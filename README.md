@@ -7,8 +7,8 @@
 Write serious BSUIR stuff without a headache
 
 - [bsuirtexmk](#bsuirtexmk)
-  - [Стандарт с человеческим лицом](#стандарт-с-человеческим-лицом)
-  - [Стандарт предприятия](#стандарт-предприятия)
+  - [Standard with a human face](#standard-with-a-human-face)
+  - [Enterprise Standard](#enterprise-standard)
 
 ## Standard with a human face
 
