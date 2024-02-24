@@ -25,8 +25,8 @@ documentation process.
 A list of the graduate's circles of hell, the documents required in hell and the
 rules for their design. It is presented in 3 forms:
 
-- [Mirrored](doc/1.md) – A copy of the text from the original, converted into
+- [Mirrored](doc/1.adoc) – A copy of the text from the original, converted into
   markdown
-- [Structured](doc/3.md) – A version with a different structure and style for
+- [Structured](doc/3.adoc) – A version with a different structure and style for
   simplicity readings
-- [Hierarchical](doc/2.md) – For comments in the tex code
+- [Hierarchical](doc/2.adoc) – For comments in the tex code
