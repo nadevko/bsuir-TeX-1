@@ -20,4 +20,7 @@ image::https://img.shields.io/badge/readme-in_english-123d7a?style=for-the-badge
 
 БГУИР:: link:./doc/standard/bsuir/2017.adoc[2017]
 
-include::CONTRIBUTING.ru.adoc[leveloffset=1]
+== Как помочь проекту?
+
+* https://github.com/nadevko/bsuirtexmk/issues/new[Сообщить об обнаруженной проблеме]
+* https://github.com/nadevko/bsuirtexmk/contribute[Помочь исправить одну из них]

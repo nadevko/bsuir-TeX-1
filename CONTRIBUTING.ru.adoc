@@ -1,7 +1,0 @@
-= Как помочь проекту?
-Nadeŭka <nadevko@riseup.net>
-v0.1, 2024-02-26
-:description: Способы помочь
-
-* https://github.com/nadevko/bsuirtexmk/issues/new[Сообщить об обнаруженной проблеме]
-* https://github.com/nadevko/bsuirtexmk/contribute[Помочь исправить одну из них]

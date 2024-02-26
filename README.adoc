@@ -20,4 +20,7 @@ documentation process.
 
 БГУИР:: link:./doc/standard/bsuir/2017.adoc[2017]
 
-include::CONTRIBUTING.adoc[leveloffset=1]
+== How can I help the project?
+
+* https://github.com/nadevko/bsuirtexmk/issues/new[Report a problem found]
+* https://github.com/nadevko/bsuirtexmk/contribute[Help fix one of them]
