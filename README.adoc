@@ -1,0 +1,23 @@
+= bsuirtexmk
+Nadeŭka <nadevko@riseup.net>
+v0.1, 2024-02-26
+:description: Write serious BSUIR stuff without a headache
+:toc:
+
+image::https://img.shields.io/github/license/nadevko/bsuirtexmk?style=for-the-badge&color=822422&logo=spdx[GitHub,link="https://github.com/nadevko/bsuirtexmk"]
+image::https://img.shields.io/badge/readme-на_беларускай-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[На беларускай,link=./README.be.adoc]
+image::https://img.shields.io/badge/readme-на_русском-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[На русском,link=./README.ru.adoc]
+
+== Standard with a human face
+
+ENSTD is simply inhumane. There are a lot of letters, it's hard to remember, it's
+hard to read. For a mere mortal student -- an impossible task. Not everyone has
+an obedient ksisarian, right? :3
+
+This project is designed to simplify life a little by presenting the material in
+an accessible form and implementing auxiliary tools for automating
+documentation process.
+
+БГУИР:: link:./doc/standard/bsuir/2017.adoc[2017]
+
+include::CONTRIBUTING.adoc[leveloffset=1]

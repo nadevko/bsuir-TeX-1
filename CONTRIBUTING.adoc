@@ -1,0 +1,7 @@
+= How can I help the project?
+Nadeŭka <nadevko@riseup.net>
+v0.1, 2024-02-26
+:description: Methods to help
+
+* https://github.com/nadevko/bsuirtexmk/issues/new[Report a problem found]
+* https://github.com/nadevko/bsuirtexmk/contribute[Help fix one of them]

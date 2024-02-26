@@ -1,0 +1,26 @@
+= bsuirtexmk
+Nadeŭka <nadevko@riseup.net>
+v0.1, 2024-02-26
+:description: Пішы сур'ёзныя БДУІРаўскія штукі без галаўнога болю
+:toc:
+
+image::https://img.shields.io/github/license/nadevko/bsuirtexmk?style=for-the-badge&color=822422&logo=spdx[GitHub,link="https://github.com/nadevko/bsuirtexmk"]
+image::https://img.shields.io/badge/readme-in_english-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[In english,link=./README.adoc]
+image::https://img.shields.io/badge/readme-на_русском-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[На русском,link=./README.ru.adoc]
+
+== Стандарт з чалавечым тварам
+
+СТП проста бесчалавечны. Вельмі шмат літар, цяжка запомніць, цяжка прачытаці.
+Для простага смяротнага студэнта -- непасільная задача.  Не ў кожнага ёсць ручны
+ксісавец, праўда ж? :3
+
+СТП просто бесчеловечен. Очень много букв, тяжко запомнить, трудно прочесть. Для
+простого смертного студента -- непосильная задача. Не у каждого есть ручной
+ксисовец, правда ведь? :3
+
+Гэты праект закліканы трохі спрасціць жыццё, выклаўшы матэрыял у даступнай форме
+і рэалізаваўшы дапаможныя прылады для аўтаматызацыі афармлення дакументавання.
+
+БГУИР:: link:./doc/standard/bsuir/2017.adoc[2017]
+
+include::CONTRIBUTING.be.adoc[leveloffset=1]
