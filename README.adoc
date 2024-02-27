@@ -10,9 +10,9 @@ image::https://img.shields.io/badge/readme-на_русском-123d7a?style=for-
 
 == Standard with a human face
 
-ENSTD is simply inhumane. There are a lot of letters, it's hard to remember, it's
-hard to read. For a mere mortal student -- an impossible task. Not everyone has
-an obedient ksisarian, right? :3
+ENSTD is simply inhumane. There are a lot of letters, it's hard to remember,
+it's hard to read. For a mere mortal student -- an impossible task. Not everyone
+has an obedient ksisarian, right? :3
 
 This project is designed to simplify life a little by presenting the material in
 an accessible form and implementing auxiliary tools for automating
