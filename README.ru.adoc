@@ -18,7 +18,7 @@ image::https://img.shields.io/badge/readme-in_english-123d7a?style=for-the-badge
 и реализовав вспомогательные инструменты для автоматизации оформления
 документации.
 
-БГУИР:: link:./doc/standard/bsuir/2017.adoc[2017]
+БГУИР:: link:./doc/standard/bsuir/2017/simple.adoc[2017]
 
 == Как помочь проекту?
 

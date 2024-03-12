@@ -1791,4 +1791,4 @@ latexmath:[\alpha+\beta=1+2=3&nbsp;хихи]
 | <<2.3.13>>
 |===
 
-include::2017-original.adoc[leveloffset=1]
+include::original.adoc[leveloffset=1]

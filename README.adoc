@@ -18,7 +18,7 @@ This project is designed to simplify life a little by presenting the material in
 an accessible form and implementing auxiliary tools for automating
 documentation process.
 
-BSUIR:: link:./doc/standard/bsuir/2017.adoc[2017]
+BSUIR:: link:./doc/standard/bsuir/2017/simple.adoc[2017]
 
 == How can I help the project?
 
