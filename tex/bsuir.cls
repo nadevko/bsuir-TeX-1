@@ -49,13 +49,13 @@
 
 % headers
 \RequirePackage{titlesec}
-\NewDocumentCommand{\bsuirtitle}{m O{} O{} m O{\baselineskip}}{
+\NewDocumentCommand{\bsuirtitle}{m O{} O{} m O{\baselineskip} O{}}{
     \titleformat{name=#1}[hang]{\raggedright\bfseries#2}{#4}{\wordsep}{#3}
-    \titleformat{name=#1,numberless}{\bfseries#2}{}{0pt}{}
+    \titleformat{name=#1,numberless}{#6\bfseries#2}{}{0pt}{}
     \titlespacing{name=#1}{\parindent}{#5}{\baselineskip}
     \titlespacing{name=#1,numberless}{\parindent}{#5}{\baselineskip}
 }
-\bsuirtitle{\chapter}[\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt]
+\bsuirtitle{\chapter}[\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt][\centering]
 \bsuirtitle{\section}{\thesection}
 \bsuirtitle{\subsection}{\thesubsection}
 \bsuirtitle{\subsubsection}{\thesubsubsection}
@@ -168,18 +168,27 @@
 
 \let\oldtableofcontents\tableofcontents
 \renewcommand{\tableofcontents}{
-    \bsuirtitle{\chapter}[\centering\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt]
     \oldtableofcontents
-    \let\chapter\chapterwithasteriskintoc
-    \bsuirtitle{\chapter}[\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt]
+    \let\chapter\chapterwithnumberlessintoc
 }
 \setcounter{tocdepth}{1}
 \let\oldchapter\chapter
-\NewDocumentCommand{\chapterwithasteriskintoc}{s m}{
+\NewDocumentCommand{\chapterwithnumberlessintoc}{s m}{
     \IfBooleanTF{#1}{
         \oldchapter*{#2}
         \addcontentsline{toc}{chapter}{#2}
     }{
         \oldchapter{#2}
     }
+}
+
+% itemize
+\RequirePackage{enumitem}
+\setlist[itemize]{
+    label=--,
+    leftmargin=*,
+    topsep=0pt,
+    partopsep=\baselineskip,
+    itemsep=0pt,
+    parsep=0pt
 }
