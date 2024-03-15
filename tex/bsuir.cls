@@ -28,6 +28,14 @@
 \babelfont{sf}{Times New Roman}
 \babelfont{tt}{Courier New}
 \RequirePackage{csquotes}
+\addto\captionsrussian{
+    \renewcommand{\contentsname}{Содержание}
+}
+
+% links
+% warning after change toc style
+\RequirePackage[hidelinks, unicode]{hyperref}
+\usepackage{bookmark}
 
 % page numbering
 \RequirePackage{fancyhdr}
@@ -50,6 +58,8 @@
 \bsuirtitle{\chapter}[\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt]
 \bsuirtitle{\section}{\thesection}
 \bsuirtitle{\subsection}{\thesubsection}
+\bsuirtitle{\subsubsection}{\thesubsubsection}
+\setcounter{secnumdepth}{3}
 
 % class options
 \SetupKeyvalOptions{
@@ -85,6 +95,7 @@
     \begin{titlepage}
         \centering
         Министерство образования Республики Беларусь\\
+        [\the\baselineskip]
         Учреждение образования\\
         \MakeUppercase{
             Белорусский Государственный Университет\\
@@ -146,4 +157,29 @@
         \centering
         Минск \@titlepageyear
     \end{titlepage}
+    \stepcounter{page}
+}
+
+% table of contents
+\RequirePackage{titletoc}
+
+\titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
+\titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}{\titlerule*[4pt]{.}\thecontentspage}
+
+\let\oldtableofcontents\tableofcontents
+\renewcommand{\tableofcontents}{
+    \bsuirtitle{\chapter}[\centering\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt]
+    \oldtableofcontents
+    \let\chapter\chapterwithasteriskintoc
+    \bsuirtitle{\chapter}[\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt]
+}
+\setcounter{tocdepth}{1}
+\let\oldchapter\chapter
+\NewDocumentCommand{\chapterwithasteriskintoc}{s m}{
+    \IfBooleanTF{#1}{
+        \oldchapter*{#2}
+        \addcontentsline{toc}{chapter}{#2}
+    }{
+        \oldchapter{#2}
+    }
 }
