@@ -4,7 +4,7 @@
 \RequirePackage{xparse}
 \RequirePackage{tabularx}
 \RequirePackage{kvoptions}
-\RequirePackage{ifthen}
+\RequirePackage{xifthen}
 \RequirePackage{calc}
 
 \newcommand{\ifeqfal}[3]{\ifthenelse{\equal{#1}{#2}}{#3}}
@@ -67,6 +67,7 @@
     prefix=KVO@
 }
 \DeclareStringOption[labwork]{variant}
+% \DeclareStringOption[build]{prefix}
 \ProcessKeyvalOptions{KVO}
 
 % variant validation
@@ -186,9 +187,52 @@
 \RequirePackage{enumitem}
 \setlist[itemize]{
     label=--,
-    leftmargin=*,
+    leftmargin=1.4\parindent,
     topsep=0pt,
     partopsep=\baselineskip,
     itemsep=0pt,
     parsep=0pt
+}
+
+% images
+\RequirePackage{graphicx}
+\RequirePackage{caption}
+\RequirePackage{float}
+\captionsetup[figure]{name=Рисунок, labelsep=endash}
+\NewDocumentCommand{\makeimage}{m o}{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{#1}
+        \caption{\IfValueTF{#2}{#2}{#1}}
+        \label{fig:#1}
+    \end{figure}
+}
+
+% listings
+\RequirePackage{minted}
+\NewDocumentCommand{\makelisting}{m o}{
+    \begin{figure}[H]
+        \centering
+        \inputminted[fontsize=\fontsize{12}{12}]{text}{#1}
+        \IfValueT{#2}{\caption{#2}}
+        \label{fig:#1}
+    \end{figure}
+}
+
+% UML
+\RequirePackage{tikz}
+\RequirePackage{aeguill}
+
+\NewDocumentCommand{\makeplantuml}{m m o}{
+    \immediate\write18{cat <<<EOF
+        #2
+        EOF > build/#1.plantuml}
+    \immediate\write18{plantuml -tlatex:nopreamble build/#1.plantuml}
+
+    \begin{figure}[H]
+        \centering
+        \include{build/#1.tex}
+        \IfValueT{#3}{\caption{#3}}
+        \label{fig:#1}
+    \end{figure}
 }
