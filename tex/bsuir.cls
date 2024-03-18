@@ -67,7 +67,6 @@
     prefix=KVO@
 }
 \DeclareStringOption[labwork]{variant}
-% \DeclareStringOption[build]{prefix}
 \ProcessKeyvalOptions{KVO}
 
 % variant validation
@@ -223,16 +222,15 @@
 \RequirePackage{tikz}
 \RequirePackage{aeguill}
 
-\NewDocumentCommand{\makeplantuml}{m m o}{
-    \immediate\write18{cat <<<EOF
-        #2
-        EOF > build/#1.plantuml}
-    \immediate\write18{plantuml -tlatex:nopreamble build/#1.plantuml}
+\NewDocumentCommand{\makeplantumlin}{m m o}{
+    \immediate\write18{echo '#2' > build/#1.plantuml}
+    \immediate\write18{plantuml -teps build/#1.plantuml}
 
     \begin{figure}[H]
         \centering
-        \include{build/#1.tex}
+        \includegraphics*{build/#1.eps}
         \IfValueT{#3}{\caption{#3}}
         \label{fig:#1}
     \end{figure}
 }
+\newcommand{\makeplantuml}{\obeylines\makeplantumlin}
