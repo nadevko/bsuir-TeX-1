@@ -243,17 +243,20 @@
 }
 
 % UML
+\RequirePackage{atveryend}
 \NewDocumentCommand{\makeplantumlin}{m m o}{
-    \immediate\write18{echo '#2' > build/#1.plantuml}
-    \immediate\write18{plantuml -teps build/#1.plantuml}
+    \immediate\write18{echo '#2' > build/#1.\jobname.plantuml}
+    \AtVeryEndDocument{\immediate\write18{rm build/#1.\jobname.plantuml}}
+    \immediate\write18{plantuml -teps build/#1.\jobname.plantuml}
+    \AtVeryEndDocument{\immediate\write18{rm build/#1.\jobname.plantuml}}
 
     \IfValueTF{#3}{
         \makefigure{#1}[img]{
-            \includegraphics*{build/#1.eps}
+            \includegraphics*{build/#1.\jobname.eps}
         }[#3]
     }{
         \makefigure{#1}[img]{
-            \includegraphics*{build/#1.eps}
+            \includegraphics*{build/#1.\jobname.eps}
         }
     }
 }
