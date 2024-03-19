@@ -193,44 +193,81 @@
     parsep=0pt
 }
 
-% images
-\RequirePackage{graphicx}
-\RequirePackage{caption}
+% figures
 \RequirePackage{float}
+\RequirePackage{caption}
 \captionsetup[figure]{name=Рисунок, labelsep=endash}
-\NewDocumentCommand{\makeimage}{m o}{
+\NewDocumentCommand{\makefigure}{m o m o}{
     \begin{figure}[H]
         \centering
-        \includegraphics[width=\textwidth]{#1}
-        \caption{\IfValueTF{#2}{#2}{#1}}
-        \label{fig:#1}
+        #3
+        \IfValueT{#4}{\caption{#4}}
+        \label{\IfValueTF{#2}{#2}{fig}:#1}
     \end{figure}
+}
+
+% images
+\RequirePackage{graphicx}
+\NewDocumentCommand{\makeimage}{m o}{
+    \IfValueTF{#2}{
+        \makefigure{#1}[img]{
+            \includegraphics[width=\textwidth]{#1}
+        }[#2]
+    }{
+        \makefigure{#1}[img]{
+            \includegraphics[width=\textwidth]{#1}
+        }
+    }
 }
 
 % listings
 \RequirePackage{minted}
+\setminted{
+    fontsize=\fontsize{12}{12},
+    tabsize=4,
+    breaklines,
+    mathescape
+}
+\makeatletter
+\let\c@figure\c@listing
+\makeatother
+\renewcommand\listingscaption{Рисунок}
+\newenvironment{listingcaption}{\captionsetup{type=listing, name=Рисунок, labelsep=endash}}{}
 \NewDocumentCommand{\makelisting}{m o}{
-    \begin{figure}[H]
+    \begin{listingcaption}
         \centering
-        \inputminted[fontsize=\fontsize{12}{12}]{text}{#1}
+        \inputminted{text}{#1}
         \IfValueT{#2}{\caption{#2}}
-        \label{fig:#1}
-    \end{figure}
+        \label{lst:#1}
+    \end{listingcaption}
 }
 
 % UML
-\RequirePackage{tikz}
-\RequirePackage{aeguill}
-
 \NewDocumentCommand{\makeplantumlin}{m m o}{
     \immediate\write18{echo '#2' > build/#1.plantuml}
     \immediate\write18{plantuml -teps build/#1.plantuml}
 
-    \begin{figure}[H]
-        \centering
-        \includegraphics*{build/#1.eps}
-        \IfValueT{#3}{\caption{#3}}
-        \label{fig:#1}
-    \end{figure}
+    \IfValueTF{#3}{
+        \makefigure{#1}[img]{
+            \includegraphics*{build/#1.eps}
+        }[#3]
+    }{
+        \makefigure{#1}[img]{
+            \includegraphics*{build/#1.eps}
+        }
+    }
 }
-\newcommand{\makeplantuml}{\obeylines\makeplantumlin}
+\newcommand{\makeuml}{\obeylines\makeplantumlin}
+
+% svg
+\NewDocumentCommand{\makesvg}{m o}{
+    \IfValueTF{#2}{
+        \makefigure{#1}[img]{
+            \includesvg[inkscapelatex=false, width=0.3\textwidth]{#1}
+        }[#2]
+    }{
+        \makefigure{#1}[img]{
+            \includesvg[inkscapelatex=false, width=0.3\textwidth]{#1}
+        }
+    }
+}
