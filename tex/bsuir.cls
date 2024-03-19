@@ -226,7 +226,8 @@
     fontsize=\fontsize{12}{12},
     tabsize=4,
     breaklines,
-    mathescape
+    mathescape,
+    stripnl
 }
 \makeatletter
 \let\c@figure\c@listing
@@ -237,7 +238,7 @@
     \begin{listingcaption}
         \centering
         \inputminted{text}{#1}
-        \IfValueT{#2}{\caption{#2}}
+        \IfValueT{#2}{\caption{#2}~\\}
         \label{lst:#1}
     \end{listingcaption}
 }
