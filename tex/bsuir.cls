@@ -2,10 +2,10 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bsuir}[2024/02/14 BSUIR ENSTD 2017 compatible class]
 \RequirePackage{xparse}
-\RequirePackage{tabularx}
 \RequirePackage{kvoptions}
 \RequirePackage{xifthen}
 \RequirePackage{calc}
+\RequirePackage{pdfpages}
 
 \newcommand{\ifeqfal}[3]{\ifthenelse{\equal{#1}{#2}}{#3}}
 \newcommand{\ifeqesc}[3]{\ifthenelse{\equal{#1}{#2}}{#3}{}}
@@ -33,7 +33,6 @@
 }
 
 % links
-% warning after change toc style
 \RequirePackage[hidelinks, unicode]{hyperref}
 \usepackage{bookmark}
 
@@ -66,19 +65,15 @@
     family=KVO,
     prefix=KVO@
 }
-\DeclareStringOption[labwork]{variant}
+\DeclareStringOption[custom]{variant}
 \ProcessKeyvalOptions{KVO}
 
 % variant validation
 \begin{switch}{\KVO@variant}
-    \falcase{labwork}{}{
-        \falcase{courcework}{}{
-            \falcase{diplomawork}{}{
-                \ClassError{bsuir}{
-                    Unknown variant. Use one of: labwork, courcework
-                }{
-                    \KVO@variant variant not available
-                }}}}
+    \falcase{custom}{}{\falcase{labwork}{}{\falcase{courcework}{}{
+                \falcase{diplomawork}{}{\ClassError{bsuir}{Unknown variant. Use
+                        one of: custom, labwork, courcework, diplomawork
+                    }{\KVO@variant variant not available}}}}}
 \end{switch}
 
 % titlepage template values
@@ -89,9 +84,11 @@
 \newcommand{\worktitle}[1]{\def\@worktitle{#1}}
 \newcommand{\workcode}[1]{\def\@workcode{#1}}
 \newcommand{\titlepageyear}[1]{\def\@titlepageyear{#1}}
+\newcommand{\titleright}[1]{\def\@titleright{#1}}
+\newcommand{\titleleft}[1]{\def\@titleleft{#1}}
 
 % titlepage template
-\renewcommand{\maketitle}[2]{
+\renewcommand{\maketitle}{
     \begin{titlepage}
         \centering
         Министерство образования Республики Беларусь\\
@@ -103,6 +100,10 @@
         }\\
         [\the\baselineskip]
 
+        \ifeqfal{\KVO@variant}{custom}{
+        \@departmentlong\\
+        [\dimexpr\the\baselineskip * 3]
+        }{
         \ifeqfal{\KVO@variant}{labwork}{
         Кафедра \@departmentlong\\
         [\dimexpr\the\baselineskip * 3]
@@ -113,8 +114,12 @@
             Кафедра   & \@departmentlong
         \end{tabular}\\
         [\the\baselineskip]
-        }
+        }}
 
+        \ifeqfal{\KVO@variant}{custom}{
+        \@departmentshort\\
+        [\dimexpr\the\baselineskip * 3]
+        }{
         \ifeqfal{\KVO@variant}{diplomawork}{
         \raggedleft
         \begin{tabular}{l}
@@ -125,8 +130,12 @@
         [\the\baselineskip]
         }{
         ~\\[\dimexpr\the\baselineskip * 4]
-        }
+        }}
 
+        \ifeqfal{\KVO@variant}{custom}{
+        \@worktitle\\
+        [\dimexpr\the\baselineskip * 7]
+        }{
         \ifeqfal{\KVO@variant}{labwork}{
         Лабораторная работа \textnumero\@workcode\\
         \textquote{\@worktitle}\\
@@ -144,13 +153,13 @@
         [\the\baselineskip]
         \@workcode\\
         [\the\baselineskip]
-        }
+        }}
 
         \begin{tabular}{l}
-            #1
+            \@titleleft
         \end{tabular}\hfill
         \begin{tabular}{l}
-            #2
+            \@titleright
         \end{tabular}
 
         \vfill
@@ -173,10 +182,16 @@
 }
 \setcounter{tocdepth}{1}
 \let\oldchapter\chapter
-\NewDocumentCommand{\chapterwithnumberlessintoc}{s m}{
+\NewDocumentCommand{\chapterwithnumberlessintoc}{s m o O{обязательное}}{
     \IfBooleanTF{#1}{
+        \titlespacing{name=\chapter,numberless}{\parindent}{0pt}{\IfValueTF{#3}{0pt}{\baselineskip}}
         \oldchapter*{#2}
         \addcontentsline{toc}{chapter}{#2}
+        \IfValueT{#3}{
+            \begin{center}
+                \textbf{\lowercase{(#4)}\\#3}
+            \end{center}
+        }
     }{
         \oldchapter{#2}
     }
@@ -188,7 +203,12 @@
     label=--,
     leftmargin=1.4\parindent,
     topsep=0pt,
-    partopsep=\baselineskip,
+    itemsep=0pt,
+    parsep=0pt
+}
+\setlist[enumerate]{
+    leftmargin=1.5\parindent,
+    topsep=0pt,
     itemsep=0pt,
     parsep=0pt
 }
@@ -197,25 +217,25 @@
 \RequirePackage{float}
 \RequirePackage{caption}
 \captionsetup[figure]{name=Рисунок, labelsep=endash}
-\NewDocumentCommand{\makefigure}{m o m o}{
+\NewDocumentCommand{\makefigure}{O{img} m m o}{
     \begin{figure}[H]
         \centering
         #3
         \IfValueT{#4}{\caption{#4}}
-        \label{\IfValueTF{#2}{#2}{fig}:#1}
+        \label{#1:#2}
     \end{figure}
 }
 
 % images
 \RequirePackage{graphicx}
-\NewDocumentCommand{\makeimage}{m o}{
+\NewDocumentCommand{\makeimage}{m o O{\textwidth}}{
     \IfValueTF{#2}{
-        \makefigure{#1}[img]{
-            \includegraphics[width=\textwidth]{#1}
+        \makefigure{#1}{
+            \includegraphics[width=#3]{#1}
         }[#2]
     }{
-        \makefigure{#1}[img]{
-            \includegraphics[width=\textwidth]{#1}
+        \makefigure{#1}{
+            \includegraphics[width=#3]{#1}
         }
     }
 }
@@ -224,10 +244,17 @@
 \RequirePackage{minted}
 \setminted{
     fontsize=\fontsize{12}{12},
-    tabsize=4,
+    tabsize=2,
     breaklines,
     mathescape,
-    stripnl
+    stripnl,
+    breakanywhere,
+    breaksymbolleft=,
+    breaksymbolright=,
+    breakbeforesymbolpre=,
+    breakaftersymbolpre=,
+    breakanywheresymbolpre=,
+    breakautoindent=false,
 }
 \makeatletter
 \let\c@figure\c@listing
@@ -252,11 +279,11 @@
     \AtVeryEndDocument{\immediate\write18{rm build/#1.\jobname.plantuml}}
 
     \IfValueTF{#3}{
-        \makefigure{#1}[img]{
+        \makefigure[uml]{#1}{
             \includegraphics*{build/#1.\jobname.eps}
         }[#3]
     }{
-        \makefigure{#1}[img]{
+        \makefigure[uml]{#1}{
             \includegraphics*{build/#1.\jobname.eps}
         }
     }
@@ -264,14 +291,21 @@
 \newcommand{\makeuml}{\obeylines\makeplantumlin}
 
 % svg
-\NewDocumentCommand{\makesvg}{m o}{
+\RequirePackage{svg}
+\NewDocumentCommand{\makesvg}{m o O{}}{
     \IfValueTF{#2}{
-        \makefigure{#1}[img]{
-            \includesvg[inkscapelatex=false, width=0.3\textwidth]{#1}
+        \makefigure{#1}{
+            \includesvg[inkscapelatex=false, width=#3\textwidth]{#1}
         }[#2]
     }{
-        \makefigure{#1}[img]{
-            \includesvg[inkscapelatex=false, width=0.3\textwidth]{#1}
+        \makefigure{#1}{
+            \includesvg[inkscapelatex=false, width=#3\textwidth]{#1}
         }
     }
 }
+
+% tables
+\RequirePackage{longtable}
+\captionsetup[longtable]{name=Таблица, labelsep=endash, justification=raggedright, singlelinecheck=false}
+\LTpre=\baselineskip
+\LTpost=\baselineskip
