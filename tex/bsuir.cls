@@ -1,93 +1,170 @@
-% meta
+%%% metadata
+% define class
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bsuir}[2024/02/14 BSUIR ENSTD 2017 compatible class]
-\RequirePackage{xparse}
-\RequirePackage{kvoptions}
-\RequirePackage{xifthen}
-\RequirePackage{calc}
-\RequirePackage{pdfpages}
-
-\newcommand{\ifeqfal}[3]{\ifthenelse{\equal{#1}{#2}}{#3}}
-\newcommand{\ifeqesc}[3]{\ifthenelse{\equal{#1}{#2}}{#3}{}}
-\newcommand{\falcase}[2]{#1 #2}
-\newcommand{\esccase}[2]{#1 #2}
-\newenvironment{switch}[1]{
-    \renewcommand{\falcase}{\ifeqfal{#1}}
-    \renewcommand{\esccase}{\ifeqesc{#1}}
-}{}
-
-% base class, font size, A4 geometry, margins
+% configure paper and margins
 \LoadClass[14pt, final, onecolumn, oneside, titlepage, openany]{extreport}
 \RequirePackage[a4paper, top=20mm, bottom=27mm, left=30mm, right=15mm, footskip=17mm]{geometry}
 \linespread{1.1}
 \setlength{\parindent}{1.25cm}
 
-% language and fonts
+%%% language
+% translations
 \RequirePackage[main=russian, english]{babel}
+\addto\captionsrussian{
+    \renewcommand{\bibname}{Список использованных источников}
+}
+% fonts
 \babelfont{rm}{Times New Roman}
 \babelfont{sf}{Times New Roman}
 \babelfont{tt}{Courier New}
+
+%%% misc
+% to merge other pdf files into document
+\RequirePackage{pdfpages}
+% fancy quotes
 \RequirePackage{csquotes}
-\addto\captionsrussian{
-    \renewcommand{\contentsname}{Содержание}
-}
-
-% links
+% enable links
 \RequirePackage[hidelinks, unicode]{hyperref}
-\usepackage{bookmark}
+\RequirePackage{bookmark}
+% bibliography
+\RequirePackage[
+    language=auto,
+    autolang=other,
+]{biblatex}
 
-% page numbering
+%%% page numbering
 \RequirePackage{fancyhdr}
+% define style
 \fancypagestyle{plain}{
+    % clean styles
     \fancyhf{}
+    % new style
     \rfoot{\underline{\thepage}}
     \renewcommand{\headrulewidth}{0pt}
     \renewcommand{\footrulewidth}{0pt}
 }
 \pagestyle{plain}
 
-% headers
-\RequirePackage{titlesec}
-\NewDocumentCommand{\bsuirtitle}{m O{} O{} m O{\baselineskip} O{}}{
-    \titleformat{name=#1}[hang]{\raggedright\bfseries#2}{#4}{\wordsep}{#3}
-    \titleformat{name=#1,numberless}{#6\bfseries#2}{}{0pt}{}
+%%% headers
+\RequirePackage[clearempty,newlinetospace]{titlesec}
+% for ...DocumentCommand
+\RequirePackage{xparse}
+% \bsuirtitle
+\NewDocumentCommand{\bsuirtitle}{
+    m % heading to modify
+    O{} % usual title formatting
+    O{} % additional numberless title formatting
+    m % label formatting
+    O{\baselineskip} % vertical indent before (remove from chapters)
+    O{}
+}{
+    % usual
+    \titleformat{name=#1}{\bfseries#2}{#4}{\wordsep}{}
     \titlespacing{name=#1}{\parindent}{#5}{\baselineskip}
+    % without number
+    \titleformat{name=#1,numberless}{#3\bfseries#2}{}{0pt}{}
     \titlespacing{name=#1,numberless}{\parindent}{#5}{\baselineskip}
 }
-\bsuirtitle{\chapter}[\fontsize{16}{\baselineskip}\MakeUppercase]{\thechapter}[0pt][\centering]
-\bsuirtitle{\section}{\thesection}
+% set formatting
+\bsuirtitle{\chapter}[\MakeUppercase][\centering]{\thechapter}[0pt]
+\bsuirtitle{\section}[\MakeUppercase]{\thesection}
 \bsuirtitle{\subsection}{\thesubsection}
 \bsuirtitle{\subsubsection}{\thesubsubsection}
+% numbering depth
 \setcounter{secnumdepth}{3}
 
-% class options
+%%% appendices
+\let\oldappendix\appendix
+\let\oldchapter\chapter
+% appendix-styled chapter
+\NewDocumentCommand{\achapter}{
+    s % is numberless
+    O{обязательное} % appendix type
+    m % title
+}{
+    \IfValueTF{#1}{
+        \oldchapter*[(#2)~#3]{(#2)\\#3}
+    }{
+        \oldchapter[(#2)~#3]{(#2)\\#3}
+    }
+}
+\renewcommand{\appendix}{
+    % set counter
+    \setcounter{chapter}{0}
+    % manually add to toc
+    \setcounter{secnumdepth}{-1}
+    % change chapter format
+    \titleformat{\chapter}{\centering\bfseries\fontsize{16}{16}}
+    {\MakeUppercase{\chaptertitlename~\thechapter}}{\wordsep}{
+        \stepcounter{chapter}
+        \addcontentsline{toc}{section}
+        {\hspace*{-12pt}\chaptertitlename~\thechapter}\\
+    }
+    % redefine chapter
+}
+
+%%% table of contents
+\RequirePackage{titletoc}
+% toc style for its parts
+\titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
+\titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}{\titlerule*[4pt]{.}\thecontentspage}
+\setcounter{tocdepth}{1}
+% add numberless to toc
+% \let\oldchapter\chapter
+% \RenewDocumentCommand
+% \RenewDocumentCommand{\chapter}{ O{обязательное} m }{
+% #1
+% #2
+% \oldchapter[#1]{#2}
+%   \IfValueT { #2 }{ \unskip #2 }
+%   \originalcite { #1 }
+% }
+% \renewcommand{\chapter}[2]{
+% appendix type
+% appendix title
+%     \oldchapter[(#1)~#2]{(#1)\\#2}
+% }
+
+%%% class options
+\RequirePackage{kvoptions}
+% init
 \SetupKeyvalOptions{
     family=KVO,
     prefix=KVO@
 }
+% variant is one of: custom, labwork, courcework, diploma, practice
 \DeclareStringOption[custom]{variant}
+% load them
 \ProcessKeyvalOptions{KVO}
+% validate variant
+\RequirePackage{xifthen}
+\ifthenelse{
+    \equal{\KVO@variant}{custom}\OR
+    \equal{\KVO@variant}{labwork}\OR
+    \equal{\KVO@variant}{courcework}\OR
+    \equal{\KVO@variant}{diploma}\OR
+    \equal{\KVO@variant}{practice}
+}{}{
+    \ClassError{bsuir}{Unknown variant. Use one of: custom, labwork, courcework,
+        diploma, practice}{\KVO@variant variant not available}
+}
 
-% variant validation
-\begin{switch}{\KVO@variant}
-    \falcase{custom}{}{\falcase{labwork}{}{\falcase{courcework}{}{
-                \falcase{diplomawork}{}{\ClassError{bsuir}{Unknown variant. Use
-                        one of: custom, labwork, courcework, diplomawork
-                    }{\KVO@variant variant not available}}}}}
-\end{switch}
-
-% titlepage template values
+%%% titlepage
+% template values
 \newcommand{\faculty}[1]{\def\@faculty{#1}}
 \newcommand{\departmentlong}[1]{\def\@departmentlong{#1}}
 \newcommand{\departmentshort}[1]{\def\@departmentshort{#1}}
-\newcommand{\departmentmanager}[1]{\def\@departmentmanager{#1}}
+\newcommand{\manager}[1]{\def\@manager{#1}}
 \newcommand{\worktitle}[1]{\def\@worktitle{#1}}
 \newcommand{\workcode}[1]{\def\@workcode{#1}}
 \newcommand{\titlepageyear}[1]{\def\@titlepageyear{#1}}
 \newcommand{\titleright}[1]{\def\@titleright{#1}}
+\newcommand{\titlecenter}[1]{\def\@titlecenter{#1}}
 \newcommand{\titleleft}[1]{\def\@titleleft{#1}}
-
-% titlepage template
+\newcommand{\group}[1]{\def\@group{#1}}
+\newcommand{\student}[1]{\def\@student{#1}}
+% template
 \renewcommand{\maketitle}{
     \begin{titlepage}
         \centering
@@ -100,13 +177,8 @@
         }\\
         [\the\baselineskip]
 
-        \ifeqfal{\KVO@variant}{custom}{
-        \@departmentlong\\
-        [\dimexpr\the\baselineskip * 3]
-        }{
-        \ifeqfal{\KVO@variant}{labwork}{
-        Кафедра \@departmentlong\\
-        [\dimexpr\the\baselineskip * 3]
+        \ifthenelse{
+        \equal{\KVO@variant}{diploma}
         }{
         \raggedright
         \begin{tabular}{l l}
@@ -114,91 +186,88 @@
             Кафедра   & \@departmentlong
         \end{tabular}\\
         [\the\baselineskip]
-        }}
-
-        \ifeqfal{\KVO@variant}{custom}{
-        \@departmentshort\\
-        [\dimexpr\the\baselineskip * 3]
         }{
-        \ifeqfal{\KVO@variant}{diplomawork}{
+        Кафедра \@departmentlong\\
+        [\dimexpr\the\baselineskip * 3]
+        }
+
+        \ifthenelse{
+        \equal{\KVO@variant}{diploma}
+        }{
         \raggedleft
         \begin{tabular}{l}
             \textit{К защите допустить}:          \\\\
             Заведующий кафедрой \@departmentshort \\
-            \hrulefill \@departmentmanager
+            \hrulefill \@manager
         \end{tabular}\\
         [\the\baselineskip]
         }{
         ~\\[\dimexpr\the\baselineskip * 4]
-        }}
+        }
 
-        \ifeqfal{\KVO@variant}{custom}{
+        \ifthenelse{
+        \equal{\KVO@variant}{custom}
+        }{
         \@worktitle\\
         [\dimexpr\the\baselineskip * 7]
+        }{\ifthenelse{
+        \equal{\KVO@variant}{practice}
         }{
-        \ifeqfal{\KVO@variant}{labwork}{
+        \MakeUppercase{Отчет по учебной (\@worktitle) практике}\\
+        [\dimexpr\the\baselineskip * 7]
+        }{\ifthenelse{
+        \equal{\KVO@variant}{labwork}
+        }{
         Лабораторная работа \textnumero\@workcode\\
         \textquote{\@worktitle}\\
         [\dimexpr\the\baselineskip * 7]
         }{
         \centering
         \MakeUppercase{Пояснительная записка}\\
-        \begin{switch}{\KVO@variant}
-            \esccase{courcework}{к курсовой работе}
-            \esccase{diplomawork}{к дипломной работе}
-        \end{switch}\\
+        \ifthenelse{
+            \equal{\KVO@variant}{courcework}
+        }{к курсовой работе}{к дипломной работе}\\
         на тему\\
         [\the\baselineskip]
         \textbf{\MakeUppercase{\@worktitle}}\\
         [\the\baselineskip]
         \@workcode\\
         [\the\baselineskip]
-        }}
+        }}}
 
-        \begin{tabular}{l}
-            \@titleleft
-        \end{tabular}\hfill
-        \begin{tabular}{l}
-            \@titleright
-        \end{tabular}
+        \ifthenelse{
+            \equal{\KVO@variant}{practice}
+        }{
+            \begin{tabular}{l}
+                Студент группы \@group \\\\
+                Руководитель практики  \\
+                от кафедры \@departmentshort
+            \end{tabular}\hfill
+            \begin{tabular}{c c l}
+                \hrulefill & \hspace{30pt} & \@student \\
+                \textsuperscript{(подпись)}            \\
+                \hrulefill &               & \@manager \\
+                ~
+            \end{tabular}
+        }{
+            \begin{tabular}{l}
+                \@titleleft
+            \end{tabular}\hfill
+            \begin{tabular}{l}
+                \@titleright
+            \end{tabular}
 
-        \vfill
-        \centering
-        Минск \@titlepageyear
+            \vfill
+            \centering
+            Минск \@titlepageyear
+        }
     \end{titlepage}
     \stepcounter{page}
 }
 
-% table of contents
-\RequirePackage{titletoc}
-
-\titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
-\titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}{\titlerule*[4pt]{.}\thecontentspage}
-
-\let\oldtableofcontents\tableofcontents
-\renewcommand{\tableofcontents}{
-    \oldtableofcontents
-    \let\chapter\chapterwithnumberlessintoc
-}
-\setcounter{tocdepth}{1}
-\let\oldchapter\chapter
-\NewDocumentCommand{\chapterwithnumberlessintoc}{s m o O{обязательное}}{
-    \IfBooleanTF{#1}{
-        \titlespacing{name=\chapter,numberless}{\parindent}{0pt}{\IfValueTF{#3}{0pt}{\baselineskip}}
-        \oldchapter*{#2}
-        \addcontentsline{toc}{chapter}{#2}
-        \IfValueT{#3}{
-            \begin{center}
-                \textbf{\lowercase{(#4)}\\#3}
-            \end{center}
-        }
-    }{
-        \oldchapter{#2}
-    }
-}
-
-% itemize
+%%% lists
 \RequirePackage{enumitem}
+% itemize
 \setlist[itemize]{
     label=--,
     leftmargin=1.4\parindent,
@@ -206,6 +275,7 @@
     itemsep=0pt,
     parsep=0pt
 }
+% enumerate
 \setlist[enumerate]{
     leftmargin=1.5\parindent,
     topsep=0pt,
@@ -213,37 +283,53 @@
     parsep=0pt
 }
 
-% figures
+%%% figures
+% figures factory
 \RequirePackage{float}
 \RequirePackage{caption}
 \captionsetup[figure]{name=Рисунок, labelsep=endash}
-\NewDocumentCommand{\makefigure}{O{img} m m o}{
+% \makefigure
+\NewDocumentCommand{\makefigure}{
+    O{img} % figure prefix
+    m % figure name
+    m % code to make figure
+}{
     \begin{figure}[H]
         \centering
         #3
-        \IfValueT{#4}{\caption{#4}}
         \label{#1:#2}
     \end{figure}
 }
-
 % images
+% \makeimage
 \RequirePackage{graphicx}
-\NewDocumentCommand{\makeimage}{m o O{\textwidth}}{
-    \IfValueTF{#2}{
-        \makefigure{#1}{
-            \includegraphics[width=#3]{#1}
-        }[#2]
-    }{
-        \makefigure{#1}{
-            \includegraphics[width=#3]{#1}
-        }
+\NewDocumentCommand{\makeimage}{
+    o % caption
+    m % filename
+    O{width=\textwidth} % image width
+}{
+    \makefigure{#2}{
+        \includegraphics[#3]{#2}
+        \IfValueT{#1}{\caption{#1}}
+    }
+}
+% \makesvg
+\RequirePackage{svg}
+\NewDocumentCommand{\makesvg}{
+    o % caption
+    m % filename
+    O{width=\textwidth} % image width
+}{
+    \makefigure{#2}{
+        \includesvg[inkscapelatex=false, #3]{#2}
+        \IfValueT{#1}{\caption{#1}}
     }
 }
 
-% listings
+%%% listings
 \RequirePackage{minted}
 \setminted{
-    fontsize=\fontsize{12}{12},
+    fontsize=\fontsize{12}{\baselineskip},
     tabsize=2,
     breaklines,
     mathescape,
@@ -256,12 +342,18 @@
     breakanywheresymbolpre=,
     breakautoindent=false,
 }
+% unite counters
 \makeatletter
 \let\c@figure\c@listing
 \makeatother
+% set caption
 \renewcommand\listingscaption{Рисунок}
 \newenvironment{listingcaption}{\captionsetup{type=listing, name=Рисунок, labelsep=endash}}{}
-\NewDocumentCommand{\makelisting}{m o}{
+% \makelisting
+\NewDocumentCommand{\makelisting}{
+    m % file
+    o % caption
+}{
     \begin{listingcaption}
         \centering
         \inputminted{text}{#1}
@@ -270,42 +362,10 @@
     \end{listingcaption}
 }
 
-% UML
-\RequirePackage{atveryend}
-\NewDocumentCommand{\makeplantumlin}{m m o}{
-    \immediate\write18{echo '#2' > build/#1.\jobname.plantuml}
-    \AtVeryEndDocument{\immediate\write18{rm build/#1.\jobname.plantuml}}
-    \immediate\write18{plantuml -teps build/#1.\jobname.plantuml}
-    \AtVeryEndDocument{\immediate\write18{rm build/#1.\jobname.plantuml}}
-
-    \IfValueTF{#3}{
-        \makefigure[uml]{#1}{
-            \includegraphics*{build/#1.\jobname.eps}
-        }[#3]
-    }{
-        \makefigure[uml]{#1}{
-            \includegraphics*{build/#1.\jobname.eps}
-        }
-    }
-}
-\newcommand{\makeuml}{\obeylines\makeplantumlin}
-
-% svg
-\RequirePackage{svg}
-\NewDocumentCommand{\makesvg}{m o O{}}{
-    \IfValueTF{#2}{
-        \makefigure{#1}{
-            \includesvg[inkscapelatex=false, width=#3\textwidth]{#1}
-        }[#2]
-    }{
-        \makefigure{#1}{
-            \includesvg[inkscapelatex=false, width=#3\textwidth]{#1}
-        }
-    }
-}
-
-% tables
+%%% tables
 \RequirePackage{longtable}
+% caption
 \captionsetup[longtable]{name=Таблица, labelsep=endash, justification=raggedright, singlelinecheck=false}
+% margins
 \LTpre=\baselineskip
 \LTpost=\baselineskip
