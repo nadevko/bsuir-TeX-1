@@ -18,6 +18,10 @@
 \babelfont{rm}{Times New Roman}
 \babelfont{sf}{Times New Roman}
 \babelfont{tt}{Courier New}
+% translations
+\addto\captionsrussian{
+    \renewcommand{\contentsname}{Содержание}
+}
 
 %%% misc
 % to merge other pdf files into document
@@ -57,7 +61,6 @@
     O{} % additional numberless title formatting
     m % label formatting
     O{\baselineskip} % vertical indent before (remove from chapters)
-    O{}
 }{
     % usual
     \titleformat{name=#1}{\bfseries#2}{#4}{\wordsep}{}
@@ -67,64 +70,64 @@
     \titlespacing{name=#1,numberless}{\parindent}{#5}{\baselineskip}
 }
 % set formatting
-\bsuirtitle{\chapter}[\MakeUppercase][\centering]{\thechapter}[0pt]
 \bsuirtitle{\section}[\MakeUppercase]{\thesection}
 \bsuirtitle{\subsection}{\thesubsection}
 \bsuirtitle{\subsubsection}{\thesubsubsection}
 % numbering depth
 \setcounter{secnumdepth}{3}
 
-%%% appendices
-\let\oldappendix\appendix
-\let\oldchapter\chapter
-% appendix-styled chapter
-\NewDocumentCommand{\achapter}{
-    s % is numberless
-    O{обязательное} % appendix type
-    m % title
-}{
-    \IfValueTF{#1}{
-        \oldchapter*[(#2)~#3]{(#2)\\#3}
-    }{
-        \oldchapter[(#2)~#3]{(#2)\\#3}
-    }
-}
-\renewcommand{\appendix}{
-    % set counter
-    \setcounter{chapter}{0}
-    % manually add to toc
-    \setcounter{secnumdepth}{-1}
-    % change chapter format
-    \titleformat{\chapter}{\centering\bfseries\fontsize{16}{16}}
-    {\MakeUppercase{\chaptertitlename~\thechapter}}{\wordsep}{
-        \stepcounter{chapter}
-        \addcontentsline{toc}{section}
-        {\hspace*{-12pt}\chaptertitlename~\thechapter}\\
-    }
-    % redefine chapter
-}
-
 %%% table of contents
 \RequirePackage{titletoc}
 % toc style for its parts
-\titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
-\titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}{\titlerule*[4pt]{.}\thecontentspage}
-\setcounter{tocdepth}{1}
-% add numberless to toc
-% \let\oldchapter\chapter
-% \RenewDocumentCommand
-% \RenewDocumentCommand{\chapter}{ O{обязательное} m }{
-% #1
-% #2
-% \oldchapter[#1]{#2}
-%   \IfValueT { #2 }{ \unskip #2 }
-%   \originalcite { #1 }
-% }
-% \renewcommand{\chapter}[2]{
-% appendix type
-% appendix title
-%     \oldchapter[(#1)~#2]{(#1)\\#2}
-% }
+\titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}
+{\titlerule*[4pt]{.}\thecontentspage}
+\titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}
+{\titlerule*[4pt]{.}\thecontentspage}
+% toc counter
+\setcounter{tocdepth}{3}
+% excludable toc
+\let\oldtableofcontents\tableofcontents
+\NewDocumentCommand{\maketoc}{
+    s % exclude it?
+}{
+    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}}
+    \tableofcontents
+    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{3}}}
+}
+
+%%% chapter with appendices
+% appendix counter
+\newcounter{appendix}
+% chapter/appendix
+\let\oldchapter\chapter
+\NewDocumentCommand{\chapterwithnumberlesstoc}{
+    s % is numberless?
+    o % appendix type
+    m % title
+    o % toc line
+}{
+    \bsuirtitle{\chapter}[\MakeUppercase][\centering]{\thechapter}[0pt]
+    \IfBooleanTF{#1}{
+        \oldchapter*{#3}
+        \addcontentsline{toc}{chapter}{\IfValueTF{#4}{#4}{#3}}
+    }{
+        \IfValueT{#2}{
+            \stepcounter{appendix}
+            \titleformat{\chapter}{\centering\bfseries}
+            {\MakeUppercase{Приложение~\Asbuk{appendix}}}{\wordsep}{\\(#2)\\}
+            \addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+        }
+        \IfValueTF{#4}
+        {\oldchapter[#4]{#3}}
+        {\oldchapter{#3}}
+        \IfValueT{#2}{
+            \addtocontents{toc}{\protect\setcounter{tocdepth}{3}}
+            \addcontentsline{toc}{chapter}
+            {\IfValueTF{#4}{#4}{Приложение \Asbuk{appendix} (#2) #3}}
+        }
+    }
+}
+\let\chapter\chapterwithnumberlesstoc
 
 %%% class options
 \RequirePackage{kvoptions}
