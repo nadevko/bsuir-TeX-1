@@ -11,17 +11,10 @@
 %%% language
 % translations
 \RequirePackage[main=russian, english]{babel}
-\addto\captionsrussian{
-    \renewcommand{\bibname}{Список использованных источников}
-}
 % fonts
 \babelfont{rm}{Times New Roman}
 \babelfont{sf}{Times New Roman}
 \babelfont{tt}{Courier New}
-% translations
-\addto\captionsrussian{
-    \renewcommand{\contentsname}{Содержание}
-}
 
 %%% misc
 % to merge other pdf files into document
@@ -32,10 +25,7 @@
 \RequirePackage[hidelinks, unicode]{hyperref}
 \RequirePackage{bookmark}
 % bibliography
-\RequirePackage[
-    language=auto,
-    autolang=other,
-]{biblatex}
+\bibliographystyle{ugost2003}
 
 %%% page numbering
 \RequirePackage{fancyhdr}
@@ -79,8 +69,6 @@
 %%% table of contents
 \RequirePackage{titletoc}
 % toc style for its parts
-\titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}
-{\titlerule*[4pt]{.}\thecontentspage}
 \titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}
 {\titlerule*[4pt]{.}\thecontentspage}
 % toc counter
@@ -106,6 +94,8 @@
     m % title
     o % toc line
 }{
+    \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}
+    {\titlerule*[4pt]{.}\thecontentspage}
     \bsuirtitle{\chapter}[\MakeUppercase][\centering]{\thechapter}[0pt]
     \IfBooleanTF{#1}{
         \oldchapter*{#3}
@@ -372,3 +362,9 @@
 % margins
 \LTpre=\baselineskip
 \LTpost=\baselineskip
+
+%%% translations
+\addto\captionsrussian{
+    \renewcommand{\contentsname}{Содержание}
+    \renewcommand{\bibname}{Список использованных источников}
+}
