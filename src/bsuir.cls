@@ -3,14 +3,14 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bsuir}[2024/02/14 BSUIR ENSTD 2017 compatible class]
 % configure paper and margins
-\LoadClass[14pt, final, onecolumn, oneside, titlepage, openany]{extreport}
-\RequirePackage[a4paper, top=20mm, bottom=27mm, left=30mm, right=15mm, footskip=17mm]{geometry}
+\LoadClass[14pt,final,onecolumn,oneside,titlepage,openany]{extreport}
+\RequirePackage[a4paper,top=20mm,bottom=27mm,left=30mm,right=15mm,footskip=17mm]{geometry}
 \linespread{1.1}
 \setlength{\parindent}{1.25cm}
 
 %%% language
 % translations
-\RequirePackage[main=russian, english]{babel}
+\RequirePackage[main=russian,english]{babel}
 % fonts
 \babelfont{rm}{Times New Roman}
 \babelfont{sf}{Times New Roman}
@@ -26,7 +26,7 @@
 % fancy quotes
 \RequirePackage{csquotes}
 % enable links
-\RequirePackage[hidelinks, unicode]{hyperref}
+\RequirePackage[hidelinks,unicode,bookmarksdepth=3]{hyperref}
 \RequirePackage{bookmark}
 % bibliography
 \bibliographystyle{ugost2003}
@@ -45,7 +45,7 @@
 %%% table of contents
 \RequirePackage{titletoc}
 % toc depth
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{1}
 % excludable from toc itself
 \let\oldtableofcontents\tableofcontents
 \NewDocumentCommand{\maketoc}{
@@ -53,36 +53,26 @@
 }{
     \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}}
     \tableofcontents
-    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{2}}}
+    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}}
 }
 
 %%% headers
 \RequirePackage[clearempty,newlinetospace]{titlesec}
 % numbering depth
 \setcounter{secnumdepth}{4}
-% \bsuirtitle helper
-\NewDocumentCommand{\bsuirtitle}{
-    m % heading to modify
-    O{} % usual title formatting
-    O{} % additional numberless title formatting
-    m % label formatting
-    O{\baselineskip} % vertical indent before (remove from chapters)
-}{
-    % usual
-    \titleformat{name=#1}{\bfseries#2}{#4}{\wordsep}{}
-    \titlespacing{name=#1}{\parindent}{#5}{\baselineskip}
-    % without number
-    \titleformat{name=#1,numberless}{#3\bfseries#2}{}{0pt}{}
-    \titlespacing{name=#1,numberless}{\parindent}{#5}{\baselineskip}
-}
 % \chapter
+\titleformat{name=\chapter,numberless}
+{\centering\bfseries\MakeUppercase}{}{0pt}{}
+\titlespacing{name=\chapter,numberless}{\parindent}{0pt}{\baselineskip}
+\titlespacing{\chapter}{\parindent}{0pt}{\baselineskip}
 \let\oldchapter\chapter
-\NewDocumentCommand{\chapterwithnumberlesstoc}{
+\NewDocumentCommand{\bsuirchapter}{
     s % is numberless?
     o % appendix type
     m % title
 }{
-    \bsuirtitle{\chapter}[\MakeUppercase][\centering]{\thechapter}[0pt]
+    \titleformat{name=\chapter}{\bfseries\MakeUppercase}
+    {\thechapter}{\wordsep}{}
     \IfBooleanTF{#1}{
         \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
         {\titlerule*[4pt]{.}\thecontentspage}
@@ -103,15 +93,38 @@
         \oldchapter[\IfValueT{#2}{(#2) }#3]{#3}
     }
 }
-\let\chapter\chapterwithnumberlesstoc
+\let\chapter\bsuirchapter
 % \section
-\bsuirtitle{\section}[\uppercase]{\thesection}
+\titleformat{\section}{\bfseries}{\MakeUppercase\thesection}{\wordsep}{}
+\titlespacing{\section}{\parindent}{\baselineskip}{\baselineskip}
 \titlecontents{section}[12pt]{}{\contentslabel{0pt}\hspace*{24pt}}
 {\hspace*{0pt}}{\titlerule*[4pt]{.}\thecontentspage}
 % \subsection
-\bsuirtitle{\subsection}{\thesubsection}
+\let\oldsubsection\subsection
+\NewDocumentCommand{\bsuirsubsection}{
+    s % is titled
+    m % title
+}{
+    \titleformat{\subsection}[\IfBooleanTF{#1}{hang}{runin}]{}
+    {\textbf{\thesubsection}}{\wordsep}{}
+    \titlespacing{\subsection}{\parindent}{0pt}
+    {\IfBooleanTF{#1}{0pt}{\wordsep}}
+    \oldsubsection[#2]{\IfBooleanT{#1}{#2}}
+}
+\let\subsection\bsuirsubsection
 % \subsubsection
-\bsuirtitle{\subsubsection}{\thesubsubsection}
+\let\oldsubsubsection\subsubsection
+\NewDocumentCommand{\bsuirsubsubsection}{
+    s % is titled
+    m % title
+}{
+    \titleformat{\subsubsection}[\IfBooleanTF{#1}{hang}{runin}]{}
+    {\textbf{\thesubsubsection}}{\wordsep}{}
+    \titlespacing{\subsubsection}{\parindent}{0pt}
+    {\IfBooleanTF{#1}{0pt}{\wordsep}}
+    \oldsubsubsection[#2]{\IfBooleanT{#1}{#2}}
+}
+\let\subsubsection\bsuirsubsubsection
 
 %%% class options
 \RequirePackage{kvoptions}
@@ -274,7 +287,7 @@
 % figures factory
 \RequirePackage{float}
 \RequirePackage{caption}
-\captionsetup[figure]{name=Рисунок, labelsep=endash}
+\captionsetup[figure]{name=Рисунок,labelsep=endash}
 % \makefigure
 \NewDocumentCommand{\makefigure}{
     O{img} % figure prefix
@@ -308,7 +321,7 @@
     O{width=\textwidth} % image width
 }{
     \makefigure{#2}{
-        \includesvg[inkscapelatex=false, #3]{#2}
+        \includesvg[inkscapelatex=false,#3]{#2}
         \IfValueT{#1}{\caption{#1}}
     }
 }
@@ -335,7 +348,7 @@
 \makeatother
 % set caption
 \renewcommand\listingscaption{Рисунок}
-\newenvironment{listingcaption}{\captionsetup{type=listing, name=Рисунок, labelsep=endash}}{}
+\newenvironment{listingcaption}{\captionsetup{type=listing,name=Рисунок,labelsep=endash}}{}
 % \makelisting
 \NewDocumentCommand{\makelisting}{
     m % file
@@ -352,7 +365,7 @@
 %%% tables
 \RequirePackage{longtable}
 % caption
-\captionsetup[longtable]{name=Таблица, labelsep=endash, justification=raggedright, singlelinecheck=false}
+\captionsetup[longtable]{name=Таблица,labelsep=endash,justification=raggedright,singlelinecheck=false}
 % margins
 \LTpre=\baselineskip
 \LTpost=\baselineskip
