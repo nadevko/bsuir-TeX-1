@@ -16,6 +16,10 @@
 \babelfont{sf}{Times New Roman}
 \babelfont{tt}{Courier New}
 
+%%% TeX improvements
+% for ...DocumentCommand
+\RequirePackage{xparse}
+
 %%% misc
 % to merge other pdf files into document
 \RequirePackage{pdfpages}
@@ -31,20 +35,32 @@
 \RequirePackage{fancyhdr}
 % define style
 \fancypagestyle{plain}{
-    % clean styles
     \fancyhf{}
-    % new style
     \rfoot{\underline{\thepage}}
     \renewcommand{\headrulewidth}{0pt}
     \renewcommand{\footrulewidth}{0pt}
 }
 \pagestyle{plain}
 
+%%% table of contents
+\RequirePackage{titletoc}
+% toc depth
+\setcounter{tocdepth}{2}
+% excludable from toc itself
+\let\oldtableofcontents\tableofcontents
+\NewDocumentCommand{\maketoc}{
+    s % exclude it?
+}{
+    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}}
+    \tableofcontents
+    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{2}}}
+}
+
 %%% headers
 \RequirePackage[clearempty,newlinetospace]{titlesec}
-% for ...DocumentCommand
-\RequirePackage{xparse}
-% \bsuirtitle
+% numbering depth
+\setcounter{secnumdepth}{4}
+% \bsuirtitle helper
 \NewDocumentCommand{\bsuirtitle}{
     m % heading to modify
     O{} % usual title formatting
@@ -59,65 +75,43 @@
     \titleformat{name=#1,numberless}{#3\bfseries#2}{}{0pt}{}
     \titlespacing{name=#1,numberless}{\parindent}{#5}{\baselineskip}
 }
-% set formatting
-\bsuirtitle{\section}[\MakeUppercase]{\thesection}
-\bsuirtitle{\subsection}{\thesubsection}
-\bsuirtitle{\subsubsection}{\thesubsubsection}
-% numbering depth
-\setcounter{secnumdepth}{3}
-
-%%% table of contents
-\RequirePackage{titletoc}
-% toc style for its parts
-\titlecontents{section}[24pt]{}{\contentslabel{24pt}}{\hspace*{-24pt}}
-{\titlerule*[4pt]{.}\thecontentspage}
-% toc counter
-\setcounter{tocdepth}{3}
-% excludable toc
-\let\oldtableofcontents\tableofcontents
-\NewDocumentCommand{\maketoc}{
-    s % exclude it?
-}{
-    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}}
-    \tableofcontents
-    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{3}}}
-}
-
-%%% chapter with appendices
-% appendix counter
-\newcounter{appendix}
-% chapter/appendix
+% \chapter
 \let\oldchapter\chapter
 \NewDocumentCommand{\chapterwithnumberlesstoc}{
     s % is numberless?
     o % appendix type
     m % title
-    o % toc line
 }{
-    \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{\hspace*{-12pt}}
-    {\titlerule*[4pt]{.}\thecontentspage}
     \bsuirtitle{\chapter}[\MakeUppercase][\centering]{\thechapter}[0pt]
     \IfBooleanTF{#1}{
+        \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
+        {\titlerule*[4pt]{.}\thecontentspage}
         \oldchapter*{#3}
-        \addcontentsline{toc}{chapter}{\IfValueTF{#4}{#4}{#3}}
+        \addcontentsline{toc}{chapter}{#3}
     }{
-        \IfValueT{#2}{
-            \stepcounter{appendix}
+        \IfValueTF{#2}{
             \titleformat{\chapter}{\centering\bfseries}
-            {\MakeUppercase{Приложение~\Asbuk{appendix}}}{\wordsep}{\\(#2)\\}
-            \addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+            {\MakeUppercase{Приложение~\thechapter}}{\wordsep}
+            {\\\MakeLowercase{(#2)}\\}
+            \titlecontents{chapter}[100pt]{}
+            {\hspace*{-100pt}Приложение~\thecontentslabel\hspace*{4pt}}{}
+            {\titlerule*[4pt]{.}\thecontentspage}
+        }{
+            \titlecontents{chapter}[12pt]{}{\contentslabel{12pt}}
+            {\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
         }
-        \IfValueTF{#4}
-        {\oldchapter[#4]{#3}}
-        {\oldchapter{#3}}
-        \IfValueT{#2}{
-            \addtocontents{toc}{\protect\setcounter{tocdepth}{3}}
-            \addcontentsline{toc}{chapter}
-            {\IfValueTF{#4}{#4}{Приложение \Asbuk{appendix} (#2) #3}}
-        }
+        \oldchapter[\IfValueT{#2}{(#2) }#3]{#3}
     }
 }
 \let\chapter\chapterwithnumberlesstoc
+% \section
+\bsuirtitle{\section}[\uppercase]{\thesection}
+\titlecontents{section}[12pt]{}{\contentslabel{0pt}\hspace*{24pt}}
+{\hspace*{0pt}}{\titlerule*[4pt]{.}\thecontentspage}
+% \subsection
+\bsuirtitle{\subsection}{\thesubsection}
+% \subsubsection
+\bsuirtitle{\subsubsection}{\thesubsubsection}
 
 %%% class options
 \RequirePackage{kvoptions}
