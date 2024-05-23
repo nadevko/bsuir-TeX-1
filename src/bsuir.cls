@@ -177,9 +177,7 @@
         }\\
         [\the\baselineskip]
 
-        \ifthenelse{
-        \equal{\KVO@variant}{diploma}
-        }{
+        \ifthenelse{\equal{\KVO@variant}{diploma}}{
         \raggedright
         \begin{tabular}{l l}
             Факультет & \@faculty        \\
@@ -191,9 +189,7 @@
         [\dimexpr\the\baselineskip * 3]
         }
 
-        \ifthenelse{
-        \equal{\KVO@variant}{diploma}
-        }{
+        \ifthenelse{\equal{\KVO@variant}{diploma}}{
         \raggedleft
         \begin{tabular}{l}
             \textit{К защите допустить}:          \\\\
@@ -205,19 +201,13 @@
         ~\\[\dimexpr\the\baselineskip * 4]
         }
 
-        \ifthenelse{
-        \equal{\KVO@variant}{custom}
-        }{
+        \ifthenelse{\equal{\KVO@variant}{custom}}{
         \@worktitle\\
         [\dimexpr\the\baselineskip * 7]
-        }{\ifthenelse{
-        \equal{\KVO@variant}{practice}
-        }{
+        }{\ifthenelse{\equal{\KVO@variant}{practice}}{
         \MakeUppercase{Отчет по учебной (\@worktitle) практике}\\
         [\dimexpr\the\baselineskip * 7]
-        }{\ifthenelse{
-        \equal{\KVO@variant}{labwork}
-        }{
+        }{\ifthenelse{\equal{\KVO@variant}{labwork}}{
         Лабораторная работа \textnumero\@workcode\\
         \textquote{\@worktitle}\\
         [\dimexpr\the\baselineskip * 7]
@@ -235,9 +225,7 @@
         [\the\baselineskip]
         }}}
 
-        \ifthenelse{
-            \equal{\KVO@variant}{practice}
-        }{
+        \ifthenelse{\equal{\KVO@variant}{practice}}{
             \begin{tabular}{l}
                 Студент группы \@group \\\\
                 Руководитель практики  \\
@@ -256,11 +244,11 @@
             \begin{tabular}{l}
                 \@titleright
             \end{tabular}
-
-            \vfill
-            \centering
-            Минск \@titlepageyear
         }
+
+        \vfill
+        \centering
+        Минск \@titlepageyear
     \end{titlepage}
     \stepcounter{page}
 }

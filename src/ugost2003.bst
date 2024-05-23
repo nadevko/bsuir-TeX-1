@@ -711,11 +711,11 @@ FUNCTION {bbl.url}
 if$}
 FUNCTION {bbl.urldate}
 { curlanguage "english" =
-   {"online; accessed"}
+   {"Accessed"}
    { curlanguage "ukrainian" =
       { "{дата звернення}" }
       { curlanguage "russian" =
-         { "{дата обращения}" }
+         { "{Дата доступа}" }
          { curlanguage "german" =
             { "{online; abgerufen}" }
             { curlanguage "french" =
@@ -1440,10 +1440,10 @@ FUNCTION {format.compiler.rest}
 
 FUNCTION {output.address.publisher}
 {
-  address empty$
+  address empty$ type$ "online" = not and
     {
       bbl.nnoaddress
-      publisher empty$
+      publisher empty$ type$ "online" = not and
         { "~: " * bbl.nopublisher * bracketise }
         { bracketise "~: " * publisher * }
       if$
@@ -1451,7 +1451,7 @@ FUNCTION {output.address.publisher}
     {
       address output
       new.colon
-      publisher empty$
+      publisher empty$ type$ "online" = not and
         { bbl.nopublisher bracketise }
         { publisher }
       if$
@@ -1706,7 +1706,7 @@ FUNCTION {format.url}
       bbl.url ": \BibUrl{" * url * "}" *
       urldate empty$
         { "" }
-        { " (" bbl.urldate * ": " * urldate * ")" * }
+        { ". --- " bbl.urldate * ": " * urldate * }
       if$ *
     }
   if$
