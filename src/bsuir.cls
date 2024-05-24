@@ -4,9 +4,40 @@
 \ProvidesClass{bsuir}[2024/02/14 BSUIR ENSTD 2017 compatible class]
 % configure paper and margins
 \LoadClass[14pt,final,onecolumn,oneside,titlepage,openany]{extreport}
-\RequirePackage[a4paper,top=20mm,bottom=27mm,left=30mm,right=15mm,footskip=17mm]{geometry}
+\RequirePackage[
+    a4paper,
+    top=20mm,
+    bottom=27mm,
+    left=30mm,
+    right=15mm,
+    footskip=17mm
+]{geometry}
 \linespread{1.1}
 \setlength{\parindent}{1.25cm}
+
+%%% class options
+\RequirePackage{kvoptions}
+% init
+\SetupKeyvalOptions{
+    family=KVO,
+    prefix=KVO@
+}
+% variant is one of: custom, labwork, courcework, diploma, practice
+\DeclareStringOption[custom]{variant}
+% load them
+\ProcessKeyvalOptions{KVO}
+% validate variant
+\RequirePackage{xifthen}
+\ifthenelse{
+    \equal{\KVO@variant}{custom}\OR
+    \equal{\KVO@variant}{labwork}\OR
+    \equal{\KVO@variant}{courcework}\OR
+    \equal{\KVO@variant}{diploma}\OR
+    \equal{\KVO@variant}{practice}
+}{}{
+    \ClassError{bsuir}{Unknown variant. Use one of: custom, labwork, courcework,
+        diploma, practice}{\KVO@variant variant not available}
+}
 
 %%% language
 % translations
@@ -21,14 +52,22 @@
 \RequirePackage{xparse}
 
 %%% misc
+% break long URLs
+\RequirePackage{xurl}
 % to merge other pdf files into document
 \RequirePackage{pdfpages}
 % fancy quotes
 \RequirePackage{csquotes}
 % enable links
-\RequirePackage[hidelinks,unicode,bookmarksdepth=3]{hyperref}
+\RequirePackage[
+    hidelinks,
+    unicode,
+    bookmarksdepth=3,
+    breaklinks
+]{hyperref}
+% make metadata toc
 \RequirePackage{bookmark}
-% bibliography
+% bibliography style
 \bibliographystyle{ugost2003}
 
 %%% page numbering
@@ -56,14 +95,21 @@
     \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}}
 }
 
+
 %%% headers
 \RequirePackage[clearempty,newlinetospace]{titlesec}
 % numbering depth
 \setcounter{secnumdepth}{4}
+%;;;;;;tmp
+\titlespacing{\chapter}{0pt}{0pt}{0pt}
+\titlespacing{\section}{0pt}{0pt}{0pt}
+\titlespacing{\subsection}{0pt}{0pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
+
 % \chapter
 \titleformat{name=\chapter,numberless}
 {\centering\bfseries\MakeUppercase}{}{0pt}{}
-\titlespacing{name=\chapter,numberless}{\parindent}{0pt}{\baselineskip}
+\titlespacing{name=\chapter,numberless}{0pt}{0pt}{\baselineskip}
 \titlespacing{\chapter}{\parindent}{0pt}{\baselineskip}
 \let\oldchapter\chapter
 \NewDocumentCommand{\bsuirchapter}{
@@ -81,7 +127,7 @@
     }{
         \IfValueTF{#2}{
             \titleformat{\chapter}{\centering\bfseries}
-            {\MakeUppercase{Приложение~\thechapter}}{\wordsep}
+            {\MakeUppercase{Приложение~\thechapter}}{\parskip}
             {\\\MakeLowercase{(#2)}\\}
             \titlecontents{chapter}[100pt]{}
             {\hspace*{-100pt}Приложение~\thecontentslabel\hspace*{4pt}}{}
@@ -96,10 +142,11 @@
 \let\chapter\bsuirchapter
 % \section
 \titleformat{\section}{\bfseries}{\MakeUppercase\thesection}{\wordsep}{}
-\titlespacing{\section}{\parindent}{\baselineskip}{\baselineskip}
 \titlecontents{section}[12pt]{}{\contentslabel{0pt}\hspace*{24pt}}
 {\hspace*{0pt}}{\titlerule*[4pt]{.}\thecontentspage}
+\titlespacing{\section}{\parindent}{\baselineskip}{\baselineskip}
 % \subsection
+\titlespacing{\subsection}{\parindent}{\baselineskip}{\wordsep}[\baselineskip]
 \let\oldsubsection\subsection
 \NewDocumentCommand{\bsuirsubsection}{
     s % is titled
@@ -107,12 +154,12 @@
 }{
     \titleformat{\subsection}[\IfBooleanTF{#1}{hang}{runin}]{}
     {\textbf{\thesubsection}}{\wordsep}{}
-    \titlespacing{\subsection}{\parindent}{0pt}
-    {\IfBooleanTF{#1}{0pt}{\wordsep}}
     \oldsubsection[#2]{\IfBooleanT{#1}{#2}}
 }
 \let\subsection\bsuirsubsection
 % \subsubsection
+\titlespacing{\subsubsection}{\parindent}{\baselineskip}{\wordsep}
+[\baselineskip]
 \let\oldsubsubsection\subsubsection
 \NewDocumentCommand{\bsuirsubsubsection}{
     s % is titled
@@ -120,34 +167,133 @@
 }{
     \titleformat{\subsubsection}[\IfBooleanTF{#1}{hang}{runin}]{}
     {\textbf{\thesubsubsection}}{\wordsep}{}
-    \titlespacing{\subsubsection}{\parindent}{0pt}
-    {\IfBooleanTF{#1}{0pt}{\wordsep}}
     \oldsubsubsection[#2]{\IfBooleanT{#1}{#2}}
 }
 \let\subsubsection\bsuirsubsubsection
 
-%%% class options
-\RequirePackage{kvoptions}
-% init
-\SetupKeyvalOptions{
-    family=KVO,
-    prefix=KVO@
+%%% lists
+\RequirePackage{enumitem}
+% itemize
+\setlist[itemize]{
+    label=--,
+    leftmargin=1.4\parindent,
+    topsep=0pt,
+    itemsep=0pt,
+    parsep=0pt
 }
-% variant is one of: custom, labwork, courcework, diploma, practice
-\DeclareStringOption[custom]{variant}
-% load them
-\ProcessKeyvalOptions{KVO}
-% validate variant
-\RequirePackage{xifthen}
-\ifthenelse{
-    \equal{\KVO@variant}{custom}\OR
-    \equal{\KVO@variant}{labwork}\OR
-    \equal{\KVO@variant}{courcework}\OR
-    \equal{\KVO@variant}{diploma}\OR
-    \equal{\KVO@variant}{practice}
-}{}{
-    \ClassError{bsuir}{Unknown variant. Use one of: custom, labwork, courcework,
-        diploma, practice}{\KVO@variant variant not available}
+% enumerate
+\setlist[enumerate]{
+    leftmargin=1.5\parindent,
+    topsep=0pt,
+    itemsep=0pt,
+    parsep=0pt
+}
+
+%%% figures
+% figures factory
+\RequirePackage{float}
+\RequirePackage[
+    position=below,
+    aboveskip=1.2\baselineskip,
+    belowskip=-0.3\baselineskip
+]{caption}
+\captionsetup[figure]{
+    name=Рисунок,
+    labelsep=endash
+}
+% \makefigure
+\NewDocumentCommand{\makefigure}{
+    O{img} % figure prefix
+    m % figure name
+    m % code to make figure
+}{
+    \vspace{0.5\baselineskip}
+    \begin{figure}[H]
+        \centering
+        #3
+        \label{#1:#2}
+    \end{figure}
+    \vspace{-0.6\baselineskip}
+}
+% images
+% \makeimage
+\RequirePackage{graphicx}
+\NewDocumentCommand{\makeimage}{
+    o % caption
+    m % filename
+    O{width=\textwidth} % image width
+}{
+    \makefigure{#2}{
+        \includegraphics[#3]{#2}
+        \IfValueT{#1}{\caption{#1}}
+    }
+}
+% \makesvg
+\RequirePackage{svg}
+\NewDocumentCommand{\makesvg}{
+    o % caption
+    m % filename
+    O{width=\textwidth} % image width
+}{
+    \makefigure{#2}{
+        \includesvg[inkscapelatex=false,#3]{#2}
+        \IfValueT{#1}{\caption{#1}}
+    }
+}
+
+%%% listings
+\RequirePackage{minted}
+\setminted{
+    fontsize=\fontsize{12}{\baselineskip},
+    tabsize=2,
+    breaklines,
+    mathescape,
+    stripnl,
+    breakanywhere,
+    breaksymbolleft=,
+    breaksymbolright=,
+    breakbeforesymbolpre=,
+    breakaftersymbolpre=,
+    breakanywheresymbolpre=,
+    breakautoindent=false,
+}
+% unite counters
+\let\c@figure\c@listing
+% set caption
+\renewcommand\listingscaption{Рисунок}
+\newenvironment{listingcaption}{\
+    captionsetup{type=listing,name=Рисунок,labelsep=endash}
+}{}
+% \makelisting
+\NewDocumentCommand{\makelisting}{
+    m % file
+    o % caption
+}{
+    \begin{listingcaption}
+        \centering
+        \inputminted{text}{#1}
+        \IfValueT{#2}{\caption{#2}~\\}
+        \label{lst:#1}
+    \end{listingcaption}
+}
+
+%%% tables
+\RequirePackage{longtable}
+% caption
+\captionsetup[longtable]{
+    name=Таблица,
+    labelsep=endash,
+    justification=raggedright,
+    singlelinecheck=false
+}
+% margins
+\LTpre=\baselineskip
+\LTpost=\baselineskip
+
+%%% translations
+\addto\captionsrussian{
+    \renewcommand{\contentsname}{Содержание}
+    \renewcommand{\bibname}{Список использованных источников}
 }
 
 %%% titlepage
@@ -251,115 +397,4 @@
         Минск \@titlepageyear
     \end{titlepage}
     \stepcounter{page}
-}
-
-%%% lists
-\RequirePackage{enumitem}
-% itemize
-\setlist[itemize]{
-    label=--,
-    leftmargin=1.4\parindent,
-    topsep=0pt,
-    itemsep=0pt,
-    parsep=0pt
-}
-% enumerate
-\setlist[enumerate]{
-    leftmargin=1.5\parindent,
-    topsep=0pt,
-    itemsep=0pt,
-    parsep=0pt
-}
-
-%%% figures
-% figures factory
-\RequirePackage{float}
-\RequirePackage{caption}
-\captionsetup[figure]{name=Рисунок,labelsep=endash}
-% \makefigure
-\NewDocumentCommand{\makefigure}{
-    O{img} % figure prefix
-    m % figure name
-    m % code to make figure
-}{
-    \begin{figure}[H]
-        \centering
-        #3
-        \label{#1:#2}
-    \end{figure}
-}
-% images
-% \makeimage
-\RequirePackage{graphicx}
-\NewDocumentCommand{\makeimage}{
-    o % caption
-    m % filename
-    O{width=\textwidth} % image width
-}{
-    \makefigure{#2}{
-        \includegraphics[#3]{#2}
-        \IfValueT{#1}{\caption{#1}}
-    }
-}
-% \makesvg
-\RequirePackage{svg}
-\NewDocumentCommand{\makesvg}{
-    o % caption
-    m % filename
-    O{width=\textwidth} % image width
-}{
-    \makefigure{#2}{
-        \includesvg[inkscapelatex=false,#3]{#2}
-        \IfValueT{#1}{\caption{#1}}
-    }
-}
-
-%%% listings
-\RequirePackage{minted}
-\setminted{
-    fontsize=\fontsize{12}{\baselineskip},
-    tabsize=2,
-    breaklines,
-    mathescape,
-    stripnl,
-    breakanywhere,
-    breaksymbolleft=,
-    breaksymbolright=,
-    breakbeforesymbolpre=,
-    breakaftersymbolpre=,
-    breakanywheresymbolpre=,
-    breakautoindent=false,
-}
-% unite counters
-\makeatletter
-\let\c@figure\c@listing
-\makeatother
-% set caption
-\renewcommand\listingscaption{Рисунок}
-\newenvironment{listingcaption}{\captionsetup{type=listing,name=Рисунок,labelsep=endash}}{}
-% \makelisting
-\NewDocumentCommand{\makelisting}{
-    m % file
-    o % caption
-}{
-    \begin{listingcaption}
-        \centering
-        \inputminted{text}{#1}
-        \IfValueT{#2}{\caption{#2}~\\}
-        \label{lst:#1}
-    \end{listingcaption}
-}
-
-%%% tables
-\RequirePackage{longtable}
-% caption
-\captionsetup[longtable]{name=Таблица,labelsep=endash,justification=raggedright,singlelinecheck=false}
-% margins
-\LTpre=\baselineskip
-\LTpost=\baselineskip
-
-%%% translations
-\addto\captionsrussian{
-    \renewcommand{\contentsname}{Содержание}
-    \renewcommand{\bibname}{Список использованных источников}
 }
