@@ -694,7 +694,7 @@ if$}
 
 FUNCTION {bbl.url}
 { curlanguage "english" =
-   {"Access mode"}
+   {"Mode of access"}
    { curlanguage "ukrainian" =
       { "{Режим доступу}" }
       { curlanguage "russian" =
@@ -703,7 +703,7 @@ FUNCTION {bbl.url}
             { "{online; abgerufen}" }
             { curlanguage "french" =
                 { "Mode d'acc\`{e}s" }
-                { "language is not defined: " curlanguage " in bbl.url" * * warning$ "online; accessed" }
+                { "language is not defined: " curlanguage " in bbl.url" * * warning$ "Mode of access" }
             if$}
          if$}
       if$}
@@ -711,7 +711,7 @@ FUNCTION {bbl.url}
 if$}
 FUNCTION {bbl.urldate}
 { curlanguage "english" =
-   {"Accessed"}
+   {"Date of access"}
    { curlanguage "ukrainian" =
       { "{дата звернення}" }
       { curlanguage "russian" =
@@ -720,7 +720,7 @@ FUNCTION {bbl.urldate}
             { "{online; abgerufen}" }
             { curlanguage "french" =
                 { "{en ligne; acc\'{e}d\'{e}}" }
-                { "language is not defined: " curlanguage " in bbl.urldate" * * warning$ "online; accessed" }
+                { "language is not defined: " curlanguage " in bbl.urldate" * * warning$ "Date of access" }
             if$}
          if$}
       if$}
@@ -1440,20 +1440,24 @@ FUNCTION {format.compiler.rest}
 
 FUNCTION {output.address.publisher}
 {
-  address empty$ type$ "online" = not and
-    {
-      bbl.nnoaddress
-      publisher empty$ type$ "online" = not and
-        { "~: " * bbl.nopublisher * bracketise }
-        { bracketise "~: " * publisher * }
-      if$
-    }
-    {
-      address output
-      new.colon
-      publisher empty$ type$ "online" = not and
-        { bbl.nopublisher bracketise }
-        { publisher }
+  type$ "online" =
+    { "" }
+    { address empty$
+      {
+        bbl.nnoaddress
+        publisher empty$
+          { "~: " * bbl.nopublisher * bracketise }
+          { bracketise "~: " * publisher * }
+        if$
+      }
+      {
+        address output
+        new.colon
+        publisher empty$
+          { bbl.nopublisher bracketise }
+          { publisher }
+        if$
+      }
       if$
     }
   if$
