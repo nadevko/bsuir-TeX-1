@@ -1,0 +1,155 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-headings}
+[2024/05/28 BSUIR STP2017 compatible headings]
+% advanched configurator
+\RequirePackage[clearempty,newlinetospace]{titlesec}
+% numbering depth
+\setcounter{secnumdepth}{4}
+
+%%% chapter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% static styles
+% format
+\titleformat{name=\chapter,numberless}
+{\centering\bfseries\MakeUppercase}{}{0pt}{}
+% spacing
+\titlespacing{name=\chapter,numberless}{0pt}{0pt}{\baselineskip}
+\titlespacing{\chapter}{\parindent}{0pt}{\baselineskip}
+
+%%% definition
+\let\oldchapter\chapter
+\NewDocumentCommand{\bsuirchapter}{
+    s % is numberless?
+    o % appendix type. In* - to newpage with title bookmark
+    m % title
+}{
+    \IfValueTF{#2}{
+        % appendix
+        % format
+        \titleformat{\chapter}{\centering\bfseries}
+        {\MakeUppercase{Приложение~\thechapter}}{\parskip}
+        {\\\MakeLowercase{(#2)}\\}
+        % contents
+        \titlecontents{chapter}[100pt]{}
+        {\hspace*{-100pt}Приложение~\thecontentslabel\hspace*{4pt}}{}
+        {\titlerule*[4pt]{.}\thecontentspage}
+    }{
+        % chapter
+        % format
+        \titleformat{\chapter}{\bfseries\MakeUppercase}{\thechapter}{\wordsep}{}
+        % contents
+        \titlecontents{chapter}[12pt]{}{\contentslabel{12pt}}
+        {\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
+    }
+    \IfBooleanTF{#1}{
+        % contents
+        \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
+        {\titlerule*[4pt]{.}\thecontentspage}
+        \IfValueTF{#2}{
+            % numberless appendix (phantom)
+            \newpage\phantomsection
+            \addcontentsline{toc}{chapter}{#3}
+        }{
+            % numberless chapter
+            \oldchapter*{#3}
+            \addcontentsline{toc}{chapter}{#3}
+        }
+    }{
+        % numbered chapter, numbered appendix
+        \oldchapter[\IfValueT{#2}{(#2) }#3]{#3}
+        \label{sec:\thechapter}
+    }
+}
+\let\chapter\bsuirchapter
+
+%%% section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% static styles
+% format
+\titleformat{\section}{\bfseries}{\MakeUppercase\thesection}{\wordsep}{}
+% contents
+\titlecontents{section}[12pt]{}{\contentslabel{0pt}\hspace*{24pt}}
+{\hspace*{0pt}}{\titlerule*[4pt]{.}\thecontentspage}
+% spacing
+\titlespacing{\section}{\parindent}{\baselineskip}{\baselineskip}
+
+%%% definition
+\let\oldsection\section
+\NewDocumentCommand{\bsuirsection}{
+    s % is numberless?
+    m % title
+}{
+    \IfBooleanTF{#1}{
+        % numbered
+        \oldsection*{#2}
+    }{
+        % numberless
+        \oldsection{#2}
+        \label{sec:\thesection}
+    }
+}
+\let\section\bsuirsection
+
+%%% subsection %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% definition
+\let\oldsubsection\subsection
+\NewDocumentCommand{\bsuirsubsection}{
+    s % is titled?
+    m % title
+}{
+    % format
+    \titleformat{\subsection}[\IfBooleanTF{#1}{hang}{runin}]{}
+    {\textbf{\thesubsection}}{\wordsep}{}
+    % spacing
+    \titlespacing{\subsection}{\parindent}{\baselineskip}
+    {\IfBooleanTF{#1}{\baselineskip}{\wordsep}}
+    % numbered
+    \oldsubsection[#2]{\IfBooleanT{#1}{#2}}
+    \label{sec:\thesubsection}
+}
+\let\subsection\bsuirsubsection
+
+%%% subsubsection %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% definition
+\let\oldsubsubsection\subsubsection
+\NewDocumentCommand{\bsuirsubsubsection}{
+    s % is titled?
+    m % title
+}{
+    % spacing
+    \titlespacing{\subsubsection}{\parindent}{\baselineskip}
+    {\IfBooleanTF{#1}{\baselineskip}{\wordsep}}
+    % format
+    \titleformat{\subsubsection}[\IfBooleanTF{#1}{hang}{runin}]{}
+    {\textbf{\thesubsubsection}}{\wordsep}{}
+    % numbered
+    \oldsubsubsection[#2]{\IfBooleanT{#1}{#2}}
+    \label{sec:\thesubsubsection}
+}
+\let\subsubsection\bsuirsubsubsection
+
+%%% phantom headings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% helpers
+% phantoms counter
+\newcounter{phantoms}
+
+% define
+\NewDocumentCommand{\phantomheading}{
+    s % add to toc?
+    O{0} % section level/type
+    m % title
+}{
+    \IfBooleanTF{#1}{
+        % toc, bookmarks
+        \phantomsection
+        \addcontentsline{toc}{#2}{#3}
+    }{
+        % bookmarks
+        \stepcounter{phantoms}
+        \hypertarget{phantom.\thephantoms}{}
+        \bookmark[level=#2,dest=phantom.\thephantoms]{#3}
+    }
+}
