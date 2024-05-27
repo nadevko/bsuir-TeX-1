@@ -132,26 +132,22 @@
         {\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
     }
     \IfBooleanTF{#1}{
+        \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
+        {\titlerule*[4pt]{.}\thecontentspage}
         \IfValueTF{#2}{
-            \clearpage
-            \phantomsection
-            \addcontentsline{toc}{chapter}{#3}
+            \afterpage{\addcontentsline{toc}{chapter}{#3}}
         }{
-            \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
-            {\titlerule*[4pt]{.}\thecontentspage}
             \oldchapter*{#3}
             \addcontentsline{toc}{chapter}{#3}
         }
     }{
-        \oldchapter[\IfValueTF{#2}{(#2) }#3]{#3}
+        \oldchapter[\IfValueT{#2}{(#2) }#3]{#3}
         \label{sec:\thechapter}
     }
 }
 \let\chapter\bsuirchapter
 
 %%% section
-% phantom sections counter
-\newcounter{phantoms}
 % static styles
 \titleformat{\section}{\bfseries}{\MakeUppercase\thesection}{\wordsep}{}
 \titlecontents{section}[12pt]{}{\contentslabel{0pt}\hspace*{24pt}}
@@ -161,20 +157,12 @@
 \let\oldsection\section
 \NewDocumentCommand{\bsuirsection}{
     s % is numberless?
-    s % is phantom?
     m % title
 }{
     \IfBooleanTF{#1}{
-        \IfBooleanTF{#2}{
-            \vspace{\baselineskip}
-            \stepcounter{phantoms}
-            \hypertarget{phantom.\thephantoms}{}
-            \bookmark[level=1,dest=phantom.\thephantoms]{#3}
-        }{
-            \oldsection*{#3}
-        }
+        \oldsection*{#2}
     }{
-        \oldsection{#3}
+        \oldsection{#2}
         \label{sec:\thesection}
     }
 }
@@ -194,7 +182,7 @@
 }
 \let\subsection\bsuirsubsection
 
-% subsubsection
+%%% subsubsection
 \let\oldsubsubsection\subsubsection
 \NewDocumentCommand{\bsuirsubsubsection}{
     s % is titled
@@ -208,6 +196,24 @@
 }
 \let\subsubsection\bsuirsubsubsection
 
+%%% phantom headings
+% phantom sections counter
+\newcounter{phantoms}
+% \phantomheading
+\NewDocumentCommand{\phantomheading}{
+    s % add to toc?
+    O{0} % section level/type
+    m % title
+}{
+    \IfBooleanTF{#1}{
+        \afterpage{\addcontentsline{toc}{#2}{#3}}
+    }{
+        \stepcounter{phantoms}
+        \hypertarget{phantom.\thephantoms}{}
+        \bookmark[level=#2,dest=phantom.\thephantoms]{#3}
+    }
+}
+
 %%% appendices
 % fix listings numbering in appendices
 \let\oldappendix\appendix
@@ -218,6 +224,37 @@
     \renewcommand{\thelisting}{\Alph{chapter}.\arabic{listing}}
 }
 \let\appendix\bsuirappendix
+% rest of page height
+\newcommand\measurepage{\dimexpr\pagegoal-\pagetotal\relax}
+% \makeappendix
+\NewDocumentCommand{\appendixfirstpage}{
+    s % is titleless?
+    o % appendix type
+    m % appendix title
+    m % pdf file
+    O{page=1} % includepdf or includegraphics args
+}{
+    \IfValueTF{#2}{
+        \begin{center}
+            \IfBooleanTF{#1}{
+                \vfill
+                \includegraphics[width=\textwidth-8pt,#5]{#4}
+                \vfill
+            }{
+                \chapter[#2]{#3}
+                \includegraphics[
+                    height=\measurepage-2pt,
+                    width=\textwidth,
+                    #5
+                ]{#4}
+            }
+        \end{center}
+        \clearpage
+    }{
+        \chapter*[]{#3}
+        \includepdf[#5]{#4}
+    }
+}
 
 %%% lists
 \RequirePackage{enumitem}
