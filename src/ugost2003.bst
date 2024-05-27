@@ -1440,24 +1440,20 @@ FUNCTION {format.compiler.rest}
 
 FUNCTION {output.address.publisher}
 {
-  type$ "online" =
-    { "" }
-    { address empty$
-      {
-        bbl.nnoaddress
-        publisher empty$
-          { "~: " * bbl.nopublisher * bracketise }
-          { bracketise "~: " * publisher * }
-        if$
-      }
-      {
-        address output
-        new.colon
-        publisher empty$
-          { bbl.nopublisher bracketise }
-          { publisher }
-        if$
-      }
+  address empty$
+    {
+      bbl.nnoaddress
+      publisher empty$
+        { "~: " * bbl.nopublisher * bracketise }
+        { bracketise "~: " * publisher * }
+      if$
+    }
+    {
+      address output
+      new.colon
+      publisher empty$
+        { bbl.nopublisher bracketise }
+        { publisher }
       if$
     }
   if$

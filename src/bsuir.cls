@@ -6,10 +6,10 @@
 \LoadClass[14pt,final,onecolumn,oneside,titlepage,openany]{extreport}
 \RequirePackage[
     a4paper,
-    top=20mm,
-    bottom=27mm,
     left=30mm,
+    bottom=27mm,
     right=15mm,
+    top=20mm,
     footskip=17mm
 ]{geometry}
 \linespread{1.1}
@@ -67,6 +67,8 @@
 ]{hyperref}
 % make metadata toc
 \RequirePackage{bookmark}
+% for rows of images
+\RequirePackage{subcaption}
 % bibliography style
 \bibliographystyle{ugost2003}
 
@@ -98,78 +100,124 @@
 
 %%% headers
 \RequirePackage[clearempty,newlinetospace]{titlesec}
+\RequirePackage{afterpage}
 % numbering depth
 \setcounter{secnumdepth}{4}
-%;;;;;;tmp
-\titlespacing{\chapter}{0pt}{0pt}{0pt}
-\titlespacing{\section}{0pt}{0pt}{0pt}
-\titlespacing{\subsection}{0pt}{0pt}{0pt}
-\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
 
-% \chapter
+%%% chapter
+% zero-width space
+\newcommand{\zwspace}{​}
+% static styles
 \titleformat{name=\chapter,numberless}
 {\centering\bfseries\MakeUppercase}{}{0pt}{}
 \titlespacing{name=\chapter,numberless}{0pt}{0pt}{\baselineskip}
 \titlespacing{\chapter}{\parindent}{0pt}{\baselineskip}
+% \bsuirchapter
 \let\oldchapter\chapter
 \NewDocumentCommand{\bsuirchapter}{
     s % is numberless?
-    o % appendix type
+    o % appendix type. In* - to newpage with title bookmark
     m % title
 }{
-    \titleformat{name=\chapter}{\bfseries\MakeUppercase}
-    {\thechapter}{\wordsep}{}
-    \IfBooleanTF{#1}{
-        \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
+    \IfValueTF{#2}{
+        \titleformat{\chapter}{\centering\bfseries}
+        {\MakeUppercase{Приложение~\thechapter}}{\parskip}
+        {\\\MakeLowercase{(#2)}\\}
+        \titlecontents{chapter}[100pt]{}
+        {\hspace*{-100pt}Приложение~\thecontentslabel\hspace*{4pt}}{}
         {\titlerule*[4pt]{.}\thecontentspage}
-        \oldchapter*{#3}
-        \addcontentsline{toc}{chapter}{#3}
     }{
+        \titleformat{\chapter}{\bfseries\MakeUppercase}{\thechapter}{\wordsep}{}
+        \titlecontents{chapter}[12pt]{}{\contentslabel{12pt}}
+        {\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
+    }
+    \IfBooleanTF{#1}{
         \IfValueTF{#2}{
-            \titleformat{\chapter}{\centering\bfseries}
-            {\MakeUppercase{Приложение~\thechapter}}{\parskip}
-            {\\\MakeLowercase{(#2)}\\}
-            \titlecontents{chapter}[100pt]{}
-            {\hspace*{-100pt}Приложение~\thecontentslabel\hspace*{4pt}}{}
-            {\titlerule*[4pt]{.}\thecontentspage}
+            \clearpage
+            \phantomsection
+            \addcontentsline{toc}{chapter}{#3}
         }{
-            \titlecontents{chapter}[12pt]{}{\contentslabel{12pt}}
-            {\hspace*{-12pt}}{\titlerule*[4pt]{.}\thecontentspage}
+            \titlecontents{chapter}[0pt]{}{\contentslabel{12pt}}{}
+            {\titlerule*[4pt]{.}\thecontentspage}
+            \oldchapter*{#3}
+            \addcontentsline{toc}{chapter}{#3}
         }
-        \oldchapter[\IfValueT{#2}{(#2) }#3]{#3}
+    }{
+        \oldchapter[\IfValueTF{#2}{(#2) }#3]{#3}
+        \label{sec:\thechapter}
     }
 }
 \let\chapter\bsuirchapter
-% \section
+
+%%% section
+% phantom sections counter
+\newcounter{phantoms}
+% static styles
 \titleformat{\section}{\bfseries}{\MakeUppercase\thesection}{\wordsep}{}
 \titlecontents{section}[12pt]{}{\contentslabel{0pt}\hspace*{24pt}}
 {\hspace*{0pt}}{\titlerule*[4pt]{.}\thecontentspage}
 \titlespacing{\section}{\parindent}{\baselineskip}{\baselineskip}
-% \subsection
-\titlespacing{\subsection}{\parindent}{\baselineskip}{\wordsep}[\baselineskip]
+% \bsuirsection
+\let\oldsection\section
+\NewDocumentCommand{\bsuirsection}{
+    s % is numberless?
+    s % is phantom?
+    m % title
+}{
+    \IfBooleanTF{#1}{
+        \IfBooleanTF{#2}{
+            \vspace{\baselineskip}
+            \stepcounter{phantoms}
+            \hypertarget{phantom.\thephantoms}{}
+            \bookmark[level=1,dest=phantom.\thephantoms]{#3}
+        }{
+            \oldsection*{#3}
+        }
+    }{
+        \oldsection{#3}
+        \label{sec:\thesection}
+    }
+}
+\let\section\bsuirsection
+
+%%% subsection
 \let\oldsubsection\subsection
 \NewDocumentCommand{\bsuirsubsection}{
     s % is titled
     m % title
 }{
+    \titlespacing{\subsection}{\parindent}{\baselineskip}{\IfBooleanTF{#1}{\baselineskip}{\wordsep}}
     \titleformat{\subsection}[\IfBooleanTF{#1}{hang}{runin}]{}
     {\textbf{\thesubsection}}{\wordsep}{}
     \oldsubsection[#2]{\IfBooleanT{#1}{#2}}
+    \label{sec:\thesubsection}
 }
 \let\subsection\bsuirsubsection
-% \subsubsection
-\titlespacing{\subsubsection}{\parindent}{\baselineskip}{\wordsep}
-[\baselineskip]
+
+% subsubsection
 \let\oldsubsubsection\subsubsection
 \NewDocumentCommand{\bsuirsubsubsection}{
     s % is titled
     m % title
 }{
+    \titlespacing{\subsubsection}{\parindent}{\baselineskip}{\IfBooleanTF{#1}{\baselineskip}{\wordsep}}
     \titleformat{\subsubsection}[\IfBooleanTF{#1}{hang}{runin}]{}
     {\textbf{\thesubsubsection}}{\wordsep}{}
     \oldsubsubsection[#2]{\IfBooleanT{#1}{#2}}
+    \label{sec:\thesubsubsection}
 }
 \let\subsubsection\bsuirsubsubsection
+
+%%% appendices
+% fix listings numbering in appendices
+\let\oldappendix\appendix
+\newcommand{\bsuirappendix}{
+    \oldappendix
+    \renewcommand{\thechapter}{\Asbuk{chapter}}
+    \renewcommand{\thefigure}{\Alph{chapter}.\arabic{figure}}
+    \renewcommand{\thelisting}{\Alph{chapter}.\arabic{listing}}
+}
+\let\appendix\bsuirappendix
 
 %%% lists
 \RequirePackage{enumitem}
@@ -193,7 +241,6 @@
 % figures factory
 \RequirePackage{float}
 \RequirePackage[
-    position=below,
     aboveskip=1.2\baselineskip,
     belowskip=-0.3\baselineskip
 ]{caption}
@@ -215,7 +262,8 @@
     \end{figure}
     \vspace{-0.6\baselineskip}
 }
-% images
+
+%%% images
 % \makeimage
 \RequirePackage{graphicx}
 \NewDocumentCommand{\makeimage}{
@@ -258,12 +306,17 @@
     breakautoindent=false,
 }
 % unite counters
-\let\c@figure\c@listing
+\BeforeBeginEnvironment{document}{
+    \makeatletter
+    \let\c@figure\c@listing
+    \makeatother
+}
 % set caption
 \renewcommand\listingscaption{Рисунок}
-\newenvironment{listingcaption}{\
-    captionsetup{type=listing,name=Рисунок,labelsep=endash}
-}{}
+\newenvironment{listingcaption}
+{\captionsetup{type=listing,name=Рисунок,labelsep=endash}}{}
+% fix listings numbering
+\renewcommand{\thelisting}{\arabic{chapter}.\arabic{listing}}
 % \makelisting
 \NewDocumentCommand{\makelisting}{
     m % file
@@ -296,8 +349,7 @@
     \renewcommand{\bibname}{Список использованных источников}
 }
 
-%%% titlepage
-% template values
+%%% template variables
 \newcommand{\faculty}[1]{\def\@faculty{#1}}
 \newcommand{\departmentlong}[1]{\def\@departmentlong{#1}}
 \newcommand{\departmentshort}[1]{\def\@departmentshort{#1}}
@@ -310,9 +362,11 @@
 \newcommand{\titleleft}[1]{\def\@titleleft{#1}}
 \newcommand{\group}[1]{\def\@group{#1}}
 \newcommand{\student}[1]{\def\@student{#1}}
-% template
+
+%%% titlepage
 \renewcommand{\maketitle}{
     \begin{titlepage}
+        % all
         \centering
         Министерство образования Республики Беларусь\\
         [\the\baselineskip]
@@ -324,6 +378,7 @@
         [\the\baselineskip]
 
         \ifthenelse{\equal{\KVO@variant}{diploma}}{
+        % diploma
         \raggedright
         \begin{tabular}{l l}
             Факультет & \@faculty        \\
@@ -331,11 +386,13 @@
         \end{tabular}\\
         [\the\baselineskip]
         }{
+        % other
         Кафедра \@departmentlong\\
         [\dimexpr\the\baselineskip * 3]
         }
 
         \ifthenelse{\equal{\KVO@variant}{diploma}}{
+        % diploma
         \raggedleft
         \begin{tabular}{l}
             \textit{К защите допустить}:          \\\\
@@ -344,20 +401,25 @@
         \end{tabular}\\
         [\the\baselineskip]
         }{
+        % other
         ~\\[\dimexpr\the\baselineskip * 4]
         }
 
         \ifthenelse{\equal{\KVO@variant}{custom}}{
+        % custom
         \@worktitle\\
         [\dimexpr\the\baselineskip * 7]
         }{\ifthenelse{\equal{\KVO@variant}{practice}}{
+        % practice
         \MakeUppercase{Отчет по учебной (\@worktitle) практике}\\
         [\dimexpr\the\baselineskip * 7]
         }{\ifthenelse{\equal{\KVO@variant}{labwork}}{
+        % labwork
         Лабораторная работа \textnumero\@workcode\\
         \textquote{\@worktitle}\\
         [\dimexpr\the\baselineskip * 7]
         }{
+        % courcework, diploma
         \centering
         \MakeUppercase{Пояснительная записка}\\
         \ifthenelse{
@@ -372,6 +434,7 @@
         }}}
 
         \ifthenelse{\equal{\KVO@variant}{practice}}{
+            % practice
             \begin{tabular}{l}
                 Студент группы \@group \\\\
                 Руководитель практики  \\
@@ -384,6 +447,7 @@
                 ~
             \end{tabular}
         }{
+            % other
             \begin{tabular}{l}
                 \@titleleft
             \end{tabular}\hfill
@@ -392,6 +456,7 @@
             \end{tabular}
         }
 
+        % all
         \vfill
         \centering
         Минск \@titlepageyear
