@@ -83,64 +83,9 @@
 }
 \pagestyle{plain}
 
-%%% table of contents
-\RequirePackage{titletoc}
-% toc depth
-\setcounter{tocdepth}{1}
-% excludable from toc itself
-\let\oldtableofcontents\tableofcontents
-\NewDocumentCommand{\maketoc}{
-    s % exclude it?
-}{
-    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}}
-    \tableofcontents
-    \IfBooleanT{#1}{\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}}
-}
-
 %%% load bsuir packages
-\RequirePackage{bsuir-headings}
-
-%%% appendices
-% fix listings numbering in appendices
-\let\oldappendix\appendix
-\newcommand{\bsuirappendix}{
-    \oldappendix
-    \renewcommand{\thechapter}{\Asbuk{chapter}}
-    \renewcommand{\thefigure}{\Alph{chapter}.\arabic{figure}}
-    \renewcommand{\thelisting}{\Alph{chapter}.\arabic{listing}}
-}
-\let\appendix\bsuirappendix
-% rest of page height
-\newcommand\measurepage{\dimexpr\pagegoal-\pagetotal\relax}
-% \makeappendix
-\NewDocumentCommand{\appendixfirstpage}{
-    s % is titleless?
-    o % appendix type
-    m % appendix title
-    m % pdf file
-    O{page=1} % includepdf or includegraphics args
-}{
-    \IfValueTF{#2}{
-        \begin{center}
-            \IfBooleanTF{#1}{
-                \vfill
-                \includegraphics[width=\textwidth-8pt,#5]{#4}
-                \vfill
-            }{
-                \chapter[#2]{#3}
-                \includegraphics[
-                    height=\measurepage-2pt,
-                    width=\textwidth,
-                    #5
-                ]{#4}
-            }
-        \end{center}
-        \clearpage
-    }{
-        \chapter*[]{#3}
-        \includepdf[#5]{#4}
-    }
-}
+% headings, toc, appendices
+\RequirePackage{bsuir-sectioning}
 
 %%% lists
 \RequirePackage{enumitem}
