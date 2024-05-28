@@ -99,48 +99,51 @@
 
 %%% make first page af appendix
 \NewDocumentCommand{\makeappendixpdf}{
-    s % is numbered (titled)?
-    o % appendix type and make formatted
+    s % is numberless?
+    o % appendix type and make titled
     m % appendix title
+    s % is unformatted?
     m % pdf file
     s % is multipage?
 }{
-    \IfValueTF{#2}{
+    \IfBooleanTF{#4}{
+        \chapter*[]{#3}
+        \IfBooleanTF{#1}{
+            % numberless, untitled, unformatted
+            \includepdf[pages=1]{#5}
+        }{
+            % numbered, untitled, unformatted
+            \includepdf[pages=1,pagecommand={}]{#5}
+        }
+    }{
         \begin{center}
-            \IfBooleanTF{#1}{
-                % numbered, formatted
-                \chapter*[]{#3}
-                \vfill
-                \includegraphics[width=\textwidth-8pt]{#4}
-                \vfill
-            }{
-                % titled, formatted
+            \IfValueTF{#2}{
+                % (un)numbered, titled, formatted
                 \chapter[#2]{#3}
+                \IfBooleanT{#1}{\thispagestyle{empty}}
                 \includegraphics[
                     height=\measurepage-2pt,
                     width=\textwidth
-                ]{#4}
+                ]{#5}
+            }{
+                % (un)numbered, titleless, formatted
+                \chapter*[]{#3}
+                \IfBooleanT{#1}{\thispagestyle{empty}}
+                \vfill
+                \includegraphics[width=\textwidth-8pt]{#5}
+                \vfill
             }
         \end{center}
         \clearpage
-    }{
-        \chapter*[]{#3}
-        \IfBooleanTF{#1}{
-            % numbered, unformatted
-            \includepdf[pages=1,pagecommand={}]{#4}
-        }{
-            % unnumbered, unformatted
-            \includepdf[pages=1]{#4}
-        }
     }
     % multipage
-    \IfBooleanT{#5}{
+    \IfBooleanT{#6}{
         \IfBooleanTF{#1}{
             % numbered, multipage
-            \includepdf[pages=2-,pagecommand={}]{#4}
+            \includepdf[pages=2-,pagecommand={}]{#5}
         }{
             % unnumbered, multipage
-            \includepdf[pages=2-]{#4}
+            \includepdf[pages=2-]{#5}
         }
     }
 }
