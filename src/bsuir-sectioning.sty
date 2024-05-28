@@ -188,9 +188,7 @@
         {\titlerule*[4pt]{.}\thecontentspage}
         \IfValueTF{#2}{
             % appendix, phantom
-            % \notoc\bsuirchapter*{#3}
-            \clearpage\phantomsection
-            \addcontentsline{toc}{chapter}{#3}
+            \clearpage\phantomheading*{#3}
         }{
             % chapter, numberless
             \oldchapter*{#3}
@@ -281,17 +279,11 @@
 %%% override
 \NewDocumentCommand{\phantomheading}{
     s % add to toc?
-    O{0} % section level/type
+    O{chapter} % section level/type
     m % title
 }{
-    \IfBooleanTF{#1}{
-        % toc, bookmarks
-        \phantomsection
-        \addcontentsline{toc}{#2}{#3}
-    }{
-        % bookmarks
-        \stepcounter{phantoms}
-        \hypertarget{phantom.\thephantoms}{}
-        \bookmark[level=#2,dest=phantom.\thephantoms]{#3}
-    }
+    \phantomsection
+    \IfBooleanTF{#1}
+    {\addcontentsline{toc}{#2}{#3}}
+    {\notoc{\addcontentsline{toc}{#2}{#3}}}
 }
