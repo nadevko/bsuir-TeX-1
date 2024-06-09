@@ -1,29 +1,35 @@
-= bsuirtexmk
+= bsuir
 Nadeŭka <nadevko@riseup.net>
-v0.1, 2024-02-26
-:description: Пішы сур'ёзныя БДУІРаўскія штукі без галаўнога болю
-:toc:
+v0.1.1, 2024-06-20
+:description: XeLaTeX рэалізацыя БДУІРаўскага СТП
 
-image::https://img.shields.io/github/license/nadevko/bsuirtexmk?style=for-the-badge&color=822422&logo=spdx[GitHub,link="https://github.com/nadevko/bsuirtexmk"]
+image::https://img.shields.io/github/license/nadevko/bsuir-TeX-1?style=for-the-badge&color=822422&logo=spdx[GitHub,link="https://github.com/nadevko/bsuir-TeX-1"]
 image::https://img.shields.io/badge/readme-in_english-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[In english,link=./README.adoc]
 image::https://img.shields.io/badge/readme-на_русском-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[На русском,link=./README.ru.adoc]
 
-== Стандарт з чалавечым тварам
+== Апісанне
 
-СТП проста бесчалавечны. Вельмі шмат літар, цяжка запомніць, цяжка прачытаці.
-Для простага смяротнага студэнта -- непасільная задача.  Не ў кожнага ёсць ручны
-ксісавец, праўда ж? :3
+Гэты праект імкнецца абагульніць у больш зручнай і зразумелай форме палажэнні
+СТП, сабраць у адным месцы ўсе вусныя рэкамендацыі лектараў і патрабаванні
+кафедраў, рэалізаваць шаблоны ўсіх тыпаў дакументаў, патрабаваных у БДУІР, і
+стварыць для іх зручнае LaTeX-асяроддзе.
 
-СТП просто бесчеловечен. Очень много букв, тяжко запомнить, трудно прочесть. Для
-простого смертного студента -- непосильная задача. Не у каждого есть ручной
-ксисовец, правда ведь? :3
+== Дакументацыя
 
-Гэты праект закліканы трохі спрасціць жыццё, выклаўшы матэрыял у даступнай форме
-і рэалізаваўшы дапаможныя прылады для аўтаматызацыі афармлення дакументавання.
+.Кіраўніцтва па ўжыванні і пералік кампанентаў
+* https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/guide.pdf[2017]
 
-БДУІР:: link:./doc/standard/bsuir/2017/simple.adoc[2017]
+.Шаблоны дакументаў
+* https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/templates.pdf[2017]
 
-== Як дапамагчы праекту?
+.Патрабаванні да зместу
+* https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/content.pdf[2017]
 
-* https://github.com/nadevko/bsuirtexmk/issues/new[Паведаміць аб выяўленай праблеме]
-* https://github.com/nadevko/bsuirtexmk/contribute[Дапамагчы выправіць адну з іх]
+== Усталёўка
+
+1. Спампуйце файлы з рэлізу.
+2. Усталюйце ў $TEXMFHOME/xelatex
+** bsuir-sectioning.sty
+** bsuir.cls
+3. Усталюйце ў $TEXMFHOME/bibtex/bst
+** ugost2003.bst

@@ -1,26 +1,35 @@
-= bsuirtexmk
+= bsuir
 Nadeŭka <nadevko@riseup.net>
-v0.1, 2024-02-26
-:description: Write serious BSUIR stuff without a headache
-:toc:
+v0.1.1, 2024-06-20
+:description: XeLaTeX implementation of the BSUIR's CoS
 
-image::https://img.shields.io/github/license/nadevko/bsuirtexmk?style=for-the-badge&color=822422&logo=spdx[GitHub,link="https://github.com/nadevko/bsuirtexmk"]
+image::https://img.shields.io/github/license/nadevko/bsuir-TeX-1?style=for-the-badge&color=822422&logo=spdx[GitHub,link="https://github.com/nadevko/bsuir-TeX-1"]
 image::https://img.shields.io/badge/readme-на_беларускай-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[На беларускай,link=./README.be.adoc]
 image::https://img.shields.io/badge/readme-на_русском-123d7a?style=for-the-badge&logo=markdown&logoColor=eeefff[На русском,link=./README.ru.adoc]
 
-== Standard with a human face
+== Description
 
-ENSTD is simply inhumane. There are a lot of letters, it's hard to remember,
-it's hard to read. For a mere mortal student -- an impossible task. Not everyone
-has an obedient ksisarian, right? :3
+This project aims to generalize in a more convenient and understandable form the
+provisions of the CoS, gather all verbal recommendations from lecturers and
+departmental requirements in one place, implement templates for all types of
+documents required at BSUIR, and create a convenient LaTeX environment for them.
 
-This project is designed to simplify life a little by presenting the material in
-an accessible form and implementing auxiliary tools for automating
-documentation process.
+== Documentation
 
-BSUIR:: link:./doc/standard/bsuir/2017/simple.adoc[2017]
+.User Guide and List of Components
+* https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/guide.pdf[2017]
 
-== How can I help the project?
+.Document Templates
+* https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/templates.pdf[2017]
 
-* https://github.com/nadevko/bsuirtexmk/issues/new[Report a problem found]
-* https://github.com/nadevko/bsuirtexmk/contribute[Help fix one of them]
+.Content Requirements
+* https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/content.pdf[2017]
+
+== Installation
+
+1. Download the files from the release.
+2. Install in $TEXMFHOME/xelatex
+** bsuir-sectioning.sty
+** bsuir.cls
+3. Install in $TEXMFHOME/bibtex/bst
+** ugost2003.bst
