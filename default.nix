@@ -6,7 +6,7 @@
 }:
 stdenvNoCC.mkDerivation {
   pname = "bsuir-tex";
-  version = "1.0.0";
+  version = "0.1.0";
 
   outputs = [ "tex" ];
   passthru.tlDeps = with texlive; [
@@ -26,7 +26,7 @@ stdenvNoCC.mkDerivation {
     babel-belarusian
   ];
 
-  src = ../src;
+  src = ./src;
 
   nativeBuildInputs = [
     (writeShellScript "force-tex-output.sh" ''
