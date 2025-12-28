@@ -26,7 +26,7 @@ stdenvNoCC.mkDerivation {
     babel-belarusian
   ];
 
-  src = ./src;
+  src = ../../src;
 
   nativeBuildInputs = [
     (writeShellScript "force-tex-output.sh" ''

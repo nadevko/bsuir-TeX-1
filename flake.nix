@@ -1,34 +1,49 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/release-24.11";
-  inputs.mkflake.url = "github:jonascarpay/mkflake";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nabiki = {
+      url = "github:nadevko/nabiki/v2-alpha";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
+  };
 
   outputs =
     {
       self,
+      treefmt-nix,
+      nabiki,
       nixpkgs,
-      mkflake,
-    }:
-    mkflake.lib.mkflake {
-      topLevel.overlays.default = final: prev: { texlivePackages.bsuir-tex = prev.callPackage ./. { }; };
-
-      perSystem = system: {
-        devShells.default =
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-          in
-          (pkgs.mkShell.override { stdenv = pkgs.stdenvNoCC; }) {
-            packages = [
-              (pkgs.texliveSmall.withPackages (_: [ self.packages.${system}.default ]))
-              pkgs.python312Packages.pygments
-              pkgs.inkscape-with-extensions
-            ];
+    }@inputs:
+    let
+      private = final: prev: { inherit inputs; };
+    in
+    nabiki.lib.mapAttrsNested nixpkgs.legacyPackages (
+      pkgs:
+      let
+        treefmt = treefmt-nix.lib.evalModule pkgs {
+          programs.nixfmt = {
+            enable = true;
+            strict = true;
           };
-        packages = {
-          texlivePackages.bsuir-tex =
-            (nixpkgs.legacyPackages.${system}.extend self.overlays.default).texlivePackages.bsuir-tex;
-          default = self.packages.${system}.texlivePackages.bsuir-tex;
+          programs.prettier.enable = true;
         };
-        formatter = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
-      };
+      in
+      rec {
+        legacyPackages = pkgs.extend (_: _: packages);
+        packages = inputs.nabiki.lib.rebase self.overlays.default pkgs;
+        devShells = nabiki.lib.rebase (nabiki.lib.readDevShellsOverlay { } private ./pkgs) pkgs;
+        formatter = treefmt.config.build.wrapper;
+        checks.treefmt = treefmt.config.build.check self;
+      }
+    )
+    // {
+      overlays.default = nabiki.lib.readPackagesOverlay { } private ./pkgs;
     };
 }
