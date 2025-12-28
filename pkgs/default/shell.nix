@@ -8,7 +8,9 @@
 }:
 mkShell.override { stdenv = stdenvNoCC; } {
   packages = [
-    (texliveSmall.withPackages (_: [ inputs.self.packages.${stdenvNoCC.hostPlatform.system}.bsuir-tex ]))
+    (texliveSmall.withPackages (_: [
+      inputs.self.packages.${stdenvNoCC.hostPlatform.system}.bsuir-tex
+    ]))
     python312Packages.pygments
     inkscape-with-extensions
   ];

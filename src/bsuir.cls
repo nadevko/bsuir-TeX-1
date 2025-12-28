@@ -1,333 +1,73 @@
-%%% metadata
-% define class
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{bsuir}[2024/02/14 BSUIR ENSTD 2017 compatible class]
-% configure paper and margins
+\ProvidesClass{bsuir}[2024/02/14 BSUIR Ultra-Compact]
+
 \LoadClass[14pt,final,onecolumn,oneside,titlepage,openany]{extreport}
-\RequirePackage[
-    a4paper,
-    left=30mm,
-    bottom=27mm,
-    right=15mm,
-    top=20mm,
-    footskip=17mm
-]{geometry}
-\linespread{1.1}
-\setlength{\parindent}{1.25cm}
+\RequirePackage[a4paper,left=30mm,bottom=27mm,right=15mm,top=20mm,footskip=17mm]{geometry}
+\linespread{1.1} \setlength{\parindent}{1.25cm}
 
-%%% class options
-\RequirePackage{kvoptions}
-% init
-\SetupKeyvalOptions{
-    family=KVO,
-    prefix=KVO@
-}
-% variant is one of: custom, labwork, courcework, diploma, practice
-\DeclareStringOption[custom]{variant}
-% load them
-\ProcessKeyvalOptions{KVO}
-% validate variant
-\RequirePackage{xifthen}
-\ifthenelse{
-    \equal{\KVO@variant}{custom}\OR
-    \equal{\KVO@variant}{labwork}\OR
-    \equal{\KVO@variant}{courcework}\OR
-    \equal{\KVO@variant}{diploma}\OR
-    \equal{\KVO@variant}{practice}
-}{}{
-    \ClassError{bsuir}{Unknown variant. Use one of: custom, labwork, courcework,
-        diploma, practice}{\KVO@variant variant not available}
+\RequirePackage{expl3, xparse, xcoffins, etoolbox}
+\ExplSyntaxOn
+
+\str_new:N \l_bsuir_variant_str
+\keys_define:nn { bsuir } { variant .choices:nn = { custom, labwork, courcework, diploma, practice } { \str_set:Nn \l_bsuir_variant_str { \l_keys_choice_tl } }, variant .initial:n = custom }
+\ProcessKeysOptions { bsuir }
+
+\prop_new:N \g_data \cs_new:Npn \getf #1 { \prop_item:Nn \g_data {#1} }
+\clist_map_inline:nn { faculty, departmentlong, departmentshort, manager, worktitle, workcode, titlepageyear, titleright, titleleft, group, student } {
+    \exp_args:Nc \NewDocumentCommand {#1} { m } { \prop_gput:Nnn \g_data {#1} {##1} }
 }
 
-%%% language
-% translations
-\RequirePackage[main=russian,english]{babel}
-% fonts
-\babelfont{rm}{Times New Roman}
-\babelfont{sf}{Times New Roman}
-\babelfont{tt}{Courier New}
-
-%%% TeX improvements
-% for ...DocumentCommand
-\RequirePackage{xparse}
-
-%%% misc
-% break long URLs
-\RequirePackage{xurl}
-% to merge other pdf files into document
-\RequirePackage{pdfpages}
-% fancy quotes
-\RequirePackage{csquotes}
-% enable links
-\RequirePackage[
-    hidelinks,
-    unicode,
-    bookmarksdepth=3,
-    breaklinks
-]{hyperref}
-% make metadata toc
-\RequirePackage{bookmark}
-% for rows of images
-\RequirePackage{subcaption}
-% bibliography style
-\bibliographystyle{ugost2003}
-
-%%% page numbering
-\RequirePackage{fancyhdr}
-% define style
-\fancypagestyle{plain}{
-    \fancyhf{}
-    \rfoot{\underline{\thepage}}
-    \renewcommand{\headrulewidth}{0pt}
-    \renewcommand{\footrulewidth}{0pt}
-}
-\pagestyle{plain}
-
-%%% load bsuir packages
-% headings, toc, appendices
-\RequirePackage{bsuir-sectioning}
-
-%%% lists
-\RequirePackage{enumitem}
-% itemize
-\setlist[itemize]{
-    label=--,
-    leftmargin=1.4\parindent,
-    topsep=0pt,
-    itemsep=0pt,
-    parsep=0pt
-}
-% enumerate
-\setlist[enumerate]{
-    leftmargin=1.5\parindent,
-    topsep=0pt,
-    itemsep=0pt,
-    parsep=0pt
-}
-
-%%% figures
-% figures factory
-\RequirePackage{float}
-\RequirePackage[
-    aboveskip=1.2\baselineskip,
-    belowskip=-0.3\baselineskip
-]{caption}
-\captionsetup[figure]{
-    name=Рисунок,
-    labelsep=endash
-}
-% \makefigure
-\NewDocumentCommand{\makefigure}{
-    O{img} % figure prefix
-    m % figure name
-    m % code to make figure
-}{
-    \vspace{0.5\baselineskip}
-    \begin{figure}[H]
-        \centering
-        #3
-        \label{#1:#2}
-    \end{figure}
-    \vspace{-0.6\baselineskip}
-}
-
-%%% images
-% \makeimage
-\RequirePackage{graphicx}
-\NewDocumentCommand{\makeimage}{
-    o % caption
-    m % filename
-    O{width=\textwidth} % image width
-}{
-    \makefigure{#2}{
-        \includegraphics[#3]{#2}
-        \IfValueT{#1}{\caption{#1}}
-    }
-}
-% \makesvg
-\RequirePackage{svg}
-\NewDocumentCommand{\makesvg}{
-    o % caption
-    m % filename
-    O{width=\textwidth} % image width
-}{
-    \makefigure{#2}{
-        \includesvg[inkscapelatex=false,#3]{#2}
-        \IfValueT{#1}{\caption{#1}}
-    }
-}
-
-%%% listings
-\RequirePackage{minted}
-\setminted{
-    fontsize=\fontsize{12}{\baselineskip},
-    tabsize=2,
-    breaklines,
-    mathescape,
-    stripnl,
-    breakanywhere,
-    breaksymbolleft=,
-    breaksymbolright=,
-    breakbeforesymbolpre=,
-    breakaftersymbolpre=,
-    breakanywheresymbolpre=,
-    breakautoindent=false,
-}
-% unite counters
-\BeforeBeginEnvironment{document}{
-    \makeatletter
-    \let\c@figure\c@listing
-    \makeatother
-}
-% set caption
-\renewcommand\listingscaption{Рисунок}
-\newenvironment{listingcaption}
-{\captionsetup{type=listing,name=Рисунок,labelsep=endash}}{}
-% fix listings numbering
-\renewcommand{\thelisting}{\arabic{chapter}.\arabic{listing}}
-% \makelisting
-\NewDocumentCommand{\makelisting}{
-    m % file
-    o % caption
-}{
-    \begin{listingcaption}
-        \centering
-        \inputminted{text}{#1}
-        \IfValueT{#2}{\caption{#2}~\\}
-        \label{lst:#1}
-    \end{listingcaption}
-}
-
-%%% tables
-\RequirePackage{longtable}
-% caption
-\captionsetup[longtable]{
-    name=Таблица,
-    labelsep=endash,
-    justification=raggedright,
-    singlelinecheck=false
-}
-% margins
-\LTpre=\baselineskip
-\LTpost=\baselineskip
-
-%%% translations
-\addto\captionsrussian{
-    \renewcommand{\contentsname}{Содержание}
-    \renewcommand{\bibname}{Список использованных источников}
-}
-
-%%% template variables
-\newcommand{\faculty}[1]{\def\@faculty{#1}}
-\newcommand{\departmentlong}[1]{\def\@departmentlong{#1}}
-\newcommand{\departmentshort}[1]{\def\@departmentshort{#1}}
-\newcommand{\manager}[1]{\def\@manager{#1}}
-\newcommand{\worktitle}[1]{\def\@worktitle{#1}}
-\newcommand{\workcode}[1]{\def\@workcode{#1}}
-\newcommand{\titlepageyear}[1]{\def\@titlepageyear{#1}}
-\newcommand{\titleright}[1]{\def\@titleright{#1}}
-\newcommand{\titlecenter}[1]{\def\@titlecenter{#1}}
-\newcommand{\titleleft}[1]{\def\@titleleft{#1}}
-\newcommand{\group}[1]{\def\@group{#1}}
-\newcommand{\student}[1]{\def\@student{#1}}
-
-%%% titlepage
-\renewcommand{\maketitle}{
+\cs_new_protected:Npn \bsuir_make_title: {
     \begin{titlepage}
-        % all
-        \centering
-        Министерство образования Республики Беларусь\\
-        [\the\baselineskip]
-        Учреждение образования\\
-        \MakeUppercase{
-            Белорусский Государственный Университет\\
-            Информатики и Радиоэлектроники
-        }\\
-        [\the\baselineskip]
-
-        \ifthenelse{\equal{\KVO@variant}{diploma}}{
-        % diploma
-        \raggedright
-        \begin{tabular}{l l}
-            Факультет & \@faculty        \\
-            Кафедра   & \@departmentlong
-        \end{tabular}\\
-        [\the\baselineskip]
-        }{
-        % other
-        Кафедра \@departmentlong\\
-        [\dimexpr\the\baselineskip * 3]
+        \NewCoffin \Canvas \NewCoffin \Block
+        \SetVboxCoffin \Canvas { \textwidth } {
+            \centering Министерство~образования~РБ \\ УО~«БГУИР» \\ \MakeUppercase{ БГУИР } \\[\baselineskip]
+            \str_if_eq:VnTF \l_bsuir_variant_str { diploma } { \raggedright Факультет:~\getf{faculty} \\ Кафедра:~\getf{departmentlong} } { Кафедра~\getf{departmentlong} }
         }
-
-        \ifthenelse{\equal{\KVO@variant}{diploma}}{
-        % diploma
-        \raggedleft
-        \begin{tabular}{l}
-            \textit{К защите допустить}:          \\\\
-            Заведующий кафедрой \@departmentshort \\
-            \hrulefill \@manager
-        \end{tabular}\\
-        [\the\baselineskip]
-        }{
-        % other
-        ~\\[\dimexpr\the\baselineskip * 4]
+        \str_if_eq:VnT \l_bsuir_variant_str { diploma } {
+            \SetHorizontalCoffin \Block { \raggedleft \begin{tabular}{l} К~защите~допустить: \\ Зав.~кафедрой~\getf{departmentshort} \\ \hrulefill~\getf{manager} \end{tabular} }
+            \JoinCoffins \Canvas [r,t] \Block [r,t] (0pt, -\baselineskip)
         }
-
-        \ifthenelse{\equal{\KVO@variant}{custom}}{
-        % custom
-        \@worktitle\\
-        [\dimexpr\the\baselineskip * 7]
-        }{\ifthenelse{\equal{\KVO@variant}{practice}}{
-        % practice
-        \MakeUppercase{Отчет по учебной (\@worktitle) практике}\\
-        [\dimexpr\the\baselineskip * 7]
-        }{\ifthenelse{\equal{\KVO@variant}{labwork}}{
-        % labwork
-        Лабораторная работа \textnumero\@workcode\\
-        \textquote{\@worktitle}\\
-        [\dimexpr\the\baselineskip * 7]
-        }{
-        % courcework, diploma
-        \centering
-        \MakeUppercase{Пояснительная записка}\\
-        \ifthenelse{
-            \equal{\KVO@variant}{courcework}
-        }{к курсовой работе}{к дипломной работе}\\
-        на тему\\
-        [\the\baselineskip]
-        \textbf{\MakeUppercase{\@worktitle}}\\
-        [\the\baselineskip]
-        \@workcode\\
-        [\the\baselineskip]
-        }}}
-
-        \ifthenelse{\equal{\KVO@variant}{practice}}{
-            % practice
-            \begin{tabular}{l}
-                Студент группы \@group \\\\
-                Руководитель практики  \\
-                от кафедры \@departmentshort
-            \end{tabular}\hfill
-            \begin{tabular}{c c l}
-                \hrulefill & \hspace{30pt} & \@student \\
-                \textsuperscript{(подпись)}            \\
-                \hrulefill &               & \@manager \\
-                ~
-            \end{tabular}
-        }{
-            % other
-            \begin{tabular}{l}
-                \@titleleft
-            \end{tabular}\hfill
-            \begin{tabular}{l}
-                \@titleright
-            \end{tabular}
+        \SetVboxCoffin \Block { \textwidth } {
+            \vspace{ \str_if_eq:VnTF \l_bsuir_variant_str { diploma } { \baselineskip } { 4\baselineskip } }
+            \centering \bfseries \MakeUppercase {
+                \str_case:VnF \l_bsuir_variant_str {
+                    { practice } { Отчет~по~учебной~практике }
+                    { labwork } { Лабораторная~работа~\textnumero \getf{workcode} }
+                } { Пояснительная~записка }
+            } \\ \str_case:Vn \l_bsuir_variant_str { {courcework}{к~курсовой~работе} {diploma}{к~дипломной~работе} } \par \vspace{\baselineskip}
+            \MakeUppercase{\getf{worktitle}}
         }
-
-        % all
-        \vfill
-        \centering
-        Минск \@titlepageyear
-    \end{titlepage}
-    \stepcounter{page}
+        \JoinCoffins \Canvas [hc,b] \Block [hc,t]
+        \SetVboxCoffin \Block { \textwidth } {
+            \vspace{ \str_if_eq:VnTF \l_bsuir_variant_str { diploma } { 3\baselineskip } { 6\baselineskip } }
+            \str_if_eq:VnTF \l_bsuir_variant_str { practice } 
+            { Студент~гр.~\getf{group} \hfill \getf{student} \\ Рук.~от~кафедры \hfill \getf{manager} }
+            { \getf{titleleft} \hfill \getf{titleright} }
+        }
+        \JoinCoffins \Canvas [hc,b] \Block [hc,t]
+        \TypesetCoffin \Canvas \vfill \centering Минск,~\getf{titlepageyear}
+    \end{titlepage} \stepcounter{page}
 }
+\RenewDocumentCommand{\maketitle}{} { \bsuir_make_title: }
+
+\RequirePackage[main=russian,english]{babel}
+\RequirePackage[hidelinks,unicode,bookmarksdepth=3,breaklinks]{hyperref}
+\RequirePackage[aboveskip=1.2\baselineskip,belowskip=-0.3\baselineskip]{caption}
+\clist_map_inline:nn { xurl, pdfpages, csquotes, bookmark, subcaption, float, graphicx, svg, minted, longtable, fancyhdr, enumitem, bsuir-sectioning } { \RequirePackage{#1} }
+
+\babelfont{rm}{Times New Roman} \babelfont{tt}{Courier New}
+\captionsetup{labelsep=endash} \captionsetup[figure]{name=Рисунок, justification=centering}
+
+\NewDocumentCommand{\makefigure}{O{img} m m}{ \begin{figure}[H] \centering #3 \label{#1:#2} \end{figure} }
+\NewDocumentCommand{\makeimage}{o m O{width=\textwidth}}{ \makefigure{#2}{ \includegraphics[#3]{#2} \IfValueT{#1}{\caption{#1}} } }
+\NewDocumentCommand{\makesvg}{o m O{width=\textwidth}}{ \makefigure{#2}{ \includesvg[inkscapelatex=false,#3]{#2} \IfValueT{#1}{\caption{#1}} } }
+
+\setminted{fontsize=\small, tabsize=2, breaklines, breakanywhere}
+\AtBeginEnvironment{document}{ \makeatletter \let\c@figure\c@listing \makeatother \renewcommand{\thelisting}{\arabic{chapter}.\arabic{listing}} }
+\NewDocumentCommand{\makelisting}{m o}{ \begin{center} \captionsetup{type=listing, name=Рисунок} \inputminted{text}{#1} \IfValueT{#2}{\caption{#2}} \end{center} }
+
+\setlist{nosep, leftmargin=1.5\parindent} \setlist[itemize]{label=--}
+\fancypagestyle{plain}{ \fancyhf{} \rfoot{\underline{\thepage}} \renewcommand{\headrulewidth}{0pt} }
+\pagestyle{plain} \bibliographystyle{ugost2003}
+\ExplSyntaxOff

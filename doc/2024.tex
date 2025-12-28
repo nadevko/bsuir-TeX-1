@@ -1,23 +1,11 @@
-\documentclass[10pt]{bsuir}
-
-% Packages for additional features
-\usepackage{xcolor}
-\usepackage{tcolorbox}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{fontawesome5}
-
-% Define colors
-\definecolor{linkblue}{RGB}{0,0,255}
-\definecolor{olive}{RGB}{128,128,0}
-\definecolor{warningbg}{RGB}{240,240,240}
+\documentclass{bsuir}
 
 % Define the ENSTD PDF URL
 \newcommand{\ENSTDPDFURL}{https://www.bsuir.by/m/12_100229_1_185586.pdf}
 
-% Define ref_enstd command
+% Define ref_enstd command (using hyperref, loaded by bsuir.cls)
 \newcommand{\refenstd}[1]{%
-  \href{\ENSTDPDFURL\##1}{\textcolor{linkblue}{[#1]}}%
+  \href{\ENSTDPDFURL\##1}{[#1]}%
 }
 
 % Define ref_enstd_text command
@@ -30,30 +18,25 @@
   \textsuperscript{\tiny #1}%
 }
 
-% Define warning environment
-\newtcolorbox{warningbox}{
-  colback=warningbg,
-  colframe=red,
-  boxrule=0pt,
-  leftrule=2pt,
-  arc=2pt,
-  width=\textwidth
-}
-
+% Define warning environment (simple, without tcolorbox)
 \newenvironment{warning}[1]{%
-  \begin{warningbox}
+  \vspace{0.5\baselineskip}
+  \noindent\rule{2pt}{\baselineskip}\hspace{0.5em}%
+  \begin{minipage}[t]{\dimexpr\textwidth-2pt-0.5em\relax}
   \textbf{Важно:} #1
-  \end{warningbox}
+  \end{minipage}
+  \vspace{0.5\baselineskip}
 }{}
 
-% Define metrics environment
+% Define metrics environment (simple, without colors)
 \newenvironment{metrics}{%
-  \itshape\textcolor{olive}{📏 }%
+  \itshape📏 %
 }{\normalfont}
 
 % Document settings for cheat sheet
 % Note: bsuir.cls sets 14pt, but we want 10pt for cheat sheet
 % We'll override some settings
+\makeatletter
 \renewcommand{\normalsize}{%
   \@setfontsize\normalsize{10}{12}%
   \abovedisplayskip 10\p@ \@plus2\p@ \@minus5\p@
@@ -62,7 +45,7 @@
   \belowdisplayskip \abovedisplayskip
   \let\@listi\@listI
 }
-\normalsize
+\makeatother
 
 % Page margins for cheat sheet
 \geometry{
@@ -80,6 +63,7 @@
 \titlespacing*{\section}{0pt}{1.2em}{0.8em}
 
 \begin{document}
+\normalsize
 
 \chapter{Шпаргалка по СТП: Хронология и Оформление}
 

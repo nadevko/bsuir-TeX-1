@@ -1,6 +1,0 @@
-= bsuir-tex
-Nadeŭka <nadevko@riseup.net>
-v0.1, 2024-02-26
-:description: LaTeX implementation of BSUIR CoS
-
-// https://github.com/nadevko/bsuir-TeX-1/releases/latest/download/manual.pdf[Manual]
