@@ -1,42 +1,46 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-text}[2025/12/28 BSUIR text and lists]
+\ProvidesPackage{bsuir-text}[2025/12/28 BSUIR text, language and lists]
 
-% Настройка списков через enumitem
+% --- Языки ---
+\RequirePackage[english, main=russian, belarusian]{babel}
+
+% --- Списки (Enumitem) ---
 \RequirePackage{enumitem}
 
-% Простые перечисления: тире, абзацный отступ, точка с запятой
-\newenvironment{simplelist}{%
-  \begin{itemize}[
-    label=\textemdash,
-    leftmargin=1.25cm,
-    itemsep=0pt,
-    parsep=0pt,
-    topsep=0pt,
-    partopsep=0pt
-  ]
-  \setlength{\itemindent}{0pt}%
-}{%
-  \end{itemize}%
+% STP: "1.25см отступ, дефис вместо буллета"
+\setlist{nosep} % Убираем вертикальные отступы
+\setlist[itemize]{
+  label=\textemdash,
+  leftmargin=1.25cm,
+  itemindent=0pt,
+  labelsep=0.5em,
+  topsep=0pt,
+  partopsep=0pt,
+  parsep=0pt
 }
 
-% Для простых перечислений: последняя строка заканчивается точкой
-% (обрабатывается вручную в документе)
-
-% Сложные перечисления: нумерация, прописная буква, точка в конце
-\newenvironment{complexlist}{%
-  \begin{enumerate}[
-    label=\arabic*.,
-    leftmargin=1.25cm,
-    itemsep=0pt,
-    parsep=0pt,
-    topsep=0pt,
-    partopsep=0pt
-  ]
-}{%
-  \end{enumerate}%
+\setlist[enumerate]{
+  leftmargin=1.25cm,
+  itemindent=0pt,
+  labelsep=0.5em,
+  topsep=0pt,
+  partopsep=0pt,
+  parsep=0pt
 }
 
-% Перечисления со ссылками: строчные буквы кириллицы со скобкой
+% Списки со скобками (а), б) ...)
+\newlist{cyrenum}{enumerate}{1}
+\setlist[cyrenum]{
+  label=\asbuk*),
+  leftmargin=1.25cm,
+  itemindent=0pt,
+  labelsep=0.5em,
+  topsep=0pt,
+  partopsep=0pt,
+  parsep=0pt
+}
+
+% --- Перечисления со ссылками: строчные буквы кириллицы со скобкой ---
 % Используем expl3 для работы с кириллическими буквами
 \RequirePackage{expl3}
 \ExplSyntaxOn
@@ -77,8 +81,37 @@
 
 \ExplSyntaxOff
 
-% Окружение для перечислений со ссылками
-\newenvironment{reflist}{%
+% Простые перечисления: тире, абзацный отступ, точка с запятой
+\NewDocumentEnvironment{simplelist}{}{
+  \begin{itemize}[
+    label=\textemdash,
+    leftmargin=1.25cm,
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt,
+    partopsep=0pt
+  ]
+  \setlength{\itemindent}{0pt}%
+}{
+  \end{itemize}%
+}
+
+% Сложные перечисления: нумерация, прописная буква, точка в конце
+\NewDocumentEnvironment{complexlist}{}{
+  \begin{enumerate}[
+    label=\arabic*.,
+    leftmargin=1.25cm,
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt,
+    partopsep=0pt
+  ]
+}{
+  \end{enumerate}%
+}
+
+% Окружение для перечислений со ссылками (первый уровень)
+\NewDocumentEnvironment{reflist}{}{
   \begin{enumerate}[
     leftmargin=1.25cm,
     itemsep=0pt,
@@ -86,24 +119,23 @@
     topsep=0pt,
     partopsep=0pt
   ]
-  \renewcommand{\labelenumi}{\bsuir_cyr_letter:n{\value{enumi}})}}%
-}{%
+  \renewcommand{\labelenumi}{\bsuir_cyr_letter:n{\value{enumi}})}%
+}{
   \end{enumerate}%
 }
 
 % Второй уровень перечислений со ссылками: арабские цифры со скобкой
-\newenvironment{reflistleveltwo}{%
+\NewDocumentEnvironment{reflistleveltwo}{}{
   \begin{enumerate}[
-    label=\arabic*)},
+    label=\arabic*),
     leftmargin=2.5cm,
     itemsep=0pt,
     parsep=0pt,
     topsep=0pt,
     partopsep=0pt
   ]
-}{%
+}{
   \end{enumerate}%
 }
 
-% Между абзацами нет пробельных строк (уже настроено в базовом классе)
-
+\endinput

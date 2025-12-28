@@ -1,40 +1,37 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-base}[2025/12/28 BSUIR base settings]
+\ProvidesPackage{bsuir-base}[2025/12/28 Base settings]
 
-% Геометрия страницы: A4, поля 30-15-20-20 мм
+% --- Геометрия (ГОСТ 7.32 / STP) ---
+% Left=30mm, Right=15mm, Top=20mm, Bottom=20mm
 \RequirePackage[
-  a4paper,
-  left=30mm,
-  right=15mm,
-  top=20mm,
-  bottom=20mm
+  left=30mm, right=15mm, top=20mm, bottom=20mm,
+  footskip=10mm, % Номер страницы в 10мм от края (по STP)
+  showframe=false % Поставь true для отладки полей
 ]{geometry}
 
-% Шрифты через fontspec (для LuaLaTeX)
+% --- Шрифты (LuaLaTeX/XeLaTeX) ---
 \RequirePackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX, Renderer=Basic} % Renderer=Basic часто лучше для Times
 
-% Основной шрифт: Times New Roman 14pt
 \setmainfont{Times New Roman}[
-  SizeFeatures={
-    {Size={14}},
-  },
-  Size=14
+  Script=Cyrillic,
+  Scale=1.0
 ]
+% Если нужны sans/mono шрифты, раскомментируй и настрой:
+% \setsansfont{Arial} 
+% \setmonofont{Courier New}[Scale=MatchLowercase]
 
-% Межстрочный интервал: 1.0 (18 пунктов при размере шрифта 14pt)
+% --- Интерлиньяж и отступы ---
 \RequirePackage{setspace}
-\setstretch{1.0}
+\setstretch{1.0} % Одинарный интервал (STP 1.2)
+% Но часто требуют множитель 1.08-1.15 для визуального соответствия Word 1.0
+% Если нормоконтроль придерется к плотности, ставь \setstretch{1.15}
 
-% Абзацный отступ: 1.25 см (12.5 мм)
-\setlength{\parindent}{1.25cm}
+\RequirePackage{indentfirst} % Абзацный отступ у первого абзаца
+\setlength{\parindent}{1.25cm} % Ровно 1.25 см
+\setlength{\parskip}{0pt}      % Между абзацами нет отступа
 
-% Выравнивание текста по ширине страницы
-\RequirePackage{microtype}
-\microtypesetup{
-  expansion=true,
-  protrusion=true
-}
+% --- Микротипографика ---
+\RequirePackage[babel=true]{microtype}
 
-% Запрет переносов в названиях разделов, подразделов, таблиц и рисунков
-% (будет настроено в соответствующих модулях)
-
+\endinput

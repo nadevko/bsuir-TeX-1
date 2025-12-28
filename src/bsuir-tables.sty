@@ -1,97 +1,120 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-tables}[2025/12/28 BSUIR tables settings]
+\ProvidesPackage{bsuir-tables}[2025/12/28 Tables]
 
-% Таблицы через tabularray
+\RequirePackage{expl3}
+\RequirePackage{xparse}
 \RequirePackage{tabularray}
-
-% Настройка caption для таблиц
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{counter}
 \RequirePackage{caption}
 
-% Создаем разделитель " -- " (тире с пробелами)
-\DeclareCaptionLabelSeparator{emdash}{\ --\ }
+\ExplSyntaxOn
 
-% Стиль подписей: "Таблица X — Название" (выравнивание по левому краю)
-\DeclareCaptionLabelFormat{bsuir-table}{Таблица\ #1}
-\DeclareCaptionFormat{bsuir-table}{#1#2#3}
-
-% Настройка caption для таблиц
+% Checklist §6.1: До названия таблицы и после таблицы пустые строки
+% Checklist §6.3: Заголовок и саму таблицу пробельной строкой не разделяют
+\setlength{\intextsep}{\baselineskip} % Пробельная строка до и после таблицы
 \captionsetup[table]{
-  labelformat=bsuir-table,
-  format=bsuir-table,
-  justification=raggedright,
-  singlelinecheck=false,
-  labelsep=emdash,
-  name=Таблица,
-  font=normalfont,
-  textfont=normalfont,
-  position=above
+  format=plain,
+  labelsep=endash, % Тире между "Таблица X" и названием
+  justification=raggedright, % По левому краю
+  singlelinecheck=false,     % Даже если одна строка - влево
+  skip=0pt, % Нет пробельной строки между названием и таблицей
+  position=top
 }
 
-% Нумерация таблиц: по разделам (раздел.номер) или сквозная
-% По умолчанию по разделам
-\@addtoreset{table}{section}
-\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+% Checklist §6.2: Название таблицы: "Таблица" номер тире название
+% Слово "Таблица" начинают писать на уровне левой границы таблицы
+% Это обрабатывается через justification=raggedright
 
-% Пробельные строки до/после таблицы
-\captionsetup[table]{
-  skip=1\baselineskip,
-  aboveskip=1\baselineskip,
-  belowskip=1\baselineskip
-}
+% Глобальный стиль таблиц БГУИР
+\DefTblrTemplate{contfoot-text}{default}{Продолжение таблицы \thetable}
+\DefTblrTemplate{conthead-text}{default}{(Продолжение)}
 
-% Окружение для таблицы с правильным оформлением
-\renewenvironment{table}[1][htbp]{%
-  \vspace{\baselineskip}%
-  \@float{table}[#1]%
-}{%
-  \end@float%
-  \vspace{\baselineskip}%
-}
+% Внутренние переменные для хранения caption и label
+\tl_new:N \l_bsuir_table_caption_tl
+\tl_new:N \l_bsuir_table_label_tl
+\tl_new:N \l_bsuir_table_inner_keys_tl
+\tl_new:N \l_bsuir_table_tblr_keys_tl
+\bool_new:N \l_bsuir_table_has_caption_bool
+\bool_new:N \l_bsuir_table_has_label_bool
 
-% Границы таблицы: слева, справа и снизу
-% Настраивается через tabularray
-\UseTblrLibrary{booktabs}
+% Определение ключей для gosttable
+\keys_define:nn { bsuir / gosttable }
+  {
+    caption .code:n = {
+      \bool_set_true:N \l_bsuir_table_has_caption_bool
+      \tl_set:Nn \l_bsuir_table_caption_tl { #1 }
+    },
+    label .code:n = {
+      \bool_set_true:N \l_bsuir_table_has_label_bool
+      \tl_set:Nn \l_bsuir_table_label_tl { #1 }
+    },
+    % Все остальные ключи передаются в tabularray
+    unknown .code:n = {
+      \tl_put_right:Nx \l_bsuir_table_inner_keys_tl
+        { \exp_not:V \l_keys_key_str = \exp_not:n {#1} , }
+    }
+  }
 
-% Стиль по умолчанию для таблиц
-\SetTblrStyle{firsthead}{font=\bfseries}
-\SetTblrStyle{head}{font=\bfseries}
-\SetTblrStyle{foot}{font=\itshape}
+% Окружение gosttable с парсингом ключей
+\NewDocumentEnvironment { gosttable } { m }
+  {
+    % Инициализация
+    \tl_clear:N \l_bsuir_table_caption_tl
+    \tl_clear:N \l_bsuir_table_label_tl
+    \tl_clear:N \l_bsuir_table_inner_keys_tl
+    \bool_set_false:N \l_bsuir_table_has_caption_bool
+    \bool_set_false:N \l_bsuir_table_has_label_bool
+    
+    % Парсинг ключей
+    \keys_set:nn { bsuir / gosttable } { #1 }
+    
+    % Начало float окружения
+    \begin{table}[htbp]
+    \centering
+    
+    % Caption (если есть)
+    \bool_if:NT \l_bsuir_table_has_caption_bool
+      {
+        \exp_args:NV \caption \l_bsuir_table_caption_tl
+      }
+    
+    % Label (если есть)
+    \bool_if:NT \l_bsuir_table_has_label_bool
+      {
+        \exp_args:NV \label \l_bsuir_table_label_tl
+      }
+    
+    % Собираем ключи для tabularray заранее
+    % Сначала добавляем пользовательские ключи (если есть)
+    \tl_set:Nn \l_bsuir_table_tblr_keys_tl {}
+    \tl_if_empty:NF \l_bsuir_table_inner_keys_tl
+      { \tl_set_eq:NN \l_bsuir_table_tblr_keys_tl \l_bsuir_table_inner_keys_tl }
+    
+    % Добавляем стиль по умолчанию
+    \tl_put_right:Nn \l_bsuir_table_tblr_keys_tl
+      {
+        hlines, vlines, % Сетка (обычно в инженерных дипломах сетка полная)
+        rows={m},       % Вертикальное центрирование
+        row{1}={font=\bfseries, c} % Заголовок жирный и по центру
+      }
 
-% Заголовки граф: с прописной буквы
-% (обрабатывается вручную в документе)
+    % Начало tabularray окружения с собранными ключами
+    % ВАЖНО: tabularray парсит colspec и не терпит нерасширяемые команды
+    % (например, \tl_use:N) внутри значения colspec. Поэтому принудительно
+    % разворачиваем tl-переменную через \expanded до передачи в tblr.
+    % \expanded полностью разворачивает переменную перед передачей в tblr
+    \expanded {
+      \noexpand \begin { tblr } {
+        \unexpanded \expandafter { \l_bsuir_table_tblr_keys_tl }
+      }
+    }
+  }
+  {
+    \end{tblr}
+    \end{table}
+  }
 
-% Подзаголовки: со строчной буквы (если не имеют самостоятельного значения)
-% (обрабатывается вручную в документе)
+\ExplSyntaxOff
 
-% Точка в конце заголовка не ставится
-% (обрабатывается вручную в документе)
-
-% Единицы измерения в боковике: после наименования показателя, отделяя запятой
-% (обрабатывается вручную в документе)
-
-% Переносы таблиц: "Продолжение таблицы номер"
-% Настраивается через tabularray
-\DefTblrTemplate{contfoot-text}{bsuir}{Продолжение таблицы\ #1}
-\SetTblrTemplate{contfoot-text}{bsuir}
-
-% При продолжении таблицы головку можно заменить нумерацией граф
-% (настраивается вручную в документе)
-
-% Разделение таблиц: двойная линия или линия удвоенной толщины
-% (настраивается вручную в документе через tabularray)
-
-% Заполнение таблиц: разряды чисел по всей графе один под другим
-% (настраивается через tabularray: colspec с выравниванием)
-
-% При отсутствии данных: тире
-% (обрабатывается вручную в документе)
-
-% Команда для создания таблицы с правильным оформлением
-\NewTblrEnviron{bsuirtable}
-\SetTblrInner{bsuirtable}{
-  hlines,
-  vlines,
-  colsep=2pt,
-  rowsep=2pt
-}
-
+\endinput

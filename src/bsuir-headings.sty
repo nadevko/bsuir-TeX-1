@@ -1,154 +1,112 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-headings}[2025/12/28 BSUIR headings and structure]
+\ProvidesPackage{bsuir-headings}[2025/12/28 Headings configuration]
 
-% Настройка заголовков через KOMA-Script
+% --- Настройка глубины ---
+\setcounter{secnumdepth}{3} % нумеруем до subsubsection
+\setcounter{tocdepth}{3}
 
-% Нумерация разделов: арабские цифры без точки в конце
-\setcounter{secnumdepth}{4} % Разделы, подразделы, пункты, подпункты
+% --- Шрифты заголовков ---
+% Все заголовки: 14pt (наследуется от основного), жирные
+\setkomafont{disposition}{\normalfont\bfseries}
+% Главы: ПРОПИСНЫМИ (Checklist §2.3)
+\setkomafont{chapter}{\normalfont\bfseries\MakeUppercase}
+\setkomafont{section}{\normalfont\bfseries}
+\setkomafont{subsection}{\normalfont\bfseries}
+\setkomafont{subsubsection}{\normalfont\bfseries}
 
-% Форматирование заголовков разделов
-\renewcommand\sectionformat{%
-  \thesection\autodot\enskip
+% --- Настройка ГЛАВ (Chapter) ---
+% Checklist §2.4 line 81: разделы начинаются с новой страницы
+% Checklist §2.4 line 74: между названием раздела и текстом - одна пробельная строка
+\RedeclareSectionCommand[
+  beforeskip=-1sp, % Отрицательный для принудительного page break
+  afterskip=\baselineskip, % Одна пробельная строка после заголовка
+  font={} % Шрифт задан выше через setkomafont
+]{chapter}
+
+% Checklist §2.3 line 67: Продолжение заголовка с левого края, не с абзацного отступа
+% Номер раздела с абзацным отступом, но продолжение заголовка с левого края
+\renewcommand*{\chapterformat}{%
+  \hspace{1.25cm}\thechapter\enskip%
 }
-\renewcommand\subsectionformat{%
-  \thesubsection\autodot\enskip
-}
-\renewcommand\subsubsectionformat{%
-  \thesubsubsection\autodot\enskip
-}
-\renewcommand\paragraphformat{%
-  \theparagraph\autodot\enskip
+
+% Переопределяем формат заголовка главы для правильного выравнивания продолжения
+\renewcommand*{\chapterlinesformat}[3]{%
+  \makebox[0pt][l]{\hspace{1.25cm}#2}% Номер с отступом
+  #3% Заголовок начинается с левого края
 }
 
-% Заголовки разделов: ПРОПИСНЫЕ буквы, без точки в конце
-\setkomafont{section}{\normalfont\bfseries\Large\MakeUppercase}
-\renewcommand\sectionformat{\thesection\enskip}
-
-% Заголовки подразделов: строчные буквы, начиная с первой прописной
-\setkomafont{subsection}{\normalfont\bfseries\large}
-\renewcommand\subsectionformat{\thesubsection\enskip}
-
-% Заголовки пунктов: жирный шрифт
-\setkomafont{subsubsection}{\normalfont\bfseries\normalsize}
-\renewcommand\subsubsectionformat{\thesubsubsection\enskip}
-
-% Заголовки подпунктов: не жирный
-\setkomafont{paragraph}{\normalfont\normalsize}
-\renewcommand\paragraphformat{\theparagraph\enskip}
-
-% Запрет переносов в заголовках
-\RequirePackage{hyphenat}
-\renewcommand\sectionformat{\thesection\enskip\nohyphenation}
-\renewcommand\subsectionformat{\thesubsection\enskip\nohyphenation}
-\renewcommand\subsubsectionformat{\thesubsubsection\enskip\nohyphenation}
-\renewcommand\paragraphformat{\theparagraph\enskip\nohyphenation}
-
-% Отступы между заголовками и текстом
-% Между названием раздела, подраздела и текстом: одна пробельная строка
-% Настройка висячей строки: вторая строка выравнивается по началу текста первой строки
+% --- Настройка РАЗДЕЛОВ (Section, Subsection...) ---
+% Checklist §2.4: между заголовками раздела и подраздела пробельная строка
+% Checklist §2.4: между заголовком подраздела и абзацем текста пробельная строка
 \RedeclareSectionCommand[
-  beforeskip=1\baselineskip,
-  afterskip=1\baselineskip,
-  indent=1.25cm,
-  hanging=1.25cm
-]{section}
-
-\RedeclareSectionCommand[
-  beforeskip=1\baselineskip,
-  afterskip=1\baselineskip,
-  indent=1.25cm
-]{subsection}
-
-\RedeclareSectionCommand[
-  beforeskip=0pt,
-  afterskip=0pt,
-  indent=1.25cm
-]{subsubsection}
-
-\RedeclareSectionCommand[
-  beforeskip=0pt,
-  afterskip=0pt,
-  indent=1.25cm
-]{paragraph}
-
-% Page break перед разделами
-\RedeclareSectionCommand[
-  beforeskip=1\baselineskip,
-  afterskip=1\baselineskip,
-  indent=1.25cm,
+  beforeskip=\baselineskip, % Пробельная строка перед заголовком
+  afterskip=\baselineskip,  % Пробельная строка после заголовка
   runin=false
 ]{section}
 
-% Содержание (tocbasic из KOMA-Script)
-\RequirePackage{scrhack} % Для совместимости
-
-% Настройка содержания
-\setkomafont{sectionentry}{\normalfont}
-\setkomafont{subsectionentry}{\normalfont}
-\setkomafont{subsubsectionentry}{\normalfont}
-
-% Выравнивание заголовков в содержании: смещение на 2 знака
-% Явно включаем отточие (точки) в содержании
 \RedeclareSectionCommand[
-  tocentryindent=2em,
-  tocentrynumwidth=2em,
-  toclinefill=\TOCLineLeaderFill
-]{section}
-
-\RedeclareSectionCommand[
-  tocentryindent=4em,
-  tocentrynumwidth=2em,
-  toclinefill=\TOCLineLeaderFill
+  beforeskip=\baselineskip,
+  afterskip=\baselineskip,
+  runin=false
 ]{subsection}
 
 \RedeclareSectionCommand[
-  tocentryindent=6em,
-  tocentrynumwidth=2em,
-  toclinefill=\TOCLineLeaderFill
+  beforeskip=0pt, % Checklist §2.4 line 77: между заголовками пункта и подпункта отступа нет
+  afterskip=0pt,  % Между подпунктом и абзацем отступа нет
+  runin=false
 ]{subsubsection}
 
-% Отточие в содержании
-\renewcommand\@pnumwidth{2em}
-\renewcommand\@tocrmarg{2.55em}
+% --- Форматы номеров ---
+% Checklist §2.2: номер жирный, без точки в конце
+% Checklist §2.2: номер с абзацным отступом (1.25cm)
+\renewcommand*{\sectionformat}{%
+  \hspace{1.25cm}\bfseries\thesection\enskip%
+}
+\renewcommand*{\subsectionformat}{%
+  \hspace{1.25cm}\bfseries\thesubsection\enskip%
+}
+\renewcommand*{\subsubsectionformat}{%
+  \hspace{1.25cm}\bfseries\thesubsubsection\enskip%
+}
 
-% Заголовок содержания: СОДЕРЖАНИЕ прописными буквами, полужирный, 14-16pt, по центру
-\renewcommand\tableofcontents{%
+% --- Содержание (TOC) ---
+\RequirePackage{tocbasic}
+% Checklist §2.5: Слово "СОДЕРЖАНИЕ" по центру, полужирный, 14-16 пунктов
+\RenewDocumentCommand{\contentsname}{}{СОДЕРЖАНИЕ}
+
+% Настройка TOC: заголовок по центру, полужирный
+\let\originaltableofcontents\tableofcontents
+\RenewDocumentCommand{\tableofcontents}{}{
   \begingroup
-    \centering
-    \bfseries
-    \fontsize{14}{18}\selectfont
-    \MakeUppercase{Содержание}%
-    \par
-    \vspace{\baselineskip}%
+  \let\clearpage\relax
+  \centering
+  \bfseries
+  \originaltableofcontents
   \endgroup
-  \@starttoc{toc}%
 }
 
-% Нумерация страниц: арабские цифры в правом нижнем углу, 10 мм от нижнего края
-\RequirePackage{scrlayer-scrpage}
+% Checklist §2.5: между словом СОДЕРЖАНИЕ и самим содержанием - пробельная строка
+% Это обрабатывается автоматически через KOMA-Script
+
+% --- Ненумерованные разделы (Введение, Заключение) ---
+% Checklist §1.3: названия ненумерованных разделов по центру без абзацного отступа
+\NewDocumentCommand{\anonsection}{m}{
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{#1}
+  \begin{center}
+    \bfseries\MakeUppercase{#1}
+  \end{center}
+  \par\nobreak\vspace{\baselineskip}
+  \@afterheading
+}
+
+% --- Колонтитулы (Номер страницы) ---
+% Checklist §2.6: страницы нумеруют арабскими цифрами в правом нижнем углу
+\RequirePackage[automark]{scrlayer-scrpage}
 \clearpairofpagestyles
-\ofoot*{\pagemark}
-\setkomafont{pagenumber}{\normalfont}
+% Номер страницы внизу справа
+\ofoot*{\thepage}
+% Checklist §1.1: номер страницы в 10мм от нижнего края (обрабатывается через footskip в geometry)
 
-% Настройка позиции номера страницы: 10 мм от нижнего края
-% Подбирается экспериментально под 10мм от края при нижнем поле 20мм
-\setlength{\footskip}{15mm}
-
-% Титульный лист, реферат и задание: номер страницы не ставится
-% (настраивается в документе через \thispagestyle{empty})
-
-% Команда для ненумерованных разделов (Введение, Заключение и т.д.)
-% Выравнивание по центру страницы без абзацного отступа
-\makeatletter
-\newcommand{\anonsection}[1]{%
-  \cleardoublepage
-  \phantomsection % Для правильной ссылки в PDF
-  \begin{center}%
-    \bfseries\Large\MakeUppercase{#1}%
-  \end{center}%
-  \addcontentsline{toc}{section}{#1}% Добавляем в содержание
-  \vspace{\baselineskip}% Отступ после заголовка
-  \@afterheading% Чтобы первый абзац вел себя как после заголовка
-}
-\makeatother
-
+\endinput

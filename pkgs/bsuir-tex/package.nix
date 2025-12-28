@@ -3,6 +3,7 @@
   writeShellScript,
   lib,
   texlive,
+  corefonts,
 }:
 stdenvNoCC.mkDerivation {
   pname = "bsuir-tex";
@@ -20,12 +21,15 @@ stdenvNoCC.mkDerivation {
     biblatex-gost
     caption
     collection-basic
+    collection-langcyrillic  # Hyphenation patterns for Russian/Belarusian
     enumitem
     eso-pic
     fontspec
     geometry
     graphics
     hyphenat
+    hyphen-belarusian  # Belarusian hyphenation patterns
+    hyphen-russian  # Russian hyphenation patterns
     koma-script
     l3kernel
     l3packages
@@ -39,6 +43,16 @@ stdenvNoCC.mkDerivation {
     svg
     tabularray
     unicode-math
+    setspaceenhanced
+    scrhack
+    lualatex-math
+    transparent
+    ninecolors
+    luacode
+    csquotes
+    filecontents
+    corefonts
+    stix2-otf
   ];
 
   src = ../../src;

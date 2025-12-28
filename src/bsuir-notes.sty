@@ -1,74 +1,43 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-notes}[2025/12/28 BSUIR footnotes and notes settings]
+\ProvidesPackage{bsuir-notes}[2025/12/28 Notes and footnotes support]
 
-% Настройка сносок через KOMA-Script
-% Знаки сноски: арабские цифры со скобкой
-\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark)}}
+\RequirePackage{enumitem}
 
-% Размещение сносок: внизу страницы под короткой чертой
-% (настраивается автоматически через KOMA-Script)
+% --- Сноски (Checklist §9.1) ---
+% Знаки сноски выполняют арабскими цифрами со скобкой и помещают справа на уровне верхнего обреза слова
+% Этот же знак повторяют внизу страницы под короткой чертой перед текстом пояснения с абзацного отступа
+% В пояснительной сноске каждая запись стартует с абзацного отступа и uppercase маленького, сверху номера сноски в круглой скобке
 
-% Текст пояснения: с абзацного отступа
-\deffootnote[1.25cm]{1em}{1em}{\textsuperscript{\thefootnotemark)}}
-
-% В пояснительной сноске каждая запись стартует с абзацного отступа
-% и uppercase маленького, сверху номера сноски в круглой скобке
-\deffootnote[1.25cm]{1em}{1em}{%
-  \textsuperscript{\thefootnotemark)}%
-  \MakeLowercase
+% Используем KOMA-Script для настройки сносок
+\deffootnote[1.25cm]{0pt}{1.25cm}{%
+  \makebox[1.25cm][l]{\textsuperscript{(\thefootnotemark)}}%
 }
 
-% Примечания
+% Счетчик для множественных примечаний
+\newcounter{bsuirnote}
+
+% --- Примечания (Checklist §9.2) ---
 % Слово "Примечание" пишется с прописной буквы с абзаца
-\newcommand{\note}[1]{%
-  \par\noindent
-  \textbf{Примечание} --- #1%
-}
-
-% Если примечание одно, то после слова "Примечание" ставится тире
-% и размещается текст пояснения, начиная с прописной буквы
-% (реализовано выше)
-
+% Если примечание одно, то после слова "Примечание" ставится тире и размещается текст пояснения, начиная с прописной буквы
 % Если примечаний несколько, то производится нумерация по порядку арабскими цифрами
-\newcounter{notecounter}
-\newcommand{\notelist}{%
-  \setcounter{notecounter}{0}%
-}
 
-\newcommand{\noteitem}[1]{%
-  \stepcounter{notecounter}%
-  \par\noindent
-  \textbf{Примечание} \arabic{notecounter} --- #1%
-}
-
-% Примечание к таблице: в конце таблицы над нижней ограничивающей чертой
-% (обрабатывается вручную в документе)
-
-% Окружение для примечаний
-\newenvironment{notes}{%
-  \setcounter{notecounter}{0}%
-  \par\noindent
-}{%
+% Одиночное примечание
+\NewDocumentCommand{\note}{m}{
+  \par\vspace{\baselineskip}
+  \noindent
+  \textbf{Примечание} -- #1
   \par
 }
 
-% Команда для одного примечания
-\renewcommand{\note}[1]{%
-  \par\noindent
-  \textbf{Примечание} --- #1%
-}
-
-% Команда для нескольких примечаний
-\newenvironment{noteslist}{%
-  \setcounter{notecounter}{0}%
-  \par\noindent
-}{%
+% Окружение для множественных примечаний
+\NewDocumentEnvironment{notes}{}{
+  \par\vspace{\baselineskip}
+  \noindent
+  \textbf{Примечания}
+  \begin{enumerate}[label=\arabic*., leftmargin=1.25cm, nosep]
+}{
+  \end{enumerate}
   \par
 }
 
-\newcommand{\noteitem}[1]{%
-  \stepcounter{notecounter}%
-  \par\noindent
-  \textbf{Примечание} \arabic{notecounter} --- #1%
-}
-
+\endinput

@@ -25,8 +25,9 @@
       private = final: prev: { inherit inputs; };
     in
     nabiki.lib.mapAttrsNested nixpkgs.legacyPackages (
-      pkgs:
+      prevPkgs:
       let
+        pkgs = import nixpkgs { config.allowUnfree = true; inherit (prevPkgs.stdenvNoCC.hostPlatform) system; };
         treefmt = treefmt-nix.lib.evalModule pkgs {
           programs.nixfmt = {
             enable = true;

@@ -1,104 +1,53 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-appendix}[2025/12/28 BSUIR appendix settings]
+\ProvidesPackage{bsuir-appendix}[2025/12/28 Appendix]
 
-% Настройка приложений через KOMA-Script
 \RequirePackage{appendix}
 
-% Обозначение приложений: заглавные буквы русского алфавита
-% Исключая: Ё, З, Й, О, Ч, Ъ, Ы, Ь
-\renewcommand{\appendixname}{ПРИЛОЖЕНИЕ}
-\renewcommand{\appendixpagename}{ПРИЛОЖЕНИЕ}
+% Checklist §7.2: Приложения обозначают заглавными буквами русского алфавита, начиная с А
+% Исключаются буквы Ё, З, Й, О, Ч, Ъ, Ы, Ь
+% Это обрабатывается через \Asbuk из babel
 
-% Настройка нумерации приложений
-\RequirePackage{expl3}
-\ExplSyntaxOn
+% Checklist §7.3: Каждое приложение начинают с новой страницы
+% Вверху по центру страницы пишут слово ПРИЛОЖЕНИЕ прописными буквами и его буквенное обозначение
+% Ниже в круглых скобках строчными буквами указывают слово «обязательное», «рекомендуемое» или «справочное»
+% Еще ниже по центру размещают заголовок, который записывают с прописной буквы
 
-% Список букв для приложений (исключая указанные)
-\clist_new:N \l_bsuir_appendix_letters_clist
-\clist_set:Nn \l_bsuir_appendix_letters_clist {А,Б,В,Г,Д,Е,Ж,И,К,Л,М,Н,П,Р,С,Т,У,Ф,Х,Ц,Ш,Щ,Э,Ю,Я}
-
-% Счётчик для приложений
-\newcounter{bsuirappendix}
-\setcounter{bsuirappendix}{0}
-
-% Команда для получения буквы приложения
-\cs_new:Npn \bsuir_appendix_letter:n #1 {
-  \clist_item:Nn \l_bsuir_appendix_letters_clist {#1}
-}
-
-\ExplSyntaxOff
-
-% Переопределение команды \appendix
-\let\oldappendix\appendix
+% Переопределяем команду \appendix
+\let\bsuir@old@appendix\appendix
 \renewcommand{\appendix}{%
-  \oldappendix%
-  \stepcounter{bsuirappendix}%
-  \renewcommand{\thesection}{\bsuir_appendix_letter:n{\value{bsuirappendix}}}%
+  \bsuir@old@appendix
+  \setcounter{chapter}{0}
+  \setcounter{section}{0}
+  \gdef\@chapapp{ПРИЛОЖЕНИЕ}
+  \gdef\thechapter{\Asbuk{chapter}} % Русские буквы А, Б, В...
+  
+  % Переопределяем формат заголовка приложения для центрирования
+  \RedeclareSectionCommand[
+    beforeskip=-1sp, % Принудительный page break
+    afterskip=\baselineskip,
+    font={}
+  ]{chapter}
+  
+  % Формат: "ПРИЛОЖЕНИЕ А" по центру
+  \renewcommand*{\chapterformat}{}
+  \def\chapterlinesformat##1##2##3{%
+    \begin{center}
+      \bfseries\MakeUppercase{\@chapapp}~\thechapter
+    \end{center}
+    \vspace{\baselineskip}
+    % Здесь можно добавить строку "(обязательное)" если нужно
+    % Пока оставляем без неё, так как это зависит от типа приложения
+    \begin{center}
+      ##3% Заголовок приложения
+    \end{center}
+  }
 }
 
-% Оформление заголовка приложения
-\renewcommand{\@resets@pp}{%
-  \stepcounter{@pps}%
-  \setcounter{section}{0}%
-  \setcounter{subsection}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thesection{\@Alph\c@section}%
+% Команда для указания типа приложения (обязательное/рекомендуемое/справочное)
+\NewDocumentCommand{\appendixnote}{m}{
+  \begin{center}
+    (#1)
+  \end{center}
 }
 
-% Заголовок приложения: "ПРИЛОЖЕНИЕ А" по центру
-\renewcommand{\@resets@pp}{%
-  \stepcounter{@pps}%
-  \setcounter{section}{0}%
-  \setcounter{subsection}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thesection{\bsuir_appendix_letter:n{\value{bsuirappendix}}}%
-}
-
-% Настройка стиля заголовка приложения
-\makeatletter
-\renewcommand{\@makechapterhead}[1]{%
-  \if@mainmatter
-    \vspace*{50\p@}%
-    {\parindent \z@ \raggedright \normalfont
-      \ifnum \c@secnumdepth >\m@ne
-        \centering
-        \Huge \bfseries \@chapapp\space \thechapter
-        \par\nobreak
-        \vskip 20\p@
-      \fi
-      \interlinepenalty\@M
-      \centering \Huge \bfseries #1\par\nobreak
-      \vskip 40\p@
-    }%
-  \fi
-}
-\makeatother
-
-% Скобки с типом приложения: (обязательное), (рекомендуемое), (справочное)
-\newcommand{\appendixtype}[1]{%
-  \vspace*{-20\p@}%
-  \centering
-  \normalfont\normalsize (#1)%
-  \vskip 20\p@
-}
-
-% Нумерация формул в приложениях: А.1, Б.2 и т.д.
-\@addtoreset{equation}{section}
-\renewcommand{\theequation}{\thesection.\arabic{equation}}
-
-% Нумерация рисунков в приложениях: Рисунок А.1
-% (настраивается автоматически через модуль figures)
-
-% Нумерация таблиц в приложениях: Таблица А.1
-% (настраивается автоматически через модуль tables)
-
-% Каждое приложение начинается с новой страницы
-\renewcommand{\@resets@pp}{%
-  \stepcounter{@pps}%
-  \setcounter{section}{0}%
-  \setcounter{subsection}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thesection{\bsuir_appendix_letter:n{\value{bsuirappendix}}}%
-  \clearpage
-}
-
+\endinput

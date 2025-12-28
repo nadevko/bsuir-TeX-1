@@ -1,88 +1,25 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-figures}[2025/12/28 BSUIR figures settings]
+\ProvidesPackage{bsuir-figures}[2025/12/28 Figures]
 
-% Пакеты для работы с графикой
 \RequirePackage{graphicx}
-\RequirePackage{svg}
-\RequirePackage{tikz}
-
-% Настройка caption для рисунков
+\RequirePackage{svg} % Если используешь SVG (требует Inkscape)
 \RequirePackage{caption}
 
-% Создаем разделитель " -- " (тире с пробелами)
-\DeclareCaptionLabelSeparator{emdash}{\ --\ }
-
-% Стиль подписей: "Рисунок X — Название"
-\DeclareCaptionLabelFormat{bsuir-figure}{Рисунок\ #1}
-\DeclareCaptionFormat{bsuir-figure}{#1#2#3}
-
-% Настройка caption для рисунков
+% Checklist §5.2: Иллюстрацию располагают по центру и отделяют от текста и подрисуночной подписи одной пробельной строкой
+% До картинки пустая строка, между картинкой и подписью пустая строка, после подписи пустая строка
+\setlength{\intextsep}{\baselineskip} % Пробельная строка до и после рисунка
 \captionsetup[figure]{
-  labelformat=bsuir-figure,
-  format=bsuir-figure,
-  justification=centering,
-  singlelinecheck=false,
-  labelsep=emdash,
-  name=Рисунок,
-  font=normalfont,
-  textfont=normalfont
+  format=plain,
+  labelsep=endash, % Тире между "Рисунок X" и названием
+  justification=centering, % По центру
+  skip=\baselineskip, % Пробельная строка между рисунком и подписью
+  position=below
 }
 
-% Нумерация рисунков: по разделам (раздел.номер) или сквозная
-% По умолчанию по разделам
-\@addtoreset{figure}{section}
-\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+% Checklist §5.3: Подпись содержит слово "Рисунок" без сокращения
+% Это обрабатывается автоматически через caption package
 
-% Для сквозной нумерации можно использовать:
-% \counterwithout{figure}{section}
-% \renewcommand{\thefigure}{\arabic{figure}}
+% Checklist §5.3: Рисунок и подрисуночная подпись выравниваются по центру страницы без абзацного отступа
+% Это обрабатывается через \centering в figure environment
 
-% Центрирование рисунков
-\let\oldincludegraphics\includegraphics
-\renewcommand{\includegraphics}[2][]{%
-  \begin{figure}[htbp]%
-    \centering%
-    \oldincludegraphics[#1]{#2}%
-  \end{figure}%
-}
-
-% Пробельные строки до/после/между рисунком и подписью
-% Настраивается через caption
-\captionsetup[figure]{
-  skip=1\baselineskip,
-  aboveskip=1\baselineskip,
-  belowskip=1\baselineskip
-}
-
-% Окружение для рисунка с правильным оформлением
-\renewenvironment{figure}[1][htbp]{%
-  \@float{figure}[#1]%
-  \centering%
-}{%
-  \end@float%
-}
-
-% Пробельные строки вокруг рисунка
-\let\oldfigure\figure
-\let\endoldfigure\endfigure
-\renewenvironment{figure}[1][htbp]{%
-  \vspace{\baselineskip}%
-  \oldfigure[#1]%
-  \centering%
-}{%
-  \endoldfigure%
-  \vspace{\baselineskip}%
-}
-
-% Поддержка приложений: Рисунок А.1
-% (настраивается в модуле приложений)
-
-% Команда для вставки рисунка с автоматическим центрированием
-\newcommand{\insertfigure}[3][htbp]{%
-  \begin{figure}[#1]%
-    \centering%
-    \includegraphics[width=#2]{#3}%
-    \caption{}%
-  \end{figure}%
-}
-
+\endinput

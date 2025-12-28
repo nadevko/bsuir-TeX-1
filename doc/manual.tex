@@ -1,0 +1,131 @@
+\documentclass[std=01-2024]{bsuir}
+
+% Подключаем библиографию (создадим временный файл для примера)
+\usepackage{filecontents}
+\begin{filecontents}{refs.bib}
+@book{knuth,
+  author = {Knuth, Donald E.},
+  title = {The Art of Computer Programming},
+  year = {1984},
+  publisher = {Addison-Wesley},
+  langid = {english}
+}
+@article{gost,
+  title = {Оформление дипломных проектов},
+  author = {Иванов, И. И.},
+  journal = {Вестник БГУИР},
+  year = {2024},
+  langid = {russian}
+}
+\end{filecontents}
+
+\addbibresource{refs.bib}
+
+\begin{document}
+
+% --- Титульный лист (заглушка) ---
+% В реальности лучше вставлять готовый PDF:
+% \insertpdf{titlepage.pdf}
+\thispagestyle{empty}
+\begin{center}
+    \vspace*{5cm}
+    \Huge \bfseries ПОЯСНИТЕЛЬНАЯ ЗАПИСКА
+    
+    \vspace{2cm}
+    \large к дипломному проекту
+\end{center}
+\clearpage
+
+% --- Содержание ---
+\tableofcontents
+
+% --- Введение ---
+\anonsection{Введение}
+Текст введения. Здесь описывается актуальность, цель и задачи.
+Отступ абзаца равен 1.25 см. Шрифт Times New Roman 14pt.
+
+% --- Глава 1 ---
+\chapter{Обзор предметной области}
+\section{Анализ существующих решений}
+
+Пример ссылки на источник \cite{knuth}. Текст выравнивается по ширине.
+
+\subsection{Подраздел с перечислением}
+Пример маркированного списка (дефис вместо точки):
+\begin{itemize}
+    \item первый элемент списка;
+    \item второй элемент списка;
+    \item третий элемент списка.
+\end{itemize}
+
+Пример нумерованного списка:
+\begin{enumerate}
+    \item Первый пункт.
+    \item Второй пункт.
+\end{enumerate}
+
+\section{Пример формул}
+Формулы должны быть отцентрированы и иметь номер справа в скобках.
+
+\begin{equation}
+    E = mc^2
+    \label{eq:einstein}
+\end{equation}
+
+\begin{where}
+    \item[E] энергия системы;
+    \item[m] масса;
+    \item[c] скорость света.
+\end{where}
+
+% --- Глава 2 ---
+\chapter{Разработка системы}
+
+\section{Таблицы}
+Пример оформления таблицы согласно STP.
+
+\begin{gosttable}{
+    colspec = {X[1,l] X[3,l]}, 
+    caption = {Сравнение аналогов}
+}
+    Критерий & Описание \\
+    Скорость & Высокая скорость обработки данных \\
+    Цена & Условно-бесплатное ПО \\
+\end{gosttable}
+
+\section{Иллюстрации}
+Пример вставки рисунка (требуется файл, используем заглушку).
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=0.5\textwidth]{image.png} 
+    \rule{10cm}{5cm} % Черный прямоугольник вместо картинки
+    \caption{Схема архитектуры}
+    \label{fig:arch}
+\end{figure}
+
+\section{Листинги кода}
+Пример вставки кода (Python).
+
+\begin{code}[lst:py]{Пример функции на Python}
+def hello_world():
+    print("Hello, BSUIR!")
+    return True
+\end{code}
+
+% --- Заключение ---
+\anonsection{Заключение}
+В ходе работы было сделано всё, что требовалось. Ссылка на ГОСТ \cite{gost}.
+
+% --- Список источников ---
+\printbibliography
+
+% --- Приложения ---
+\appendix
+\chapter{Листинг основного модуля}
+Текст приложения А.
+
+\chapter{Акт внедрения}
+Текст приложения Б.
+
+\end{document}

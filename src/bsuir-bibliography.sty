@@ -1,40 +1,37 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-bibliography}[2025/12/28 BSUIR bibliography settings]
+\ProvidesPackage{bsuir-bibliography}[2025/12/28 Bibliography]
 
-% Библиография через biblatex с ГОСТ стилем
-% Используем biblatex-gost для строгого соответствия ГОСТ 7.1-2003
+\RequirePackage{csquotes}
 \RequirePackage[
   backend=biber,
-  style=gost-numeric, % Соответствует ГОСТ 7.1-2003 (нумерация)
-  language=auto,
+  style=gost-numeric, % ГОСТ 7.1-2003 через стиль numeric
+  sorting=none,       % По порядку упоминания (Checklist §8.3)
+  language=auto,      % Автоопределение языка источника
   autolang=other,
-  sorting=none,       % По порядку упоминания (требование 8.3)
-  movenames=false,    % Не перемещать имена авторов
-  maxnames=5          % Количество авторов до "и др."
+  movenames=false,    % Не двигать имена
+  maxnames=5          % "и др" после 5 авторов
 ]{biblatex}
 
-% Настройка заголовка
+% Разделитель тире в библиографии (ГОСТ 2003)
+% gost-standard уже включен через style=gost-numeric
+
+% Заголовок списка литературы (Checklist §8.1)
 \DefineBibliographyStrings{russian}{
   bibliography = {СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
 }
 
-% Форматирование заголовка (ALL CAPS, по центру)
-\defbibheading{bsuirheading}[\bibname]{%
-  \cleardoublepage
-  \begin{center}%
-    \bfseries\Large\MakeUppercase{#1}%
-  \end{center}%
-  \vspace{\baselineskip}%
-  \markboth{#1}{#1}%
-  \addcontentsline{toc}{section}{#1}%
+% Маппинг белорусского языка на русский для biblatex
+% (biblatex не имеет полной поддержки belarusian, используем русские термины)
+\DeclareLanguageMapping{belarusian}{russian}
+
+% Используем anonsection для заголовка (по центру, прописными)
+\defbibheading{bsuir}[\bibname]{%
+  \anonsection{#1}%
 }
 
-% Настройка отступов в списке литературы
-\setlength{\biblabelsep}{1.5em}
+% Checklist §8.5: Запятая разделяет фамилию и инициалы, инициалы разделяют пробелом
+% Вид издания указывается со строчной буквы
+% Библиографические знаки (: ; –/) с двух сторон отделяются пробелами
+% Это обрабатывается автоматически через стиль gost-numeric
 
-% Команда для вывода библиографии в документе:
-% \printbibliography[heading=bsuirheading]
-%
-% Примечание: Пользователю нужно будет использовать \addbibresource{file.bib}
-% в основном файле и компилировать через biber вместо bibtex.
-
+\endinput

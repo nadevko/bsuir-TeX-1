@@ -1,29 +1,17 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bsuir-pdf}[2025/12/28 BSUIR external PDF support]
+\ProvidesPackage{bsuir-pdf}[2025/12/28 External PDF support]
 
-% Поддержка вставки внешних PDF через pdfpages
 \RequirePackage{pdfpages}
 
-% Настройка для вставки бланка задания или чертежей из стороннего софта
-% Используется команда \includepdf из pdfpages
-
-% Команда для вставки PDF без нумерации страниц (для титульного листа, задания)
-\newcommand{\insertpdfnonumbered}[2][]{%
-  \includepdf[pages=-,#1]{#2}%
+% Вставка PDF без номера страницы (для титульника или задания)
+% \insertpdf[pages=-]{file.pdf}
+\NewDocumentCommand{\insertpdf}{O{} m}{
+  \includepdf[pages=-, #1]{#2}
 }
 
-% Команда для вставки PDF с нумерацией страниц
-\newcommand{\insertpdfnumbered}[2][]{%
-  \includepdf[pages=-,pagecommand={\thispagestyle{plain}},#1]{#2}%
+% Вставка с сохранением нумерации сквозной (если нужно)
+\NewDocumentCommand{\insertpdfnumbered}{O{} m}{
+  \includepdf[pages=-, pagecommand={\thispagestyle{plain}}, #1]{#2}
 }
 
-% Команда для вставки одной страницы PDF
-\newcommand{\insertpdfpage}[3][]{%
-  \includepdf[pages={#2},#1]{#3}%
-}
-
-% Команда для вставки диапазона страниц PDF
-\newcommand{\insertpdfrange}[4][]{%
-  \includepdf[pages={#2-#3},#1]{#4}%
-}
-
+\endinput
