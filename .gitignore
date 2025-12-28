@@ -172,10 +172,6 @@ acs-*.bib
 *.slt[0-9]*
 *.stc[0-9]*
 
-# minted
-_minted*
-*.pyg
-
 # morewrites
 *.mw
 

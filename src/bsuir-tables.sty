@@ -1,0 +1,97 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-tables}[2025/12/28 BSUIR tables settings]
+
+% Таблицы через tabularray
+\RequirePackage{tabularray}
+
+% Настройка caption для таблиц
+\RequirePackage{caption}
+
+% Создаем разделитель " -- " (тире с пробелами)
+\DeclareCaptionLabelSeparator{emdash}{\ --\ }
+
+% Стиль подписей: "Таблица X — Название" (выравнивание по левому краю)
+\DeclareCaptionLabelFormat{bsuir-table}{Таблица\ #1}
+\DeclareCaptionFormat{bsuir-table}{#1#2#3}
+
+% Настройка caption для таблиц
+\captionsetup[table]{
+  labelformat=bsuir-table,
+  format=bsuir-table,
+  justification=raggedright,
+  singlelinecheck=false,
+  labelsep=emdash,
+  name=Таблица,
+  font=normalfont,
+  textfont=normalfont,
+  position=above
+}
+
+% Нумерация таблиц: по разделам (раздел.номер) или сквозная
+% По умолчанию по разделам
+\@addtoreset{table}{section}
+\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+
+% Пробельные строки до/после таблицы
+\captionsetup[table]{
+  skip=1\baselineskip,
+  aboveskip=1\baselineskip,
+  belowskip=1\baselineskip
+}
+
+% Окружение для таблицы с правильным оформлением
+\renewenvironment{table}[1][htbp]{%
+  \vspace{\baselineskip}%
+  \@float{table}[#1]%
+}{%
+  \end@float%
+  \vspace{\baselineskip}%
+}
+
+% Границы таблицы: слева, справа и снизу
+% Настраивается через tabularray
+\UseTblrLibrary{booktabs}
+
+% Стиль по умолчанию для таблиц
+\SetTblrStyle{firsthead}{font=\bfseries}
+\SetTblrStyle{head}{font=\bfseries}
+\SetTblrStyle{foot}{font=\itshape}
+
+% Заголовки граф: с прописной буквы
+% (обрабатывается вручную в документе)
+
+% Подзаголовки: со строчной буквы (если не имеют самостоятельного значения)
+% (обрабатывается вручную в документе)
+
+% Точка в конце заголовка не ставится
+% (обрабатывается вручную в документе)
+
+% Единицы измерения в боковике: после наименования показателя, отделяя запятой
+% (обрабатывается вручную в документе)
+
+% Переносы таблиц: "Продолжение таблицы номер"
+% Настраивается через tabularray
+\DefTblrTemplate{contfoot-text}{bsuir}{Продолжение таблицы\ #1}
+\SetTblrTemplate{contfoot-text}{bsuir}
+
+% При продолжении таблицы головку можно заменить нумерацией граф
+% (настраивается вручную в документе)
+
+% Разделение таблиц: двойная линия или линия удвоенной толщины
+% (настраивается вручную в документе через tabularray)
+
+% Заполнение таблиц: разряды чисел по всей графе один под другим
+% (настраивается через tabularray: colspec с выравниванием)
+
+% При отсутствии данных: тире
+% (обрабатывается вручную в документе)
+
+% Команда для создания таблицы с правильным оформлением
+\NewTblrEnviron{bsuirtable}
+\SetTblrInner{bsuirtable}{
+  hlines,
+  vlines,
+  colsep=2pt,
+  rowsep=2pt
+}
+

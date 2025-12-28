@@ -1,0 +1,109 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-text}[2025/12/28 BSUIR text and lists]
+
+% Настройка списков через enumitem
+\RequirePackage{enumitem}
+
+% Простые перечисления: тире, абзацный отступ, точка с запятой
+\newenvironment{simplelist}{%
+  \begin{itemize}[
+    label=\textemdash,
+    leftmargin=1.25cm,
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt,
+    partopsep=0pt
+  ]
+  \setlength{\itemindent}{0pt}%
+}{%
+  \end{itemize}%
+}
+
+% Для простых перечислений: последняя строка заканчивается точкой
+% (обрабатывается вручную в документе)
+
+% Сложные перечисления: нумерация, прописная буква, точка в конце
+\newenvironment{complexlist}{%
+  \begin{enumerate}[
+    label=\arabic*.,
+    leftmargin=1.25cm,
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt,
+    partopsep=0pt
+  ]
+}{%
+  \end{enumerate}%
+}
+
+% Перечисления со ссылками: строчные буквы кириллицы со скобкой
+% Используем expl3 для работы с кириллическими буквами
+\RequirePackage{expl3}
+\ExplSyntaxOn
+
+% Функция для получения кириллической буквы по номеру
+\cs_new:Npn \bsuir_cyr_letter:n #1 {
+  \int_case:nn {#1} {
+    {1} {а}
+    {2} {б}
+    {3} {в}
+    {4} {г}
+    {5} {д}
+    {6} {е}
+    {7} {ж}
+    {8} {з}
+    {9} {и}
+    {10} {к}
+    {11} {л}
+    {12} {м}
+    {13} {н}
+    {14} {о}
+    {15} {п}
+    {16} {р}
+    {17} {с}
+    {18} {т}
+    {19} {у}
+    {20} {ф}
+    {21} {х}
+    {22} {ц}
+    {23} {ч}
+    {24} {ш}
+    {25} {щ}
+    {26} {э}
+    {27} {ю}
+    {28} {я}
+  }
+}
+
+\ExplSyntaxOff
+
+% Окружение для перечислений со ссылками
+\newenvironment{reflist}{%
+  \begin{enumerate}[
+    leftmargin=1.25cm,
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt,
+    partopsep=0pt
+  ]
+  \renewcommand{\labelenumi}{\bsuir_cyr_letter:n{\value{enumi}})}}%
+}{%
+  \end{enumerate}%
+}
+
+% Второй уровень перечислений со ссылками: арабские цифры со скобкой
+\newenvironment{reflistleveltwo}{%
+  \begin{enumerate}[
+    label=\arabic*)},
+    leftmargin=2.5cm,
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt,
+    partopsep=0pt
+  ]
+}{%
+  \end{enumerate}%
+}
+
+% Между абзацами нет пробельных строк (уже настроено в базовом классе)
+

@@ -1,0 +1,99 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-math}[2025/12/28 BSUIR math settings]
+
+% Математические шрифты через unicode-math
+\RequirePackage{unicode-math}
+
+% Загрузка математического шрифта (STIX Two или Cambria Math)
+% Пробуем загрузить STIX Two, если не доступен - Cambria Math
+\IfFontExistsTF{STIX Two Math}{%
+  \setmathfont{STIX Two Math}%
+}{%
+  \IfFontExistsTF{Cambria Math}{%
+    \setmathfont{Cambria Math}%
+  }{%
+    \setmathfont{Latin Modern Math}% Fallback
+  }%
+}
+
+% Буквы латинского алфавита - курсив, русского и греческого - прямой шрифт
+% (настраивается автоматически через unicode-math)
+
+% Размещение формул: по центру, пробельные строки до и после
+\RequirePackage{amsmath}
+
+% Настройка межтекстовых промежутков для формул
+% 6 интервалов (24 мм) для простейших однострочных формул
+% 8 интервалов (32 мм) для формул со знаками Σ, Π, ∫
+% 32 мм для формул с дробью в столбик
+% 48 мм для формул в столбик с высокими знаками
+
+% Настройка отступов вокруг формул
+% Задаем явно в мм, чтобы не зависеть от размера шрифта
+\setlength{\abovedisplayskip}{24mm}
+\setlength{\belowdisplayskip}{24mm}
+\setlength{\abovedisplayshortskip}{24mm}
+\setlength{\belowdisplayshortskip}{24mm}
+
+% Для формул с высокими знаками увеличиваем отступы
+\newcommand{\highformula}{%
+  \setlength{\abovedisplayskip}{32mm}%
+  \setlength{\belowdisplayskip}{32mm}%
+}
+
+% Нумерация формул: по разделам (раздел.номер)
+\RequirePackage{mathtools}
+\numberwithin{equation}{section}
+
+% Размещение номера формулы: справа в круглых скобках
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+% Для формул в приложениях нумерация будет А.1, Б.2 и т.д.
+% (настраивается в модуле приложений)
+
+% Пояснения к формулам: блок "где"
+\newenvironment{formulaexplanation}{%
+  \par\noindent
+  \ignorespaces
+}{%
+  \par
+}
+
+% Команда для создания пояснения к формуле
+\newcommand{\where}[2]{%
+  \begin{formulaexplanation}%
+  где\enspace #1\ ---\ #2%
+  \end{formulaexplanation}%
+}
+
+% Улучшенная версия для нескольких переменных
+% Используем enumitem вместо tabular для возможности переноса между страницами
+\RequirePackage{enumitem}
+
+\renewenvironment{wherelist}{%
+  \par\noindent где\ %
+  \begin{description}[
+    font=\normalfont,% Шрифт меток обычный, не жирный
+    style=multiline,
+    leftmargin=3cm,% Отступ для описания (подобрать под самую длинную переменную)
+    labelwidth=2.5cm,% Ширина места под переменную
+    labelsep=0.5cm,% Отступ от переменной до тире
+    itemsep=0pt,
+    parsep=0pt,
+    topsep=0pt
+  ]%
+}{%
+  \end{description}%
+}
+
+% Команда для добавления переменной в список пояснений
+% Использование: \item[S] площадь;
+% Тире ставится автоматически через настройку description
+\newcommand{\whereitem}[2]{\item[#1] #2}
+
+% Переносы формул: знак операции дублируется
+% (настраивается автоматически через amsmath)
+
+% Запрет переносов на знаке деления, корня, интеграла и т.п.
+% (настраивается автоматически через amsmath)
+

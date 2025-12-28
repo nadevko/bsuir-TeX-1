@@ -1,0 +1,40 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-bibliography}[2025/12/28 BSUIR bibliography settings]
+
+% Библиография через biblatex с ГОСТ стилем
+% Используем biblatex-gost для строгого соответствия ГОСТ 7.1-2003
+\RequirePackage[
+  backend=biber,
+  style=gost-numeric, % Соответствует ГОСТ 7.1-2003 (нумерация)
+  language=auto,
+  autolang=other,
+  sorting=none,       % По порядку упоминания (требование 8.3)
+  movenames=false,    % Не перемещать имена авторов
+  maxnames=5          % Количество авторов до "и др."
+]{biblatex}
+
+% Настройка заголовка
+\DefineBibliographyStrings{russian}{
+  bibliography = {СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
+}
+
+% Форматирование заголовка (ALL CAPS, по центру)
+\defbibheading{bsuirheading}[\bibname]{%
+  \cleardoublepage
+  \begin{center}%
+    \bfseries\Large\MakeUppercase{#1}%
+  \end{center}%
+  \vspace{\baselineskip}%
+  \markboth{#1}{#1}%
+  \addcontentsline{toc}{section}{#1}%
+}
+
+% Настройка отступов в списке литературы
+\setlength{\biblabelsep}{1.5em}
+
+% Команда для вывода библиографии в документе:
+% \printbibliography[heading=bsuirheading]
+%
+% Примечание: Пользователю нужно будет использовать \addbibresource{file.bib}
+% в основном файле и компилировать через biber вместо bibtex.
+

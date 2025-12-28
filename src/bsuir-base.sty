@@ -1,0 +1,40 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-base}[2025/12/28 BSUIR base settings]
+
+% Геометрия страницы: A4, поля 30-15-20-20 мм
+\RequirePackage[
+  a4paper,
+  left=30mm,
+  right=15mm,
+  top=20mm,
+  bottom=20mm
+]{geometry}
+
+% Шрифты через fontspec (для LuaLaTeX)
+\RequirePackage{fontspec}
+
+% Основной шрифт: Times New Roman 14pt
+\setmainfont{Times New Roman}[
+  SizeFeatures={
+    {Size={14}},
+  },
+  Size=14
+]
+
+% Межстрочный интервал: 1.0 (18 пунктов при размере шрифта 14pt)
+\RequirePackage{setspace}
+\setstretch{1.0}
+
+% Абзацный отступ: 1.25 см (12.5 мм)
+\setlength{\parindent}{1.25cm}
+
+% Выравнивание текста по ширине страницы
+\RequirePackage{microtype}
+\microtypesetup{
+  expansion=true,
+  protrusion=true
+}
+
+% Запрет переносов в названиях разделов, подразделов, таблиц и рисунков
+% (будет настроено в соответствующих модулях)
+

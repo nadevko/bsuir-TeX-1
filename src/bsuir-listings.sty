@@ -1,0 +1,123 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir-listings}[2025/12/28 BSUIR listings settings]
+
+% Подсветка синтаксиса через piton
+% Piton использует listings для базовой функциональности
+\RequirePackage{listings}
+\RequirePackage{piton}
+
+% Шрифт для листингов: Courier New 12pt (на 2pt меньше основного текста)
+\setmonofont{Courier New}[
+  SizeFeatures={
+    {Size={12}},
+  },
+  Size=12
+]
+
+% Настройка listings: базовые настройки
+\lstset{
+  basicstyle=\ttfamily\fontsize{12}{14}\selectfont,
+  breaklines=true,
+  breakatwhitespace=true,
+  frame=single,
+  numbers=none
+}
+
+% Настройка piton: по умолчанию без подсветки синтаксиса
+% Для включения подсветки используется опция syntaxhighlight=true
+\RequirePackage{expl3}
+\ExplSyntaxOn
+
+% Опция для включения подсветки синтаксиса
+\bool_new:N \l_bsuir_listings_syntax_bool
+\bool_set_false:N \l_bsuir_listings_syntax_bool
+
+\keys_define:nn { bsuir / listings }
+{
+  syntaxhighlight .bool_set:N = \l_bsuir_listings_syntax_bool,
+  syntaxhighlight .default:n = true,
+  syntaxhighlight .initial:n = false
+}
+
+\ProcessKeysOptions { bsuir / listings }
+
+% Если подсветка включена, настраиваем piton
+\bool_if:NT \l_bsuir_listings_syntax_bool {
+  \pitonconfig{style=default}
+}
+
+\ExplSyntaxOff
+
+% Интеграция с caption для подрисуночных подписей
+\RequirePackage{caption}
+
+% Подрисуночная подпись опциональна, по умолчанию включена
+\ExplSyntaxOn
+
+\bool_new:N \l_bsuir_listings_caption_bool
+\bool_set_true:N \l_bsuir_listings_caption_bool
+
+\keys_define:nn { bsuir / listings }
+{
+  caption .bool_set:N = \l_bsuir_listings_caption_bool,
+  caption .default:n = true,
+  caption .initial:n = true
+}
+
+\ProcessKeysOptions { bsuir / listings }
+
+% Если подпись включена, листинг считается как рисунок
+\bool_if:NT \l_bsuir_listings_caption_bool {
+  \ExplSyntaxOff
+  % Используем общий счётчик с рисунками
+  \@addtoreset{lstlisting}{figure}
+  \renewcommand{\thelstlisting}{\arabic{section}.\arabic{lstlisting}}
+  
+  % Создаем разделитель " -- " (тире с пробелами), если еще не определен
+  \@ifundefined{caption@label@separator@emdash}{%
+    \DeclareCaptionLabelSeparator{emdash}{\ --\ }%
+  }{}
+  
+  % Настройка caption для листингов
+  \captionsetup[lstlisting]{
+    labelformat=simple,
+    format=simple,
+    justification=centering,
+    singlelinecheck=false,
+    labelsep=emdash,
+    name=Рисунок,
+    font=normalfont,
+    textfont=normalfont
+  }
+  \ExplSyntaxOn
+}
+
+\ExplSyntaxOff
+
+% Окружение для листинга с правильным оформлением
+\newenvironment{bsuirlisting}[1][]{%
+  \ExplSyntaxOn
+  \bool_if:NTF \l_bsuir_listings_caption_bool {
+    \ExplSyntaxOff
+    \begin{figure}[htbp]%
+      \centering%
+      \begin{minipage}{\textwidth}%
+        \begin{lstlisting}[#1]%
+  }{
+    \ExplSyntaxOff
+    \begin{lstlisting}[#1]%
+  }
+}{%
+  \ExplSyntaxOn
+  \bool_if:NTF \l_bsuir_listings_caption_bool {
+    \ExplSyntaxOff
+        \end{lstlisting}%
+      \end{minipage}%
+      \caption{}%
+    \end{figure}%
+  }{
+    \ExplSyntaxOff
+    \end{lstlisting}%
+  }
+}
+
