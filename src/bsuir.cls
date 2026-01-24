@@ -4,7 +4,7 @@
 \ProvidesClass{bsuir}[2024/02/14 BSUIR ENSTD 2017 compatible class]
 % configure paper and margins
 \LoadClass[14pt,final,onecolumn,oneside,titlepage,openany]{extreport}
-\RequirePackage[
+\RequirePackage[    
     a4paper,
     left=30mm,
     bottom=27mm,
@@ -230,6 +230,7 @@
 \newcommand{\titleleft}[1]{\def\@titleleft{#1}}
 \newcommand{\group}[1]{\def\@group{#1}}
 \newcommand{\student}[1]{\def\@student{#1}}
+\newcommand{\coursename}[1]{\def\@coursename{#1}}
 
 %%% titlepage
 \renewcommand{\maketitle}{
@@ -245,17 +246,23 @@
         }\\
         [\the\baselineskip]
 
+        
         \ifthenelse{\equal{\KVO@variant}{diploma}}{
-        % diploma
-        \raggedright
-        \begin{tabular}{l l}
-            Факультет & \@faculty        \\
-            Кафедра   & \@departmentlong
-        \end{tabular}\\
-        [\the\baselineskip]
+            % diploma
+            \raggedright
+            \begin{tabular}{l l}
+                Факультет & \@faculty        \\
+                Кафедра   & \@departmentlong
+            \end{tabular}\\
+            [\the\baselineskip]
         }{
         % other
-        Кафедра \@departmentlong\\
+        \raggedright
+        \begin{tabular}{l l l}
+            Факультет & \@faculty        \\
+            Кафедра   & \@departmentlong \\
+            Дисциплина & \@coursename
+        \end{tabular}\\
         [\dimexpr\the\baselineskip * 3]
         }
 
@@ -283,6 +290,7 @@
         [\dimexpr\the\baselineskip * 7]
         }{\ifthenelse{\equal{\KVO@variant}{labwork}}{
         % labwork
+        \center
         Лабораторная работа \textnumero\@workcode\\
         \textquote{\@worktitle}\\
         [\dimexpr\the\baselineskip * 7]
@@ -314,7 +322,21 @@
                 \hrulefill &               & \@manager \\
                 ~
             \end{tabular}
-        }{
+        }{\ifthenelse{\equal{\KVO@variant}{courcework}}{
+            % courcework
+            \vspace{4\baselineskip}
+            \begin{tabular}[t]{l}
+                Студент группы \@group \\\\
+                Руководитель  \\
+            \end{tabular}\hfill
+            \begin{tabular}[t]{c c l}
+                \hrulefill & \hspace{30pt} & \@student \\
+                \textsuperscript{(подпись)}            \\
+                \hrulefill &               & \@manager \\
+                \textsuperscript{(подпись)}            \\
+                ~
+            \end{tabular}
+        
             % other
             \begin{tabular}{l}
                 \@titleleft
@@ -322,7 +344,29 @@
             \begin{tabular}{l}
                 \@titleright
             \end{tabular}
-        }
+        }}{\ifthenelse{\equal{\KVO@variant}{labwork}}{
+            % courcework
+            \vspace{4\baselineskip}
+            \begin{tabular}[t]{l}
+                Студент группы \@group \\\\
+                Руководитель  \\
+            \end{tabular}\hfill
+            \begin{tabular}[t]{c c l}
+                \hrulefill & \hspace{30pt} & \@student \\
+                \textsuperscript{(подпись)}            \\
+                \hrulefill &               & \@manager \\
+                \textsuperscript{(подпись)}            \\
+                ~
+            \end{tabular}
+        
+            % other
+            \begin{tabular}{l}
+                \@titleleft
+            \end{tabular}\hfill
+            \begin{tabular}{l}
+                \@titleright
+            \end{tabular}
+        }}
 
         % all
         \vfill
