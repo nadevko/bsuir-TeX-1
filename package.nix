@@ -6,7 +6,7 @@
 }:
 stdenvNoCC.mkDerivation {
   pname = "bsuir-tex";
-  version = "0.1.0";
+  version = "0.2-alpha";
 
   outputs = [ "tex" ];
   passthru.tlDeps = with texlive; [
@@ -24,6 +24,8 @@ stdenvNoCC.mkDerivation {
     babel-english
     babel-russian
     babel-belarusian
+    upquote
+    multirow
   ];
 
   src = ./src;
@@ -44,7 +46,7 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = with lib; {
-    description = "XeLaTeX implementation of BSUIR CoS.";
+    description = "XeLaTeX implementation of BSUIR CoS";
     homepage = "https://github.com/nadevko/bsuir-TeX-1";
     license = licenses.gpl3Only;
     platforms = platforms.all;

@@ -1,39 +1,44 @@
 {
   "nodes": {
-    "mkflake": {
+    "kasumi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1712284878,
-        "narHash": "sha256-66dqRuL4kQw9r/xthE7RbTdaszwUZLdjwFwFloeu6NI=",
-        "owner": "jonascarpay",
-        "repo": "mkflake",
-        "rev": "eb1172a9cd34e0a42848e787fb11a673f658c9e2",
+        "lastModified": 1770130747,
+        "narHash": "sha256-x5kZ7pzdXEWETBerEdUWNXIBHte7f2zNRhx3tLO5LZY=",
+        "owner": "nadevko",
+        "repo": "kasumi",
+        "rev": "f9e9c7291c9f39caa52ac2a79e570e2ab880d397",
         "type": "github"
       },
       "original": {
-        "owner": "jonascarpay",
-        "repo": "mkflake",
+        "owner": "nadevko",
+        "repo": "kasumi",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1746382573,
-        "narHash": "sha256-tJ0tzM9L4vB0D5EA5GPFJKGkZX7NdNwvFNGvx6HYSbc=",
+        "lastModified": 1768564909,
+        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "8e27393b4030f33542b9b4a628d008780cf2da6a",
+        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "release-24.11",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "mkflake": "mkflake",
+        "kasumi": "kasumi",
         "nixpkgs": "nixpkgs"
       }
     }

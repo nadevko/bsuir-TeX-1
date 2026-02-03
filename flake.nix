@@ -1,34 +1,62 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/release-24.11";
-  inputs.mkflake.url = "github:jonascarpay/mkflake";
+  nixConfig.extra-experimental-features = [
+    "pipe-operators"
+    "no-url-literals"
+  ];
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.kasumi = {
+    url = "github:nadevko/kasumi";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 
   outputs =
     {
       self,
+      kasumi,
       nixpkgs,
-      mkflake,
     }:
-    mkflake.lib.mkflake {
-      topLevel.overlays.default = final: prev: { texlivePackages.bsuir-tex = prev.callPackage ./. { }; };
-
-      perSystem = system: {
-        devShells.default =
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-          in
-          (pkgs.mkShell.override { stdenv = pkgs.stdenvNoCC; }) {
-            packages = [
-              (pkgs.texliveSmall.withPackages (_: [ self.packages.${system}.default ]))
-              pkgs.python312Packages.pygments
-              pkgs.inkscape-with-extensions
-            ];
-          };
-        packages = {
-          texlivePackages.bsuir-tex =
-            (nixpkgs.legacyPackages.${system}.extend self.overlays.default).texlivePackages.bsuir-tex;
-          default = self.packages.${system}.texlivePackages.bsuir-tex;
-        };
-        formatter = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+    let
+      so = self.overlays;
+      k = kasumi.lib;
+      ko = kasumi.overlays;
+    in
+    {
+      overlays = {
+        default = import ./overlay.nix;
+        devShells = import ./overlays/devShells.nix;
+        environment = k.foldLay [
+          ko.augment
+          ko.compat
+          ko.default
+        ];
       };
+
+      packages = k.forAllSystems (
+        system:
+        nixpkgs.legacyPackages.${system}
+        |> k.makeLayer so.environment
+        |> k.rebaseLayerTo so.default
+        |> k.collapseSupportedBy system
+        |> (packages: packages // { default = packages.bsuir-tex; })
+      );
+
+      legacyPackages = k.importPkgsForAll nixpkgs {
+        overlays = [
+          so.environment
+          so.default
+          so.devShells
+        ];
+      };
+
+      devShells = k.forAllSystems (
+        system:
+        self.legacyPackages.${system}
+        |> k.makeLayer so.devShells
+        |> k.collapseSupportedBy system
+        |> (packages: packages // { default = packages.bsuir-tex-shell; })
+      );
+
+      formatter = k.forAllPkgs self { } (pkgs: pkgs.kasumi-fmt);
     };
 }
