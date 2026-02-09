@@ -10,22 +10,26 @@ stdenvNoCC.mkDerivation {
 
   outputs = [ "tex" ];
   passthru.tlDeps = with texlive; [
-    xifthen
-    ifmtarg
-    xurl
-    csquotes
-    titlesec
-    enumitem
-    svg
-    trimspaces
-    catchfile
-    transparent
-    minted
+    babel-belarusian
     babel-english
     babel-russian
-    babel-belarusian
-    upquote
+    breqn
+    catchfile
+    csquotes
+    enumitem
+    hyphenat
+    ifmtarg
+    makecell
+    minted
     multirow
+    pgfplots
+    svg
+    titlesec
+    transparent
+    trimspaces
+    upquote
+    xifthen
+    xurl
   ];
 
   src = ./src;

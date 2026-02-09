@@ -2,25 +2,15 @@
   mkShell,
   texliveMedium,
   tex-fmt,
-  inkscape-with-extensions,
+  inkscape,
   python3Packages,
   texlivePackages,
 }:
 mkShell {
   packages = [
-    (texliveMedium.withPackages (
-      ps:
-      with ps;
-      [
-        texlivePackages.bsuir-tex
-        makecell
-        breqn
-        pgfplots
-      ]
-      ++ texlivePackages.bsuir-tex.tlDeps
-    ))
+    (texliveMedium.withPackages (_: [ texlivePackages.bsuir-tex ] ++ texlivePackages.bsuir-tex.tlDeps))
     tex-fmt
-    inkscape-with-extensions
+    inkscape
     python3Packages.pygments
   ];
 }
