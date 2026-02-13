@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770130747,
-        "narHash": "sha256-x5kZ7pzdXEWETBerEdUWNXIBHte7f2zNRhx3tLO5LZY=",
+        "lastModified": 1770613704,
+        "narHash": "sha256-AkgDcEWowLtcDwW6rJRQelDFuIlN5OoT18cFiw6UBEQ=",
         "owner": "nadevko",
         "repo": "kasumi",
-        "rev": "f9e9c7291c9f39caa52ac2a79e570e2ab880d397",
+        "rev": "fb0e8f550940fd901343c29cf2f843a955d6999c",
         "type": "github"
       },
       "original": {
@@ -22,18 +22,15 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1768564909,
-        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
-        "type": "github"
+        "lastModified": 1770841267,
+        "narHash": "sha256-BKNoPyCG5hRTJUNhwnL9PlWFujr8/18VzggAVRXl6us=",
+        "rev": "ec7c70d12ce2fc37cb92aff673dcdca89d187bae",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.05pre944744.ec7c70d12ce2/nixexprs.tar.xz"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
       }
     },
     "root": {

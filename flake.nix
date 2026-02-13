@@ -4,7 +4,7 @@
     "no-url-literals"
   ];
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
   inputs.kasumi = {
     url = "github:nadevko/kasumi";
     inputs.nixpkgs.follows = "nixpkgs";
@@ -25,6 +25,7 @@
       overlays = {
         default = import ./overlay.nix;
         devShells = import ./overlays/devShells.nix;
+        apps = import ./overlays/apps.nix;
         environment = k.foldLay [
           ko.augment
           ko.compat
@@ -54,9 +55,28 @@
         self.legacyPackages.${system}
         |> k.makeLayer so.devShells
         |> k.collapseSupportedBy system
-        |> (packages: packages // { default = packages.bsuir-tex-shell; })
+        |> (packages: packages // { default = packages.bsuir-shell; })
       );
 
       formatter = k.forAllPkgs self { } (pkgs: pkgs.kasumi-fmt);
+
+      apps = k.forAllSystems (
+        system:
+        nixpkgs.legacyPackages.${system}
+        |> k.makeLayer so.environment
+        |> k.foldLayerWith [
+          so.default
+          so.devShells
+        ]
+        |> k.rebaseLayerTo so.apps
+        |> k.collapseSupportedBy system
+        |> (apps: apps // { default = apps.bsuir-xelatex; })
+        |> builtins.mapAttrs (
+          _: v: {
+            type = "app";
+            program = nixpkgs.lib.getExe v;
+          }
+        )
+      );
     };
 }

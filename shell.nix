@@ -1,16 +1,10 @@
 {
   mkShell,
-  texliveMedium,
+  bsuir-tex-shell,
+
   tex-fmt,
-  inkscape,
-  python3Packages,
-  texlivePackages,
 }:
 mkShell {
-  packages = [
-    (texliveMedium.withPackages (_: [ texlivePackages.bsuir-tex ] ++ texlivePackages.bsuir-tex.tlDeps))
-    tex-fmt
-    inkscape
-    python3Packages.pygments
-  ];
+  inputsFrom = [ bsuir-tex-shell ];
+  packages = [ tex-fmt ];
 }
