@@ -7,17 +7,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1770613704,
-        "narHash": "sha256-AkgDcEWowLtcDwW6rJRQelDFuIlN5OoT18cFiw6UBEQ=",
-        "owner": "nadevko",
-        "repo": "kasumi",
-        "rev": "fb0e8f550940fd901343c29cf2f843a955d6999c",
-        "type": "github"
+        "lastModified": 1771871028,
+        "narHash": "sha256-7wWIOhVFquqToQhsGkpZzO//tL3GtURuNybxj92yYrs=",
+        "rev": "cc0a6826be2c4c4c6a419d7b420980b5d58bebca",
+        "type": "tarball",
+        "url": "https://codeberg.org/api/v1/repos/nadevko/kasumi/archive/cc0a6826be2c4c4c6a419d7b420980b5d58bebca.tar.gz"
       },
       "original": {
-        "owner": "nadevko",
-        "repo": "kasumi",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://codeberg.org/nadevko/kasumi/archive/master.tar.gz"
       }
     },
     "nixpkgs": {
