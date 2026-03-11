@@ -1,43 +1,4 @@
-%%% metadata
-% define class
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{bsuir-old}[2024/02/14 BSUIR ENSTD 2017 compatible class]
-% configure paper and margins
-\LoadClass[14pt,final,onecolumn,oneside,titlepage,openany]{extreport}
-\RequirePackage[
-  a4paper,
-  left=30mm,
-  bottom=27mm,
-  right=15mm,
-  top=20mm,
-  footskip=17mm
-]{geometry}
-\linespread{1.1}
 \setlength{\parindent}{1.25cm}
-
-%%% class options
-\RequirePackage{kvoptions}
-% init
-\SetupKeyvalOptions{
-  family=KVO,
-  prefix=KVO@
-}
-% variant is one of: custom, labwork, courcework, diploma, practice
-\DeclareStringOption[custom]{variant}
-% load them
-\ProcessKeyvalOptions{KVO}
-% validate variant
-\RequirePackage{xifthen}
-\ifthenelse{
-  \equal{\KVO@variant}{custom}\OR
-  \equal{\KVO@variant}{labwork}\OR
-  \equal{\KVO@variant}{courcework}\OR
-  \equal{\KVO@variant}{diploma}\OR
-  \equal{\KVO@variant}{practice}
-}{}{
-  \ClassError{bsuir}{Unknown variant. Use one of: custom, labwork, courcework,
-  diploma, practice}{\KVO@variant variant not available}
-}
 
 %%% language
 % translations

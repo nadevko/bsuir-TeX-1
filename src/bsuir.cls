@@ -51,4 +51,34 @@
   toc=graduated
 ]{scrreprt}
 
+\ExplSyntaxOff
+
+\RequirePackage[
+  a4paper,
+  left=30mm,
+  right=15mm,
+  top=20mm,
+  bottom=20mm,
+  footskip=10mm
+]{geometry}
+
+\RequirePackage[babelshorthands]{polyglossia}
+
+\setmainlanguage{russian}
+\setotherlanguage[variant=british]{english}
+\setotherlanguage{belarusian}
+
+\setlanguagealias{belarusian}{be}
+\setlanguagealias{russian}{ru}
+\setlanguagealias[variant=british]{english}{en}
+
+\newfontfamily{\cyrillicfont}{Times New Roman}[Ligatures=TeX]
+\newfontfamily{\cyrillicfontrm}{Times New Roman}[Ligatures=TeX]
+\newfontfamily{\cyrillicfontsf}{Arial}[Ligatures=TeX]
+\newfontfamily{\cyrillicfonttt}{Courier New}[Ligatures=TeX]
+
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Courier New}[Ligatures=TeX]
+
 \endinput
