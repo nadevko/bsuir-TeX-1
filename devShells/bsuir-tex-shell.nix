@@ -1,14 +1,13 @@
 {
   mkShell,
 
-  texliveMedium,
+  texliveFull,
   inkscape,
   python3Packages,
-  texlivePackages,
 }:
 mkShell {
   packages = [
-    (texliveMedium.withPackages (_: [ texlivePackages.bsuir-tex ] ++ texlivePackages.bsuir-tex.tlDeps))
+    texliveFull
     inkscape
     python3Packages.pygments
   ];
