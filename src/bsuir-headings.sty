@@ -1,249 +1,223 @@
-\ProvidesExplPackage {bsuir-headings} {2026-03-12} {2.9} {BSUIR headings configuration}
+\ProvidesExplPackage {bsuir-headings} {2026-03-12} {0.3} {BSUIR
+headings configuration}
+
 \RequirePackage{needspace}
 
-\addto\captionsrussian{\renewcommand*\contentsname{Содержание}}
+\addto\captionsrussian { \renewcommand* \contentsname { Содержание } }
 
-\ExplSyntaxOff
-\makeatletter
-\renewcommand{\@dotsep}{1}
-\makeatother
-\ExplSyntaxOn
+\cs_set:Npn \@dotsep { 1 }
 
 \providecommand\phantomsection{}
 
-\setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{3}
+\int_set:Nn \c@secnumdepth { 3 }
+\int_set:Nn \c@tocdepth { 3 }
 
-\renewcommand* \thechapter       { \arabic{chapter} }
-\renewcommand* \thesection       { \thechapter.\arabic{section} }
-\renewcommand* \thesubsection    { \thesection.\arabic{subsection} }
-\renewcommand* \thesubsubsection { \thesubsection.\arabic{subsubsection} }
+\cs_gset:Npn \thechapter       { \arabic{chapter} }
+\cs_gset:Npn \thesection       { \thechapter.\arabic{section} }
+\cs_gset:Npn \thesubsection    { \thesection.\arabic{subsection} }
+\cs_gset:Npn \thesubsubsection { \thesubsection.\arabic{subsubsection} }
 
-% Счётчик приложений — буква русского алфавита
-\newcounter{bsuir@appendix}
+\use:c { newcounter } { bsuir@appendix }
 
 \cs_new:Npn \bsuir_appendix_letter:n #1
+{
+  \int_case:nn {#1}
   {
-    \int_case:nn {#1}
-      {
-        {1}  {А} {2}  {Б} {3}  {В} {4}  {Г} {5}  {Д}
-        {6}  {Е} {7}  {Ж} {8}  {З} {9}  {И} {10} {К}
-        {11} {Л} {12} {М} {13} {Н} {14} {О} {15} {П}
-        {16} {Р} {17} {С} {18} {Т} {19} {У} {20} {Ф}
-        {21} {Х} {22} {Ц} {23} {Ч} {24} {Ш} {25} {Щ}
-        {26} {Э} {27} {Ю} {28} {Я}
-      }
+    {1}  {А} {2}  {Б} {3}  {В} {4}  {Г} {5}  {Д}
+    {6}  {Е} {7}  {Ж} {8}  {И} {9}  {К} {10} {Л}
+    {11} {М} {12} {Н} {13} {П} {14} {Р} {15} {С}
+    {16} {Т} {17} {У} {18} {Ф} {19} {Х} {20} {Ц}
+    {21} {Ш} {22} {Щ} {23} {Э} {24} {Ю} {25} {Я}
   }
+}
 
-% =============================================================================
-% 3. Содержание через KOMA
-% =============================================================================
-\ExplSyntaxOff
-\setkomafont{chapterentry}           {\normalfont\normalsize}
-\setkomafont{chapterentrypagenumber} {\normalfont\normalsize}
-\setkomafont{chapterentrydots}       {\normalfont\normalsize}
+\clist_map_inline:nn { chapterentry, chapterentrypagenumber, chapterentrydots }
+{ \use:c { setkomafont } {#1} { \normalfont \normalsize } }
 
-\RedeclareSectionCommand[tocindent=0mm,  tocbeforeskip=0pt]{chapter}
-\RedeclareSectionCommand[tocindent=5mm,  tocbeforeskip=0pt]{section}
-\RedeclareSectionCommand[tocindent=10mm, tocbeforeskip=0pt]{subsection}
-\RedeclareSectionCommand[tocindent=15mm, tocbeforeskip=0pt]{subsubsection}
-\ExplSyntaxOn
+\int_step_inline:nnn { 0 } { 3 }
+{
+  \use:c { RedeclareSectionCommand } [
+    tocindent     = \dim_eval:n { 1.25cm * #1 },
+    tocbeforeskip = 0pt,
+    toclinefill   = \TOCLineLeaderFill
+  ] { \int_case:nn {#1} { {0}{chapter} {1}{section} {2}{subsection}
+  {3}{subsubsection} } }
+}
 
-% =============================================================================
-% 4. Вспомогательные команды
-% =============================================================================
-\NewDocumentCommand \MakeCapitalFirst { m }
-  { \text_titlecase_first:n {#1} }
+\NewDocumentCommand \MakeCapitalFirst { m } { \text_titlecase_first:n {#1} }
 
-% \bsuir_vbreak:n  #1 = число строк которые должны поместиться на странице
+\skip_const:Nn \c_bsuir_vspace_skip { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+
+\cs_new_protected:Npn \bsuir_nohyphens:
+{ \int_set:Nn \tex_hyphenpenalty:D { 10000 } \int_set:Nn
+\tex_exhyphenpenalty:D { 10000 } }
+
 \cs_new_protected:Npn \bsuir_vbreak:n #1
-  {
-    \par
-    \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
-    \needspace { #1\baselineskip }
-  }
+{
+  \par
+  \addvspace { \c_bsuir_vspace_skip }
+  \needspace { #1\baselineskip }
+}
 
-% =============================================================================
-% 5. Движки вывода заголовков
-% =============================================================================
-\makeatletter
-
-% Общий вывод block-заголовка с hanging indent.
-% \phantomsection + \leavevmode ставят якорь hyperref прямо перед текстом.
-% #1=номер  #2=текст  #3=font  #4=transform
 \cs_new_protected:Npn \bsuir_heading_box:nnnn #1#2#3#4
-  {
-    \dim_set:Nn \l_tmpa_dim { \parindent }
-    \settowidth \@tempdima { #3 #1 \space }
-    \begingroup
-      #3
-      \raggedright
-      \hyphenpenalty  = 10000
-      \exhyphenpenalty= 10000
-      \leftskip  = \dim_eval:n { \l_tmpa_dim + \@tempdima }
-      \parindent = -\@tempdima
-      \leavevmode \phantomsection
-      \tl_if_empty:nF {#1} { #1 \space }
-      #4 {#2} \par
-    \endgroup
-    \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
-  }
+{
+  \dim_set:Nn \l_tmpa_dim { \parindent }
+  \settowidth \@tempdima { #3 #1 \space }
+  \begingroup
+  #3
+  \raggedright
+  \hyphenpenalty  = 10000
+  \exhyphenpenalty= 10000
+  \leftskip  = \dim_eval:n { \l_tmpa_dim + \@tempdima }
+  \parindent = -\@tempdima
+  \leavevmode \phantomsection
+  \tl_if_empty:nF {#1} { #1 \space }
+  #4 {#2} \par
+  \endgroup
+  \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+}
 
-% \chapter{} — новая страница + hanging indent + uppercase
 \cs_new_protected:Npn \bsuir_chapter_numbered_heading:nn #1#2
-  {
-    \clearpage
-    \bsuir_heading_box:nnnn {#1} {#2}
-      { \fontsize{16}{19}\selectfont\bfseries }
-      { \text_uppercase:n }
-    \@afterindentfalse \@afterheading
-  }
+{
+  \clearpage
+  \bsuir_heading_box:nnnn {#1} {#2}
+  { \fontsize{16}{19}\selectfont\bfseries }
+  { \text_uppercase:n }
+  \@afterindentfalse \@afterheading
+}
 
-% \chapter*{} — новая страница + центр + uppercase
 \cs_new_protected:Npn \bsuir_chapter_star_heading:n #1
-  {
-    \clearpage
-    \begingroup
-      \fontsize{16}{19}\selectfont\bfseries
-      \centering
-      \hyphenpenalty  = 10000
-      \exhyphenpenalty= 10000
-      \leavevmode \phantomsection
-      \text_uppercase:n {#1} \par
-    \endgroup
-    \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
-    \@afterindentfalse \@afterheading
-  }
+{
+  \clearpage
+  \begingroup
+  \fontsize{16}{19}\selectfont\bfseries
+  \centering
+  \hyphenpenalty  = 10000
+  \exhyphenpenalty= 10000
+  \leavevmode \phantomsection
+  \text_uppercase:n {#1} \par
+  \endgroup
+  \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+  \@afterindentfalse \@afterheading
+}
 
-% \chapter[B]{A} — новая страница + центр, три строки
 \cs_new_protected:Npn \bsuir_chapter_appendix_heading:nnn #1#2#3
-  {
-    \clearpage
-    \begingroup
-      \fontsize{16}{19}\selectfont\bfseries
-      \centering
-      \hyphenpenalty  = 10000
-      \exhyphenpenalty= 10000
-      \leavevmode \phantomsection
-      #1 \par
-      ( \text_lowercase:n {#2} ) \par
-      \MakeCapitalFirst {#3} \par
-    \endgroup
-    \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
-    \@afterindentfalse \@afterheading
-  }
+{
+  \clearpage
+  \begingroup
+  \fontsize{16}{19}\selectfont\bfseries
+  \centering
+  \hyphenpenalty  = 10000
+  \exhyphenpenalty= 10000
+  \leavevmode \phantomsection
+  #1 \par
+  ( \text_lowercase:n {#2} ) \par
+  \MakeCapitalFirst {#3} \par
+  \endgroup
+  \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+  \@afterindentfalse \@afterheading
+}
 
-% \section — эвристика needspace + hanging indent + titlecase
 \cs_new_protected:Npn \bsuir_section_heading:nn #1#2
-  {
-    \dim_set:Nn \l_tmpa_dim { \parindent }
-    \settowidth \@tempdima { \normalsize\bfseries #1 \space }
-    \settowidth \@tempdimc { \normalsize\bfseries #2 }
-    \@tempdimb = \linewidth
-    \dim_sub:Nn \@tempdimb { \l_tmpa_dim }
-    \dim_sub:Nn \@tempdimb { \@tempdima }
-    \@tempcnta = \numexpr
-      ( \number\@tempdimc + \number\@tempdimb - 1 ) / \number\@tempdimb
-    \relax
-    \bsuir_vbreak:n { \int_eval:n { \@tempcnta + 3 } }
-    \bsuir_heading_box:nnnn {#1} {#2}
-      { \normalsize\bfseries }
-      { \MakeCapitalFirst }
-    \@afterindentfalse \@afterheading
-  }
+{
+  \dim_set:Nn \l_tmpa_dim { \parindent }
+  \settowidth \@tempdima { \normalsize\bfseries #1 \space }
+  \settowidth \@tempdimc { \normalsize\bfseries #2 }
+  \@tempdimb = \linewidth
+  \dim_sub:Nn \@tempdimb { \l_tmpa_dim }
+  \dim_sub:Nn \@tempdimb { \@tempdima }
+  \@tempcnta = \numexpr
+  ( \number\@tempdimc + \number\@tempdimb - 1 ) / \number\@tempdimb
+  \relax
+  \bsuir_vbreak:n { \int_eval:n { \@tempcnta + 3 } }
+  \bsuir_heading_box:nnnn {#1} {#2}
+  { \normalsize\bfseries }
+  { \MakeCapitalFirst }
+  \@afterindentfalse \@afterheading
+}
 
-\makeatother
-
-% =============================================================================
-% 6. \chapter
-% =============================================================================
 \bool_new:N \g_bsuir_backmatter_bool
 
 \msg_new:nnn {bsuir-headings} {appendix-in-mainmatter}
-  { appendix-style~chapter~is~not~allowed~before~\appendix! }
+{ appendix-style~chapter~is~not~allowed~before~\appendix! }
 \msg_new:nnn {bsuir-headings} {no-sections-in-backmatter}
-  { \token_to_str:N #1 ~is~not~allowed~in~appendix~mode! }
+{ \token_to_str:N #1 ~is~not~allowed~in~appendix~mode! }
 
 \RenewDocumentCommand \chapter { s o m }
+{
+  \IfBooleanTF {#1}
   {
-    \IfBooleanTF {#1}
-      {
-        \bsuir_chapter_star_heading:n {#3}
-        \addcontentsline {toc} {chapter} {#3}
-      }
-      {
-        \bool_if:NTF \g_bsuir_backmatter_bool
-          {
-            \stepcounter{bsuir@appendix}
-            \tl_set:Nn \l_tmpa_tl { \IfNoValueTF{#2}{обязательное}{#2} }
-            \tl_set:Nx \l_tmpb_tl
-              { ПРИЛОЖЕНИЕ~ \bsuir_appendix_letter:n { \arabic{bsuir@appendix} } }
-            \bsuir_chapter_appendix_heading:nnn
-              { \l_tmpb_tl } { \l_tmpa_tl } {#3}
-            \addcontentsline {toc} {chapter} { \l_tmpb_tl }
-          }
-          {
-            \IfNoValueTF{#2}
-              {
-                \refstepcounter{chapter}
-                \bsuir_chapter_numbered_heading:nn {\thechapter} {#3}
-                \addcontentsline {toc} {chapter}
-                  { \protect\numberline{\thechapter} #3 }
-                \chaptermark {#3}
-              }
-              {
-                \msg_error:nn {bsuir-headings} {appendix-in-mainmatter}
-              }
-          }
-      }
+    \bsuir_chapter_star_heading:n {#3}
+    \addcontentsline {toc} {chapter} {#3}
   }
+  {
+    \bool_if:NTF \g_bsuir_backmatter_bool
+    {
+      \stepcounter{bsuir@appendix}
+      \tl_set:Nn \l_tmpa_tl { \IfNoValueTF{#2}{обязательное}{#2} }
+      \tl_set:Nx \l_tmpb_tl
+      { ПРИЛОЖЕНИЕ~ \bsuir_appendix_letter:n { \arabic{bsuir@appendix} } }
+      \bsuir_chapter_appendix_heading:nnn
+      { \l_tmpb_tl } { \l_tmpa_tl } {#3}
+      \addcontentsline {toc} {chapter} { \l_tmpb_tl }
+    }
+    {
+      \IfNoValueTF{#2}
+      {
+        \refstepcounter{chapter}
+        \bsuir_chapter_numbered_heading:nn {\thechapter} {#3}
+        \addcontentsline {toc} {chapter}
+        { \protect\numberline{\thechapter} #3 }
+        \chaptermark {#3}
+      }
+      {
+        \msg_error:nn {bsuir-headings} {appendix-in-mainmatter}
+      }
+    }
+  }
+}
 
-\RenewDocumentCommand \appendix {}
-  { \bool_gset_true:N \g_bsuir_backmatter_bool }
+\RenewDocumentCommand \appendix { } { \bool_gset_true:N
+\g_bsuir_backmatter_bool }
 
-% =============================================================================
-% 7. \section
-% =============================================================================
-\makeatletter
 \RenewDocumentCommand \section { o m }
-  {
-    \bool_if:NT \g_bsuir_backmatter_bool
-      { \msg_error:nnx {bsuir-headings} {no-sections-in-backmatter} { \section } }
-    \refstepcounter {section}
-    \bsuir_section_heading:nn {\thesection} {#2}
-    \addcontentsline {toc} {section}
-      { \protect\numberline{\thesection} \IfNoValueTF{#1}{#2}{#1} }
-    \sectionmark { \IfNoValueTF{#1}{#2}{#1} }
-  }
-\makeatother
+{
+  \bool_if:NT \g_bsuir_backmatter_bool
+  { \msg_error:nnx {bsuir-headings} {no-sections-in-backmatter} { \section } }
+  \refstepcounter {section}
+  \bsuir_section_heading:nn {\thesection} {#2}
+  \addcontentsline {toc} {section}
+  { \protect\numberline{\thesection} \IfNoValueTF{#1}{#2}{#1} }
+  \sectionmark { \IfNoValueTF{#1}{#2}{#1} }
+}
 
-% =============================================================================
-% 8–9. \subsection и \subsubsection — run-in
-% =============================================================================
 \cs_new_protected:Npn \bsuir_runsec:nnnnn #1#2#3#4#5
-  {
-    \bool_if:NT \g_bsuir_backmatter_bool
-      { \msg_error:nnx {bsuir-headings} {no-sections-in-backmatter} { \token_to_str:c {#1} } }
-    \bool_if:nT {#4} { \bsuir_vbreak:n {2} }
-    \refstepcounter {#1}
-    \noindent \phantomsection
-    \addcontentsline {toc} {#1} { \protect\numberline{#2} #5 }
-    \hspace* { \parindent }
-    \bool_if:nTF {#3} { \textbf{#2} } {#2}
-    \space \ignorespaces
-  }
+{
+  \bool_if:NT \g_bsuir_backmatter_bool
+  { \msg_error:nnx {bsuir-headings} {no-sections-in-backmatter} {
+  \token_to_str:c {#1} } }
+  \bool_if:nT {#4} { \bsuir_vbreak:n {2} }
+  \refstepcounter {#1}
+  \noindent \phantomsection
+  \addcontentsline {toc} {#1} { \protect\numberline{#2} #5 }
+  \hspace* { \parindent }
+  \bool_if:nTF {#3} { \textbf{#2} } {#2}
+  \space \ignorespaces
+}
 
 \cs_new_protected:Npn \bsuir_declare_runsec:NNnn #1#2#3#4
+{
+  \RenewDocumentCommand #1 { o m }
   {
-    \RenewDocumentCommand #1 { o m }
-      {
-        \bsuir_runsec:nnnnn
-          { \cs_to_str:N #1 } {#2} {#3} {#4}
-          { \IfNoValueTF{##1}{##2}{##1} }
-      }
+    \bsuir_runsec:nnnnn
+    { \cs_to_str:N #1 } {#2} {#3} {#4}
+    { \IfNoValueTF{##1}{##2}{##1} }
   }
+}
 
-\bsuir_declare_runsec:NNnn \subsection    \thesubsection    { \c_true_bool  } { \c_true_bool  }
-\bsuir_declare_runsec:NNnn \subsubsection \thesubsubsection { \c_false_bool } { \c_false_bool }
+\bsuir_declare_runsec:NNnn \subsection    \thesubsection    {
+\c_true_bool  } { \c_true_bool  }
+\bsuir_declare_runsec:NNnn \subsubsection \thesubsubsection {
+\c_false_bool } { \c_false_bool }
 
 \endinput

@@ -1,39 +1,46 @@
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \ProvidesExplClass
-  {bsuir}
-  {2026-03-11}
-  {0.3}
-  {BSUIR Enterprise Standard (UDG) 01-2024 implementation}
+{bsuir}
+{2026-03-12}
+{0.3}
+{expl3 BSUIR Enterprise Standard (UDG) 01-2024 implementation}
 
 \tl_new:N \g_bsuir_udg_tl
 \tl_new:N \g_bsuir_type_tl
 
 \msg_new:nnnn { bsuir } { unknown-choice }
-  { Invalid~value~'#3'~for~key~'#1'. \\ Available~options~for~'#1'~are:~#2. }
-  { You~tried~to~set~#1=#3.~This~is~not~allowed. }
+{ Invalid value '#3' for key '#1'. \\ Available options for '#1' are: #2. }
+{ You tried to set #1=#3. This is not allowed. }
 
 \keys_define:nn { bsuir }
-  {
-    udg .choices:nn = { 01-2024 } { \tl_gset:Nn \g_bsuir_udg_tl { \l_keys_choice_tl } },
-    udg / unknown .code:n = { \msg_fatal:nnnnn { bsuir } { unknown-choice } { udg } { 01-2024 } { #1 } },
-    udg .initial:n = 01-2024,
+{
+  udg .choices:nn = { 01-2024 }
+  { \tl_gset:Nn \g_bsuir_udg_tl { \l_keys_choice_tl } },
+  udg / unknown .code:n =
+  { \msg_fatal:nnnnn { bsuir } { unknown-choice } { udg } { 01-2024 } {#1} },
+  udg .initial:n = 01-2024,
 
-    doctype .choices:nn = { report, lab, assignment, coursework, thesis, research }
-      { \tl_gset:Nn \g_bsuir_type_tl { \l_keys_choice_tl } },
-    doctype / unknown .code:n = { \msg_fatal:nnnnn { bsuir } { unknown-choice } { doctype } { report,~lab,~assignment,~coursework,~thesis,~research } { #1 } },
-    doctype .initial:n = lab,
+  doctype .choices:nn = { report, lab, assignment, coursework,
+  thesis, research }
+  { \tl_gset:Nn \g_bsuir_type_tl { \l_keys_choice_tl } },
+  doctype / unknown .code:n =
+  { \msg_fatal:nnnnn { bsuir } { unknown-choice }
+  { doctype } { report,~lab,~assignment,~coursework,~thesis,~research } {#1} },
+  doctype .initial:n = lab,
 
-    unknown .code:n = { \PassOptionsToClass { \CurrentOption } { scrreprt } }
-  }
+  unknown .code:n = { \PassOptionsToClass {#1} { scrreprt } },
+}
 
 \ProcessKeyOptions [ bsuir ]
+\cs_set:Npn \baselinestretch { 1.25 }
+\dim_gset:Nn \parindent { 1.25cm }
 
 \LoadClass[
   fontsize=14pt,
   oneside,
   numbers=noenddot,
   captions=tableheading,
-  toc=chapterentrydotfill
+  toc=chapterentrydotfill,
 ]{scrreprt}
 
 \RequirePackage[
@@ -42,49 +49,54 @@
   right=15mm,
   top=20mm,
   bottom=20mm,
-  footskip=10mm
+  footskip=10mm,
 ]{geometry}
 
-\ExplSyntaxOff
 \RequirePackage[tbtags]{amsmath}
 \RequirePackage[math-style=upright]{unicode-math}
 
-\RequirePackage[babelshorthands]{polyglossia}
+\ExplSyntaxOff
 
+\RequirePackage[babelshorthands]{polyglossia}
 \setmainlanguage{russian}
 \setotherlanguage[variant=british]{english}
 \setotherlanguage{belarusian}
+
 \ExplSyntaxOn
 
 \setlanguagealias{belarusian}{be}
 \setlanguagealias{russian}{ru}
 \setlanguagealias[variant=british]{english}{en}
 
-\newfontfamily{\cyrillicfont}{Times~New~Roman}[Ligatures=TeX, Script=Cyrillic]
-\newfontfamily{\cyrillicfontrm}{Times~New~Roman}[Ligatures=TeX, Script=Cyrillic]
-\newfontfamily{\cyrillicfontsf}{Arial}[Ligatures=TeX, Script=Cyrillic]
-\newfontfamily{\cyrillicfonttt}{Courier~New}[Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfont}  {Times New Roman}[Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfontrm}{Times New Roman}[Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfontsf}{Arial}           [Ligatures=TeX,
+Script=Cyrillic]
+\newfontfamily{\cyrillicfonttt}{Courier New}     [Ligatures=TeX,
+Script=Cyrillic]
 
-\setmainfont{Times~New~Roman}[Ligatures=TeX]
-\setsansfont{Arial}[Ligatures=TeX]
-\setmonofont{Courier~New}[Ligatures=TeX]
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}          [Ligatures=TeX]
+\setmonofont{Courier New}    [Ligatures=TeX]
 
-\setmathfont{XITS~Math}
-\setmathrm{XITS~Math}
-\setmathfont{Times New Roman}[range = up/{latin, Latin, greek, Greek, num}]
-
-\setlength{\parindent}{1.25cm}
+\setmathfont{XITS Math}
+\setmathrm{XITS Math}
+\setmathfont{Times New Roman}[range=up/{latin,Latin,greek,Greek,num}]
 
 \RequirePackage{scrlayer-scrpage}
-\pagestyle{scrheadings}
-\clearpairofpagestyles
-\ofoot*{\pagemark}
+
+\use:c { AtBeginDocument }
+  {
+    \use:c { pagestyle } { scrheadings }
+    \use:c { clearpairofpagestyles }
+    \use:c { ofoot* } { \use:c { pagemark } }
+  }
 
 \RequirePackage[
   unicode,
   bookmarksopen=true,
   bookmarksnumbered=true,
-  pdfstartview=FitH
+  pdfstartview=FitH,
 ]{hyperref}
 \RequirePackage{bookmark}
 \RequirePackage{bsuir-headings}

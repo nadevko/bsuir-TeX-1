@@ -6,7 +6,7 @@
 
   inputs.nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
   inputs.kasumi = {
-    url = "https://codeberg.org/nadevko/kasumi/archive/master.tar.gz";
+    url = "https://codeberg.org/api/v1/repos/nadevko/kasumi/archive/cc0a6826be2c4c4c6a419d7b420980b5d58bebca.tar.gz";
     inputs.nixpkgs.follows = "nixpkgs";
   };
 

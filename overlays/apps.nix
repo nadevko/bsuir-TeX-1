@@ -1,9 +1,9 @@
 final: prev: {
-  bsuir-xelatex = final.writeShellApplication {
+  bsuir-tex-build = final.writeShellApplication {
     name = "bsuir-xelatex";
     runtimeInputs = final.bsuir-tex-shell.nativeBuildInputs;
     text = ''
-      xelatex -synctex=1 -interaction=nonstopmode -file-line-error -shell-escape "$@"
+      lualatex -interaction=nonstopmode -halt-on-error -file-line-error "''${1:-report.tex}"
     '';
   };
 }
