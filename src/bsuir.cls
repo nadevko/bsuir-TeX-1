@@ -51,8 +51,6 @@
   toc=graduated
 ]{scrreprt}
 
-\ExplSyntaxOff
-
 \RequirePackage[
   a4paper,
   left=30mm,
@@ -62,23 +60,31 @@
   footskip=10mm
 ]{geometry}
 
+\ExplSyntaxOff
+\RequirePackage[tbtags]{amsmath}
+\RequirePackage[math-style=upright]{unicode-math}
+
 \RequirePackage[babelshorthands]{polyglossia}
 
 \setmainlanguage{russian}
 \setotherlanguage[variant=british]{english}
 \setotherlanguage{belarusian}
+\ExplSyntaxOn
 
 \setlanguagealias{belarusian}{be}
 \setlanguagealias{russian}{ru}
 \setlanguagealias[variant=british]{english}{en}
 
-\newfontfamily{\cyrillicfont}{Times New Roman}[Ligatures=TeX]
-\newfontfamily{\cyrillicfontrm}{Times New Roman}[Ligatures=TeX]
-\newfontfamily{\cyrillicfontsf}{Arial}[Ligatures=TeX]
-\newfontfamily{\cyrillicfonttt}{Courier New}[Ligatures=TeX]
+\newfontfamily{\cyrillicfont}{Times~New~Roman}[Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfontrm}{Times~New~Roman}[Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfontsf}{Arial}[Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfonttt}{Courier~New}[Ligatures=TeX, Script=Cyrillic]
 
-\setmainfont{Times New Roman}[Ligatures=TeX]
+\setmainfont{Times~New~Roman}[Ligatures=TeX]
 \setsansfont{Arial}[Ligatures=TeX]
-\setmonofont{Courier New}[Ligatures=TeX]
+\setmonofont{Courier~New}[Ligatures=TeX]
+\setmathfont{XITS~Math}
+\setmathrm{XITS~Math}
+\setmathfont{Times New Roman}[range = up/{latin, Latin, greek, Greek, num}]
 
 \endinput
