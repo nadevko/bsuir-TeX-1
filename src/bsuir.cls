@@ -33,7 +33,7 @@
   oneside,
   numbers=noenddot,
   captions=tableheading,
-  toc=graduated
+  toc=chapterentrydotfill
 ]{scrreprt}
 
 \RequirePackage[

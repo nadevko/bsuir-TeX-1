@@ -1,21 +1,18 @@
-\ProvidesExplPackage {bsuir-headings} {2026-03-12} {2.6}
-  {BSUIR headings configuration for KOMA-Script}
-
+\ProvidesExplPackage {bsuir-headings} {2026-03-12} {2.9} {BSUIR headings configuration}
 \RequirePackage{needspace}
 
-% \phantomsection — no-op если hyperref не загружен
-\providecommand \phantomsection {}
+\addto\captionsrussian{\renewcommand*\contentsname{Содержание}}
 
-% =============================================================================
-% 1. Глубина нумерации и TOC
-% =============================================================================
+\ExplSyntaxOff
+\makeatletter
+\renewcommand{\@dotsep}{1}
+\makeatother
+\ExplSyntaxOn
+
+\providecommand\phantomsection{}
 
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
-
-% =============================================================================
-% 2. Формат номеров
-% =============================================================================
 
 \renewcommand* \thechapter       { \arabic{chapter} }
 \renewcommand* \thesection       { \thechapter.\arabic{section} }
@@ -39,15 +36,22 @@
   }
 
 % =============================================================================
-% 3. Базовый шрифт заголовков (для chapter)
+% 3. Содержание через KOMA
 % =============================================================================
+\ExplSyntaxOff
+\setkomafont{chapterentry}           {\normalfont\normalsize}
+\setkomafont{chapterentrypagenumber} {\normalfont\normalsize}
+\setkomafont{chapterentrydots}       {\normalfont\normalsize}
 
-\addtokomafont{disposition}{\normalfont\normalsize\mdseries}
+\RedeclareSectionCommand[tocindent=0mm,  tocbeforeskip=0pt]{chapter}
+\RedeclareSectionCommand[tocindent=5mm,  tocbeforeskip=0pt]{section}
+\RedeclareSectionCommand[tocindent=10mm, tocbeforeskip=0pt]{subsection}
+\RedeclareSectionCommand[tocindent=15mm, tocbeforeskip=0pt]{subsubsection}
+\ExplSyntaxOn
 
 % =============================================================================
 % 4. Вспомогательные команды
 % =============================================================================
-
 \NewDocumentCommand \MakeCapitalFirst { m }
   { \text_titlecase_first:n {#1} }
 
@@ -62,12 +66,10 @@
 % =============================================================================
 % 5. Движки вывода заголовков
 % =============================================================================
-
 \makeatletter
 
 % Общий вывод block-заголовка с hanging indent.
-% \phantomsection + \leavevmode ставят якорь hyperref прямо перед текстом —
-% уже после того как needspace/clearpage решил на какой странице мы находимся.
+% \phantomsection + \leavevmode ставят якорь hyperref прямо перед текстом.
 % #1=номер  #2=текст  #3=font  #4=transform
 \cs_new_protected:Npn \bsuir_heading_box:nnnn #1#2#3#4
   {
@@ -155,12 +157,10 @@
 % =============================================================================
 % 6. \chapter
 % =============================================================================
-
 \bool_new:N \g_bsuir_backmatter_bool
 
 \msg_new:nnn {bsuir-headings} {appendix-in-mainmatter}
-  { \appendix-style~chapter~is~not~allowed~before~\appendix! }
-
+  { appendix-style~chapter~is~not~allowed~before~\appendix! }
 \msg_new:nnn {bsuir-headings} {no-sections-in-backmatter}
   { \token_to_str:N #1 ~is~not~allowed~in~appendix~mode! }
 
@@ -168,14 +168,12 @@
   {
     \IfBooleanTF {#1}
       {
-        % \chapter*{A} — ненумерованный, независимо от режима
         \bsuir_chapter_star_heading:n {#3}
         \addcontentsline {toc} {chapter} {#3}
       }
       {
         \bool_if:NTF \g_bsuir_backmatter_bool
           {
-            % режим приложений
             \stepcounter{bsuir@appendix}
             \tl_set:Nn \l_tmpa_tl { \IfNoValueTF{#2}{обязательное}{#2} }
             \tl_set:Nx \l_tmpb_tl
@@ -187,7 +185,6 @@
           {
             \IfNoValueTF{#2}
               {
-                % \chapter{A} — нумерованная глава
                 \refstepcounter{chapter}
                 \bsuir_chapter_numbered_heading:nn {\thechapter} {#3}
                 \addcontentsline {toc} {chapter}
@@ -195,7 +192,6 @@
                 \chaptermark {#3}
               }
               {
-                % \chapter[B]{A} — ошибка в основном тексте
                 \msg_error:nn {bsuir-headings} {appendix-in-mainmatter}
               }
           }
@@ -208,14 +204,12 @@
 % =============================================================================
 % 7. \section
 % =============================================================================
-
 \makeatletter
 \RenewDocumentCommand \section { o m }
   {
     \bool_if:NT \g_bsuir_backmatter_bool
       { \msg_error:nnx {bsuir-headings} {no-sections-in-backmatter} { \section } }
     \refstepcounter {section}
-    % \addcontentsline после heading — якорь уже на правильной странице
     \bsuir_section_heading:nn {\thesection} {#2}
     \addcontentsline {toc} {section}
       { \protect\numberline{\thesection} \IfNoValueTF{#1}{#2}{#1} }
@@ -226,14 +220,12 @@
 % =============================================================================
 % 8–9. \subsection и \subsubsection — run-in
 % =============================================================================
-
 \cs_new_protected:Npn \bsuir_runsec:nnnnn #1#2#3#4#5
   {
     \bool_if:NT \g_bsuir_backmatter_bool
       { \msg_error:nnx {bsuir-headings} {no-sections-in-backmatter} { \token_to_str:c {#1} } }
     \bool_if:nT {#4} { \bsuir_vbreak:n {2} }
     \refstepcounter {#1}
-    % \noindent\phantomsection перед текстом — якорь в начале строки
     \noindent \phantomsection
     \addcontentsline {toc} {#1} { \protect\numberline{#2} #5 }
     \hspace* { \parindent }
