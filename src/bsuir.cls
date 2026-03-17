@@ -63,11 +63,11 @@
 \RequirePackage{scrlayer-scrpage}
 
 \use:c { AtBeginDocument }
-  {
-    \use:c { pagestyle } { scrheadings }
-    \use:c { clearpairofpagestyles }
-    \use:c { ofoot* } { \use:c { pagemark } }
-  }
+{
+  \use:c { pagestyle } { scrheadings }
+  \use:c { clearpairofpagestyles }
+  \use:c { ofoot* } { \use:c { pagemark } }
+}
 
 \RequirePackage[
   unicode,
@@ -77,6 +77,7 @@
   hidelinks,
 ]{hyperref}
 \RequirePackage{bookmark}
+\RequirePackage{bsuir-typography}
 \RequirePackage{bsuir-headings}
 
 \pdfstringdefDisableCommands
@@ -103,9 +104,9 @@
 }
 
 \bool_lazy_or:nnTF
-  { \str_if_eq_p:Vn \g_bsuir_type_tl { thesis } }
-  { \str_if_eq_p:Vn \g_bsuir_type_tl { coursework } }
-  { \bsuir_headings_use_full: }
-  { \bsuir_headings_use_short: }
+{ \str_if_eq_p:Vn \g_bsuir_type_tl { thesis } }
+{ \str_if_eq_p:Vn \g_bsuir_type_tl { coursework } }
+{ \bsuir_headings_use_full: }
+{ \bsuir_headings_use_short: }
 
 \endinput
