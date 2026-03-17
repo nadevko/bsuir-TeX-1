@@ -2,15 +2,17 @@
 \ProvidesExplClass
 {bsuir}
 {2026-03-12}
-{0.3}
+{0.4}
 {expl3 BSUIR Enterprise Standard (UDG) 01-2024 implementation}
 
 \tl_new:N \g_bsuir_style_tl
 \tl_new:N \g_bsuir_type_tl
+\tl_new:N \g_bsuir_equationnumbering_tl
 
 \msg_new:nnnn { bsuir } { unknown-choice }
 { Invalid value '#3' for key '#1'. \\ Available options for '#1' are: #2. }
 { You tried to set #1=#3. This is not allowed. }
+
 
 \keys_define:nn { bsuir }
 {
@@ -27,10 +29,17 @@
 			{ type } { report,~lab,~assignment,~coursework,~thesis,~research } {#1} },
 	type .initial:n = lab,
 
+	equationnumbering .choices:nn = { global, bychapter }
+		{ \tl_gset:NV \g_bsuir_equationnumbering_tl \l_keys_choice_tl },
+	equationnumbering / unknown .code:n =
+		{ \msg_fatal:nnnnn { bsuir } { unknown-choice }
+			{ equationnumbering } { global,~bychapter } {#1} },
+
 	unknown .code:n = { \PassOptionsToClass {#1} { scrreprt } },
 }
 
 \ProcessKeyOptions [ bsuir ]
+
 \cs_set:Npn \baselinestretch { 1.25 }
 \dim_gset:Nn \parindent { 1.25cm }
 
@@ -42,45 +51,18 @@
 	toc=chapterentrydotfill,
 ]{scrreprt}
 
-\RequirePackage[
-	a4paper,
-	left=30mm,
-	right=15mm,
-	top=20mm,
-	bottom=20mm,
-	footskip=10mm,
-]{geometry}
-
-\RequirePackage[tbtags]{amsmath}
-\RequirePackage[math-style=upright]{unicode-math}
-\RequirePackage{bsuir-lang}
-
-\setmathfont{XITS Math}
-\setmathrm{XITS Math}
-\setmathfont{Times New Roman}[range=up/{greek,Greek}]
-
-\RequirePackage{scrlayer-scrpage}
-
-\use:c { AtBeginDocument }
+% Set default equationnumbering based on type, unless user set it explicitly.
+\bool_set:Nn \l_tmpa_bool
 {
-	\use:c { pagestyle } { scrheadings }
-	\use:c { clearpairofpagestyles }
-	\use:c { ofoot* } { \use:c { pagemark } }
+	\str_if_eq_p:Vn \g_bsuir_type_tl { thesis } ||
+	\str_if_eq_p:Vn \g_bsuir_type_tl { coursework }
 }
 
-\RequirePackage[
-	unicode,
-	bookmarksopen=true,
-	bookmarksnumbered=true,
-	pdfstartview=FitH,
-	hidelinks,
-]{hyperref}
-\RequirePackage{bookmark}
-\RequirePackage{bsuir-typography}
+\RequirePackage{bsuir-lang}
+\RequirePackage{bsuir-page}
 \RequirePackage{bsuir-headings}
-
-\pdfstringdefDisableCommands
-{ \cs_set:Npn \bsuir@tocnum #1 { #1 \space } }
+\RequirePackage{bsuir-itemisation}
+\RequirePackage{bsuir-equations}
 
 \msg_new:nnn { bsuir } { subsubsection-not-allowed }
 { \token_to_str:N \subsubsection \ is~not~allowed~for~this~document~type! }
@@ -102,10 +84,21 @@
 	{ \msg_error:nn { bsuir } { subsubsection-not-allowed } }
 }
 
-\bool_lazy_or:nnTF
-{ \str_if_eq_p:Vn \g_bsuir_type_tl { thesis } }
-{ \str_if_eq_p:Vn \g_bsuir_type_tl { coursework } }
+\bool_if:NTF \l_tmpa_bool
 { \bsuir_headings_use_full: }
 { \bsuir_headings_use_short: }
+
+% Apply equationnumbering: user choice takes priority, then type-based default.
+\tl_if_empty:NTF \g_bsuir_equationnumbering_tl
+{
+	\bool_if:NTF \l_tmpa_bool
+	{ \bsuir_equations_numbering_bychapter: }
+	{ \bsuir_equations_numbering_global: }
+}
+{
+	\str_if_eq:VnTF \g_bsuir_equationnumbering_tl { global }
+	{ \bsuir_equations_numbering_global: }
+	{ \bsuir_equations_numbering_bychapter: }
+}
 
 \endinput

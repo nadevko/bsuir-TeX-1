@@ -1,0 +1,30 @@
+\ProvidesExplPackage {bsuir-page} {2026-03-12} {0.4}
+{BSUIR page layout: geometry, headers, PDF infrastructure}
+
+\RequirePackage[
+	a4paper,
+	left=30mm,
+	right=15mm,
+	top=20mm,
+	bottom=20mm,
+	footskip=10mm,
+]{geometry}
+
+\RequirePackage[
+	unicode,
+	bookmarksopen=true,
+	bookmarksnumbered=true,
+	pdfstartview=FitH,
+	hidelinks,
+]{hyperref}
+\RequirePackage{bookmark}
+
+\RequirePackage{scrlayer-scrpage}
+\pagestyle{scrheadings}
+\clearpairofpagestyles
+\ofoot*{\pagemark}
+
+\pdfstringdefDisableCommands
+{ \cs_set:Npn \bsuir@tocnum #1 { #1 \space } }
+
+\endinput

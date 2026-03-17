@@ -1,0 +1,48 @@
+\ProvidesExplPackage {bsuir-equations} {2026-03-12} {0.4}
+{BSUIR equation typography}
+
+\RequirePackage{bsuir-utils}
+
+% --- Equation numbering ----------------------------------------------------
+
+\cs_new_protected:Npn \bsuir_equations_numbering_global:
+{
+	\renewcommand{\theequation}{\arabic{equation}}
+}
+
+\cs_new_protected:Npn \bsuir_equations_numbering_bychapter:
+{
+	\@addtoreset{equation}{chapter}
+	\renewcommand{\theequation}{\thechapter.\arabic{equation}}
+}
+
+% --- Line break in math: \mathbreak{op} ------------------------------------
+% Repeats op at end of line and start of next line (BSUIR standard).
+% \cdot and * → \times on break.
+% Division forbidden.
+
+\msg_new:nnn { bsuir-equations } { mathbreak-division-forbidden }
+{ Line~break~on~division~sign~is~not~allowed~by~BSUIR~standard. }
+
+\NewDocumentCommand \mathbreak { m }
+{
+	\bsuir__mathbreak:n {#1}
+}
+
+\cs_new_protected:Npn \bsuir__mathbreak:n #1
+{
+	\tl_set:Nn \l_tmpa_tl {#1}
+	\bool_lazy_or:nnTF
+	{ \tl_if_eq_p:Nn \l_tmpa_tl { / } }
+	{ \tl_if_eq_p:Nn \l_tmpa_tl { \div } }
+	{ \msg_error:nn { bsuir-equations } { mathbreak-division-forbidden } }
+	{
+		\bool_lazy_or:nnTF
+		{ \tl_if_eq_p:Nn \l_tmpa_tl { \cdot } }
+		{ \tl_if_eq_p:Nn \l_tmpa_tl { * } }
+		{ \cdot \\ \times }
+		{ #1 \\ #1 }
+	}
+}
+
+\endinput

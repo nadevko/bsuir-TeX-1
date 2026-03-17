@@ -1,4 +1,4 @@
-\ProvidesPackage{bsuir-lang}[2026-03-12 v0.3 BSUIR font and language setup]
+\ProvidesPackage{bsuir-lang}[2026-03-12 v0.4 BSUIR font, language and localisation setup]
 
 \RequirePackage{bsuir-utils}
 \RequirePackage[babelshorthands]{polyglossia}
@@ -12,13 +12,58 @@
 
 \newfontfamily{\cyrillicfont}  {Times New Roman}[Ligatures=TeX, Script=Cyrillic]
 \newfontfamily{\cyrillicfontrm}{Times New Roman}[Ligatures=TeX, Script=Cyrillic]
-\newfontfamily{\cyrillicfontsf}{Arial}           [Ligatures=TeX,
-	Script=Cyrillic]
-\newfontfamily{\cyrillicfonttt}{Courier New}     [Ligatures=TeX,
-	Script=Cyrillic]
+\newfontfamily{\cyrillicfontsf}{Arial}           [Ligatures=TeX, Script=Cyrillic]
+\newfontfamily{\cyrillicfonttt}{Courier New}     [Ligatures=TeX, Script=Cyrillic]
 
 \setmainfont{Times New Roman}[Ligatures=TeX]
 \setsansfont{Arial}          [Ligatures=TeX]
 \setmonofont{Courier New}    [Ligatures=TeX]
+
+\RequirePackage[tbtags]{amsmath}
+\RequirePackage[math-style=upright]{unicode-math}
+
+\setmathfont{XITS Math}
+\setmathrm{XITS Math}
+\setmathfont{Times New Roman}[range=up/{greek,Greek}]
+\setmathfont{Times New Roman}[range=up/{cyrillic,Cyrillic}]
+
+% ---------------------------------------------------------------------------
+%  Alphabet letters for appendix numbering (LaTeX2e \ifcase, no expl3)
+% ---------------------------------------------------------------------------
+
+\renewcommand*{\bsuir@alphaletter}[1]{%
+  \ifcase#1\or А\or Б\or В\or Г\or Д%
+  \or Е\or Ж\or И\or К\or Л%
+  \or М\or Н\or П\or Р\or С%
+  \or Т\or У\or Ф\or Х\or Ц%
+  \or Ш\or Щ\or Э\or Ю\or Я%
+  \fi
+}
+
+% ---------------------------------------------------------------------------
+%  Russian captions
+% ---------------------------------------------------------------------------
+
+\addto\captionsrussian
+{
+  \renewcommand*{\contentsname}{Содержание}
+  \renewcommand*{\appendixname}{ПРИЛОЖЕНИЕ}
+
+  \renewcommand*{\bsuir@alphaenumer}[1]{%
+    \MakeLowercase{\bsuir@@alphaletter{\csname c@#1\endcsname}}%
+  }
+}
+
+% ---------------------------------------------------------------------------
+%  autoref names (hyperref)
+% ---------------------------------------------------------------------------
+
+\def\chapterautorefname{раздел}
+\def\sectionautorefname{подраздел}
+\def\subsectionautorefname{пункт}
+\def\subsubsectionautorefname{подпункт}
+\def\figureautorefname{рисунок}
+\def\tableautorefname{таблица}
+\def\equationautorefname{формула}
 
 \endinput

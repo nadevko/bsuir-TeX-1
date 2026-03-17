@@ -1,4 +1,4 @@
-\ProvidesExplPackage {bsuir-utils} {2026-03-12} {0.3} {BSUIR utilities}
+\ProvidesExplPackage {bsuir-utils} {2026-03-12} {0.4} {BSUIR utilities}
 
 \RequirePackage{needspace}
 
@@ -6,7 +6,7 @@
 
 \cs_new_protected:Npn \bsuir_heading_disable_hyphens:
 {
-	\int_set:Nn \tex_hyphenpenalty:D  { 10000 }
+	\int_set:Nn \tex_hyphenpenalty:D   { 10000 }
 	\int_set:Nn \tex_exhyphenpenalty:D { 10000 }
 }
 
@@ -17,7 +17,9 @@
 	\needspace { #1\baselineskip }
 }
 
-\newcommand* \bsuir@alphaletter [1] { }
 \cs_new:Npn \bsuir_alpha_letter:n #1 { \bsuir@alphaletter {#1} }
+
+% Empty fallback — real definition provided by bsuir-lang
+\providecommand* \bsuir@alphaletter [1] { }
 
 \endinput

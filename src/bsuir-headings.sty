@@ -1,20 +1,14 @@
-\ProvidesExplPackage {bsuir-headings} {2026-03-12} {0.3}
+\ProvidesExplPackage {bsuir-headings} {2026-03-12} {0.4}
 {BSUIR headings configuration}
 
 \RequirePackage{bsuir-utils}
-
-\addto\captionsrussian
-{
-	\renewcommand* \contentsname { Содержание }
-	\renewcommand* \appendixname { ПРИЛОЖЕНИЕ }
-}
 
 \cs_set:Npn \@dotsep { 1 }
 
 \providecommand\phantomsection{}
 
 \int_set:Nn \c@secnumdepth { 3 }
-\int_set:Nn \c@tocdepth { 1 }
+\int_set:Nn \c@tocdepth    { 1 }
 
 \NewDocumentCommand \bsuir@tocnum { m } { #1\space }
 
@@ -40,6 +34,10 @@
 	] { \int_case:nn {#1} { {0}{chapter} {1}{section} {2}{subsection}
 				{3}{subsubsection} } }
 }
+
+% ---------------------------------------------------------------------------
+%  Low-level rendering helpers
+% ---------------------------------------------------------------------------
 
 \cs_new_protected:Npn \bsuir_heading_render_box:nnnn #1#2#3#4
 {
@@ -115,29 +113,37 @@
 	\@afterindentfalse \@afterheading
 }
 
+% ---------------------------------------------------------------------------
+%  Error messages
+% ---------------------------------------------------------------------------
+
 \msg_new:nnn { bsuir-headings } { appendix-in-mainmatter }
 { appendix-style~chapter~is~not~allowed~before~\appendix! }
 \msg_new:nnn { bsuir-headings } { not-allowed-in-backmatter }
 { \token_to_str:N #1 \ is~not~allowed~in~appendix~mode! }
+
+% ---------------------------------------------------------------------------
+%  High-level heading declarations
+% ---------------------------------------------------------------------------
 
 \cs_new_protected:Npn \bsuir_chapter_dispatch:nn #1#2
 {
 	\str_case:nn {#1}
 	{
 		{ star }
-			{
-				\bsuir_chapter_render_star:n {#2}
-				\addcontentsline {toc} {chapter}
-				{ \text_titlecase_first:n {#2} }
-			}
-			{ numbered }
-			{
-				\refstepcounter{chapter}
-				\bsuir_chapter_render_numbered:nn {\thechapter} {#2}
-				\addcontentsline {toc} {chapter}
-				{ \protect\bsuir@tocnum{\thechapter} \text_titlecase_first:n {#2} }
-				\chaptermark {#2}
-			}
+		{
+			\bsuir_chapter_render_star:n {#2}
+			\addcontentsline {toc} {chapter}
+			{ \text_titlecase_first:n {#2} }
+		}
+		{ numbered }
+		{
+			\refstepcounter{chapter}
+			\bsuir_chapter_render_numbered:nn {\thechapter} {#2}
+			\addcontentsline {toc} {chapter}
+			{ \protect\bsuir@tocnum{\thechapter} \text_titlecase_first:n {#2} }
+			\chaptermark {#2}
+		}
 	}
 }
 
@@ -204,25 +210,25 @@
 {
 	\stepcounter{bsuir@appendix}
 	\RenewDocumentCommand \chapter { o m }
-	 {
-	  \tl_set:Nn \l_tmpa_tl { \IfNoValueTF{##1}{обязательное}{##1} }
-	  \tl_set:Nx \l_tmpb_tl
-	  { \appendixname \c_space_tl \bsuir_appendix_letter:n {
-			  \arabic{bsuir@appendix} } }
-	  \bsuir_chapter_render_appendix:nnn
-	  { \l_tmpb_tl } { \l_tmpa_tl } {##2}
-	  \addcontentsline {toc} {chapter}
-	  { \l_tmpb_tl \space \text_titlecase_first:n {##2} }
-	  \stepcounter{bsuir@appendix}
-	 }
+	{
+		\tl_set:Nn \l_tmpa_tl { \IfNoValueTF{##1}{обязательное}{##1} }
+		\tl_set:Nx \l_tmpb_tl
+		{ \appendixname \c_space_tl \bsuir_appendix_letter:n {
+				\arabic{bsuir@appendix} } }
+		\bsuir_chapter_render_appendix:nnn
+		{ \l_tmpb_tl } { \l_tmpa_tl } {##2}
+		\addcontentsline {toc} {chapter}
+		{ \l_tmpb_tl \space \text_titlecase_first:n {##2} }
+		\stepcounter{bsuir@appendix}
+	}
 	\cs_set_protected:Npn \bsuir__backmatter_error:w ##1 ##2
 	{ \msg_error:nnn {bsuir-headings} {not-allowed-in-backmatter} {##1} }
-	\RenewDocumentCommand \section    { o m } {
-	  \bsuir__backmatter_error:w \section    {##2} }
-	\RenewDocumentCommand \subsection { o m } {
-		\bsuir__backmatter_error:w \subsection {##2} }
-	\RenewDocumentCommand \subsubsection { o m } {
-		\bsuir__backmatter_error:w \subsubsection {##2} }
+	\RenewDocumentCommand \section    { o m }
+	{ \bsuir__backmatter_error:w \section    {##2} }
+	\RenewDocumentCommand \subsection { o m }
+	{ \bsuir__backmatter_error:w \subsection {##2} }
+	\RenewDocumentCommand \subsubsection { o m }
+	{ \bsuir__backmatter_error:w \subsubsection {##2} }
 }
 
 \endinput

@@ -1,0 +1,44 @@
+\ProvidesExplPackage {bsuir-itemisation} {2026-03-12} {0.4}
+{BSUIR list typography}
+
+\RequirePackage{bsuir-utils}
+\RequirePackage{enumitem}
+
+% \bsuir@alphaenumer is declared in bsuir-lang via \addto\captionsrussian;
+% provide a neutral fallback so the counter registration below always works.
+\providecommand* \bsuir@alphaenumer [1] { \arabic {#1} }
+
+% Internal command receiving the raw \count register (per AddEnumerateCounter API)
+\newcommand* \bsuir@@alphaletter [1] { \bsuir@alphaletter { \number #1 } }
+
+\AddEnumerateCounter
+  { \bsuir@alphaenumer }
+  { \bsuir@@alphaletter }
+  { А }
+
+\msg_new:nnn { bsuir-itemisation } { description-not-allowed }
+{ The~description~environment~is~not~allowed. }
+
+\setlist
+{
+	nosep,
+	listparindent = \parindent,
+	labelsep      = \fontdimen2\font,
+	align         = left,
+}
+
+\setlist [1] { labelindent = \parindent, leftmargin = * }
+\setlist [2] { labelindent = \parindent, leftmargin = * }
+
+\setlist [itemize]   { label = \textendash }
+\setlist [enumerate] { label = \arabic*    }
+
+\newlist {alphabetize} {enumerate} {2}
+
+\setlist [alphabetize, 1] { label = \bsuir@alphaenumer*), ref = \bsuir@alphaenumer* }
+\setlist [alphabetize, 2] { label = \arabic*),            ref = \arabic*            }
+
+\AddToHook { env/description/begin }
+{ \msg_error:nn { bsuir-itemisation } { description-not-allowed } }
+
+\endinput

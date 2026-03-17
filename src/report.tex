@@ -1,4 +1,4 @@
-\documentclass{bsuir}
+\documentclass[type=thesis]{bsuir}
 
 \begin{document}
 hello!!! аа RR КК f f f ff f f f f f f f f   f f f f f f f f f f f  f
@@ -7,27 +7,27 @@ f f f f f ff f  f f f f f   f f f f f f f f f f
 \tableofcontents
 
 \chapter{Первая глава}
-Текст абзаца сразу после номера 1.1.1. идёт с абзацным отступом.
 Дальше продолжается текст.
 
 \section{первый разделпервый разделпервый разделпервый разделпервый
 разделпервый разделпервый раздел}
-Текст абзаца сразу после номера 1.1.1. идёт с абзацным отступом.
 Дальше продолжается текст.
 
 \subsection{подраздел}
 
-\begin{enumalpha}
-\item первый\label{baka}
+\begin{itemize}
+  \item a
+\end{itemize}
+\begin{alphabetize}
+% \item первый\label{baka}
 \item второй
-  \begin{enumalpha}
+  \begin{alphabetize}
   \item первый
-  \item второй
-  \end{enumalpha}
-\end{enumalpha}
+  \item второй\label{baka}
+  \end{alphabetize}
+\end{alphabetize}
 
-Текст абзаца сразу после номера 1.1.1. идёт с абзацным отступом.
-Дальше продолжается текст. \ref{baka}
+Дальше продолжается текст.c~\ref{baka} d
 
 \appendix
 
