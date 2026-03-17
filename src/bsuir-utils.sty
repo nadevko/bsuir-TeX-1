@@ -1,0 +1,20 @@
+\ProvidesExplPackage {bsuir-utils} {2026-03-12} {0.3} {BSUIR utilities}
+
+\RequirePackage{needspace}
+
+\skip_const:Nn \c_bsuir_vspace_skip { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+
+\cs_new_protected:Npn \bsuir_heading_disable_hyphens:
+{
+  \int_set:Nn \tex_hyphenpenalty:D  { 10000 }
+  \int_set:Nn \tex_exhyphenpenalty:D { 10000 }
+}
+
+\cs_new_protected:Npn \bsuir_heading_vbreak:n #1
+{
+  \par
+  \addvspace { \c_bsuir_vspace_skip }
+  \needspace { #1\baselineskip }
+}
+
+\endinput

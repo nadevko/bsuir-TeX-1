@@ -54,30 +54,7 @@
 
 \RequirePackage[tbtags]{amsmath}
 \RequirePackage[math-style=upright]{unicode-math}
-
-\ExplSyntaxOff
-
-\RequirePackage[babelshorthands]{polyglossia}
-\setmainlanguage{russian}
-\setotherlanguage[variant=british]{english}
-\setotherlanguage{belarusian}
-
-\ExplSyntaxOn
-
-\setlanguagealias{belarusian}{be}
-\setlanguagealias{russian}{ru}
-\setlanguagealias[variant=british]{english}{en}
-
-\newfontfamily{\cyrillicfont}  {Times New Roman}[Ligatures=TeX, Script=Cyrillic]
-\newfontfamily{\cyrillicfontrm}{Times New Roman}[Ligatures=TeX, Script=Cyrillic]
-\newfontfamily{\cyrillicfontsf}{Arial}           [Ligatures=TeX,
-Script=Cyrillic]
-\newfontfamily{\cyrillicfonttt}{Courier New}     [Ligatures=TeX,
-Script=Cyrillic]
-
-\setmainfont{Times New Roman}[Ligatures=TeX]
-\setsansfont{Arial}          [Ligatures=TeX]
-\setmonofont{Courier New}    [Ligatures=TeX]
+\RequirePackage{bsuir-lang}
 
 \setmathfont{XITS Math}
 \setmathrm{XITS Math}
@@ -97,8 +74,38 @@ Script=Cyrillic]
   bookmarksopen=true,
   bookmarksnumbered=true,
   pdfstartview=FitH,
+  hidelinks,
 ]{hyperref}
 \RequirePackage{bookmark}
 \RequirePackage{bsuir-headings}
+
+\pdfstringdefDisableCommands
+{ \cs_set:Npn \bsuir@tocnum #1 { #1 \space } }
+
+\msg_new:nnn { bsuir } { subsubsection-not-allowed }
+{ \token_to_str:N \subsubsection \ is~not~allowed~for~this~document~type! }
+
+\cs_new_protected:Npn \bsuir_headings_use_full:
+{
+  \bsuir_declare_chapter:N \chapter
+  \bsuir_declare_section:N  \section
+  \bsuir_declare_runin:Nnn  \subsection    {true}  {true}
+  \bsuir_declare_runin:Nnn  \subsubsection {false} {false}
+}
+
+\cs_new_protected:Npn \bsuir_headings_use_short:
+{
+  \bsuir_declare_section:N  \chapter
+  \bsuir_declare_runin:Nnn  \section    {true}  {true}
+  \bsuir_declare_runin:Nnn  \subsection {false} {false}
+  \RenewDocumentCommand \subsubsection { o m }
+  { \msg_error:nn { bsuir } { subsubsection-not-allowed } }
+}
+
+\bool_lazy_or:nnTF
+  { \str_if_eq_p:Vn \g_bsuir_type_tl { thesis } }
+  { \str_if_eq_p:Vn \g_bsuir_type_tl { coursework } }
+  { \bsuir_headings_use_full: }
+  { \bsuir_headings_use_short: }
 
 \endinput
