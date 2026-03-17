@@ -6,15 +6,15 @@
 
 \cs_new_protected:Npn \bsuir_heading_disable_hyphens:
 {
-  \int_set:Nn \tex_hyphenpenalty:D  { 10000 }
-  \int_set:Nn \tex_exhyphenpenalty:D { 10000 }
+	\int_set:Nn \tex_hyphenpenalty:D  { 10000 }
+	\int_set:Nn \tex_exhyphenpenalty:D { 10000 }
 }
 
 \cs_new_protected:Npn \bsuir_heading_vbreak:n #1
 {
-  \par
-  \addvspace { \c_bsuir_vspace_skip }
-  \needspace { #1\baselineskip }
+	\par
+	\addvspace { \c_bsuir_vspace_skip }
+	\needspace { #1\baselineskip }
 }
 
 \newcommand* \bsuir@alphaletter [1] { }

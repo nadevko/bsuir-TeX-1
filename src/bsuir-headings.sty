@@ -1,12 +1,12 @@
-\ProvidesExplPackage {bsuir-headings} {2026-03-12} {0.3} {BSUIR
-headings configuration}
+\ProvidesExplPackage {bsuir-headings} {2026-03-12} {0.3}
+{BSUIR headings configuration}
 
 \RequirePackage{bsuir-utils}
 
 \addto\captionsrussian
 {
-  \renewcommand* \contentsname { Содержание }
-  \renewcommand* \appendixname { ПРИЛОЖЕНИЕ }
+	\renewcommand* \contentsname { Содержание }
+	\renewcommand* \appendixname { ПРИЛОЖЕНИЕ }
 }
 
 \cs_set:Npn \@dotsep { 1 }
@@ -33,86 +33,86 @@ headings configuration}
 
 \int_step_inline:nnn { 0 } { 3 }
 {
-  \use:c { RedeclareSectionCommand } [
-    tocindent     = \dim_eval:n { 1.25cm * #1 },
-    tocbeforeskip = 0pt,
-    toclinefill   = \TOCLineLeaderFill
-  ] { \int_case:nn {#1} { {0}{chapter} {1}{section} {2}{subsection}
-  {3}{subsubsection} } }
+	\use:c { RedeclareSectionCommand } [
+		tocindent     = \dim_eval:n { 1.25cm * #1 },
+		tocbeforeskip = 0pt,
+		toclinefill   = \TOCLineLeaderFill
+	] { \int_case:nn {#1} { {0}{chapter} {1}{section} {2}{subsection}
+				{3}{subsubsection} } }
 }
 
 \cs_new_protected:Npn \bsuir_heading_render_box:nnnn #1#2#3#4
 {
-  \dim_set:Nn \l_tmpa_dim { \parindent }
-  \settowidth \@tempdima { #3 #1 \space }
-  \begingroup
-  #3
-  \raggedright
-  \bsuir_heading_disable_hyphens:
-  \leftskip  = \dim_eval:n { \l_tmpa_dim + \@tempdima }
-  \parindent = -\@tempdima
-  \leavevmode \phantomsection
-  \tl_if_empty:nF {#1} { #1 \space }
-  #4 {#2} \par
-  \endgroup
-  \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+	\dim_set:Nn \l_tmpa_dim { \parindent }
+	\settowidth \@tempdima { #3 #1 \space }
+	\begingroup
+	#3
+	\raggedright
+	\bsuir_heading_disable_hyphens:
+	\leftskip  = \dim_eval:n { \l_tmpa_dim + \@tempdima }
+	\parindent = -\@tempdima
+	\leavevmode \phantomsection
+	\tl_if_empty:nF {#1} { #1 \space }
+	#4 {#2} \par
+	\endgroup
+	\addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
 }
 
 \cs_new_protected:Npn \bsuir_chapter_render_numbered:nn #1#2
 {
-  \clearpage
-  \bsuir_heading_render_box:nnnn {#1} {#2}
-  { \fontsize{16}{19}\selectfont\bfseries }
-  { \text_uppercase:n }
-  \@afterindentfalse \@afterheading
+	\clearpage
+	\bsuir_heading_render_box:nnnn {#1} {#2}
+	{ \fontsize{16}{19}\selectfont\bfseries }
+	{ \text_uppercase:n }
+	\@afterindentfalse \@afterheading
 }
 
 \cs_new_protected:Npn \bsuir_chapter_render_star:n #1
 {
-  \clearpage
-  \begingroup
-  \fontsize{16}{19}\selectfont\bfseries
-  \centering
-  \bsuir_heading_disable_hyphens:
-  \leavevmode \phantomsection
-  \text_uppercase:n {#1} \par
-  \endgroup
-  \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
-  \@afterindentfalse \@afterheading
+	\clearpage
+	\begingroup
+	\fontsize{16}{19}\selectfont\bfseries
+	\centering
+	\bsuir_heading_disable_hyphens:
+	\leavevmode \phantomsection
+	\text_uppercase:n {#1} \par
+	\endgroup
+	\addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+	\@afterindentfalse \@afterheading
 }
 
 \cs_new_protected:Npn \bsuir_chapter_render_appendix:nnn #1#2#3
 {
-  \clearpage
-  \begingroup
-  \fontsize{16}{19}\selectfont\bfseries
-  \centering
-  \bsuir_heading_disable_hyphens:
-  \leavevmode \phantomsection
-  #1 \par
-  ( \text_lowercase:n {#2} ) \par
-  \text_titlecase_first:n {#3} \par
-  \endgroup
-  \addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
-  \@afterindentfalse \@afterheading
+	\clearpage
+	\begingroup
+	\fontsize{16}{19}\selectfont\bfseries
+	\centering
+	\bsuir_heading_disable_hyphens:
+	\leavevmode \phantomsection
+	#1 \par
+	( \text_lowercase:n {#2} ) \par
+	\text_titlecase_first:n {#3} \par
+	\endgroup
+	\addvspace { 1.0\baselineskip plus 0.2ex minus 0.2ex }
+	\@afterindentfalse \@afterheading
 }
 
 \cs_new_protected:Npn \bsuir_section_render:nn #1#2
 {
-  \dim_set:Nn \l_tmpa_dim { \parindent }
-  \settowidth \@tempdima { \normalsize\bfseries #1 \space }
-  \settowidth \@tempdimc { \normalsize\bfseries #2 }
-  \@tempdimb = \linewidth
-  \dim_sub:Nn \@tempdimb { \l_tmpa_dim }
-  \dim_sub:Nn \@tempdimb { \@tempdima }
-  \@tempcnta = \numexpr
-  ( \number\@tempdimc + \number\@tempdimb - 1 ) / \number\@tempdimb
-  \relax
-  \bsuir_heading_vbreak:n { \int_eval:n { \@tempcnta + 3 } }
-  \bsuir_heading_render_box:nnnn {#1} {#2}
-  { \normalsize\bfseries }
-  { \text_titlecase_first:n }
-  \@afterindentfalse \@afterheading
+	\dim_set:Nn \l_tmpa_dim { \parindent }
+	\settowidth \@tempdima { \normalsize\bfseries #1 \space }
+	\settowidth \@tempdimc { \normalsize\bfseries #2 }
+	\@tempdimb = \linewidth
+	\dim_sub:Nn \@tempdimb { \l_tmpa_dim }
+	\dim_sub:Nn \@tempdimb { \@tempdima }
+	\@tempcnta = \numexpr
+	( \number\@tempdimc + \number\@tempdimb - 1 ) / \number\@tempdimb
+	\relax
+	\bsuir_heading_vbreak:n { \int_eval:n { \@tempcnta + 3 } }
+	\bsuir_heading_render_box:nnnn {#1} {#2}
+	{ \normalsize\bfseries }
+	{ \text_titlecase_first:n }
+	\@afterindentfalse \@afterheading
 }
 
 \msg_new:nnn { bsuir-headings } { appendix-in-mainmatter }
@@ -122,107 +122,107 @@ headings configuration}
 
 \cs_new_protected:Npn \bsuir_chapter_dispatch:nn #1#2
 {
-  \str_case:nn {#1}
-  {
-    { star }
-    {
-      \bsuir_chapter_render_star:n {#2}
-      \addcontentsline {toc} {chapter}
-      { \text_titlecase_first:n {#2} }
-    }
-    { numbered }
-    {
-      \refstepcounter{chapter}
-      \bsuir_chapter_render_numbered:nn {\thechapter} {#2}
-      \addcontentsline {toc} {chapter}
-      { \protect\bsuir@tocnum{\thechapter} \text_titlecase_first:n {#2} }
-      \chaptermark {#2}
-    }
-  }
+	\str_case:nn {#1}
+	{
+		{ star }
+			{
+				\bsuir_chapter_render_star:n {#2}
+				\addcontentsline {toc} {chapter}
+				{ \text_titlecase_first:n {#2} }
+			}
+			{ numbered }
+			{
+				\refstepcounter{chapter}
+				\bsuir_chapter_render_numbered:nn {\thechapter} {#2}
+				\addcontentsline {toc} {chapter}
+				{ \protect\bsuir@tocnum{\thechapter} \text_titlecase_first:n {#2} }
+				\chaptermark {#2}
+			}
+	}
 }
 
 \cs_new_protected:Npn \bsuir_declare_chapter:N #1
 {
-  \RenewDocumentCommand #1 { s o m }
-  {
-    \IfBooleanTF {##1}
-    {
-      \bsuir_chapter_dispatch:nn {star} {##3}
-    }
-    {
-      \IfNoValueTF {##2}
-      {
-        \bsuir_chapter_dispatch:nn {numbered} {##3}
-      }
-      {
-        \msg_error:nn {bsuir-headings} {appendix-in-mainmatter}
-      }
-    }
-  }
+	\RenewDocumentCommand #1 { s o m }
+	{
+		\IfBooleanTF {##1}
+		{
+			\bsuir_chapter_dispatch:nn {star} {##3}
+		}
+		{
+			\IfNoValueTF {##2}
+			{
+				\bsuir_chapter_dispatch:nn {numbered} {##3}
+			}
+			{
+				\msg_error:nn {bsuir-headings} {appendix-in-mainmatter}
+			}
+		}
+	}
 }
 
 \cs_new_protected:Npn \bsuir_declare_section:N #1
 {
-  \RenewDocumentCommand #1 { o m }
-  {
-    \refstepcounter { \cs_to_str:N #1 }
-    \bsuir_section_render:nn
-    { \use:c { the \cs_to_str:N #1 } } {##2}
-    \addcontentsline {toc} { \cs_to_str:N #1 }
-    { \protect\bsuir@tocnum { \use:c { the \cs_to_str:N #1 } }
-    \text_titlecase_first:n { \IfNoValueTF{##1}{##2}{##1} } }
-    \use:c { \cs_to_str:N #1 mark } { \IfNoValueTF{##1}{##2}{##1} }
-  }
+	\RenewDocumentCommand #1 { o m }
+	{
+		\refstepcounter { \cs_to_str:N #1 }
+		\bsuir_section_render:nn
+		{ \use:c { the \cs_to_str:N #1 } } {##2}
+		\addcontentsline {toc} { \cs_to_str:N #1 }
+		{ \protect\bsuir@tocnum { \use:c { the \cs_to_str:N #1 } }
+			\text_titlecase_first:n { \IfNoValueTF{##1}{##2}{##1} } }
+		\use:c { \cs_to_str:N #1 mark } { \IfNoValueTF{##1}{##2}{##1} }
+	}
 }
 
 \cs_new_protected:Npn \bsuir_declare_runin:Nnn #1#2#3
 {
-  \RenewDocumentCommand #1 { o m }
-  {
-    \str_if_eq:nnT {#3} {true} { \bsuir_heading_vbreak:n {2} }
-    \refstepcounter { \cs_to_str:N #1 }
-    \noindent \phantomsection
-    \addcontentsline {toc} { \cs_to_str:N #1 }
-    { \protect\bsuir@tocnum { \use:c { the \cs_to_str:N #1 } }
-    \text_titlecase_first:n { \IfNoValueTF{##1}{##2}{##1} } }
-    \hspace* { \parindent }
-    \str_if_eq:nnTF {#2} {true}
-    { \textbf { \use:c { the \cs_to_str:N #1 } } }
-    { \use:c { the \cs_to_str:N #1 } }
-    \space \ignorespaces
-  }
+	\RenewDocumentCommand #1 { o m }
+	{
+		\str_if_eq:nnT {#3} {true} { \bsuir_heading_vbreak:n {2} }
+		\refstepcounter { \cs_to_str:N #1 }
+		\noindent \phantomsection
+		\addcontentsline {toc} { \cs_to_str:N #1 }
+		{ \protect\bsuir@tocnum { \use:c { the \cs_to_str:N #1 } }
+			\text_titlecase_first:n { \IfNoValueTF{##1}{##2}{##1} } }
+		\hspace* { \parindent }
+		\str_if_eq:nnTF {#2} {true}
+		{ \textbf { \use:c { the \cs_to_str:N #1 } } }
+		{ \use:c { the \cs_to_str:N #1 } }
+		\space \ignorespaces
+	}
 }
 
 \RenewDocumentCommand \tableofcontents { }
 {
-  \bsuir_chapter_render_star:n { \contentsname }
-  \@starttoc {toc}
-  \clearpage
+	\bsuir_chapter_render_star:n { \contentsname }
+	\@starttoc {toc}
+	\clearpage
 }
 
 \RenewDocumentCommand \appendix { }
 {
-  \stepcounter{bsuir@appendix}
-  \RenewDocumentCommand \chapter { o m }
-  {
-    \tl_set:Nn \l_tmpa_tl { \IfNoValueTF{##1}{обязательное}{##1} }
-    \tl_set:Nx \l_tmpb_tl
-    { \appendixname \c_space_tl \bsuir_appendix_letter:n {
-    \arabic{bsuir@appendix} } }
-    \bsuir_chapter_render_appendix:nnn
-    { \l_tmpb_tl } { \l_tmpa_tl } {##2}
-    \addcontentsline {toc} {chapter}
-    { \l_tmpb_tl \space \text_titlecase_first:n {##2} }
-    \stepcounter{bsuir@appendix}
-  }
-  \cs_set_protected:Npn \bsuir__backmatter_error:w ##1 ##2
-  { \msg_error:nnn {bsuir-headings} {not-allowed-in-backmatter} {##1} }
-  \RenewDocumentCommand \section    { o m } {
-  \bsuir__backmatter_error:w \section    {##2} }
-  \RenewDocumentCommand \subsection { o m } {
-  \bsuir__backmatter_error:w \subsection {##2} }
-  \RenewDocumentCommand \subsubsection { o m } {
-  \bsuir__backmatter_error:w \subsubsection {##2} }
+	\stepcounter{bsuir@appendix}
+	\RenewDocumentCommand \chapter { o m }
+	 {
+	  \tl_set:Nn \l_tmpa_tl { \IfNoValueTF{##1}{обязательное}{##1} }
+	  \tl_set:Nx \l_tmpb_tl
+	  { \appendixname \c_space_tl \bsuir_appendix_letter:n {
+			  \arabic{bsuir@appendix} } }
+	  \bsuir_chapter_render_appendix:nnn
+	  { \l_tmpb_tl } { \l_tmpa_tl } {##2}
+	  \addcontentsline {toc} {chapter}
+	  { \l_tmpb_tl \space \text_titlecase_first:n {##2} }
+	  \stepcounter{bsuir@appendix}
+	 }
+	\cs_set_protected:Npn \bsuir__backmatter_error:w ##1 ##2
+	{ \msg_error:nnn {bsuir-headings} {not-allowed-in-backmatter} {##1} }
+	\RenewDocumentCommand \section    { o m } {
+	  \bsuir__backmatter_error:w \section    {##2} }
+	\RenewDocumentCommand \subsection { o m } {
+		\bsuir__backmatter_error:w \subsection {##2} }
+	\RenewDocumentCommand \subsubsection { o m } {
+		\bsuir__backmatter_error:w \subsubsection {##2} }
 }
 
 \endinput

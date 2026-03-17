@@ -6,20 +6,20 @@
 
 \addto\captionsrussian
 {
-  \renewcommand* \bsuir@alphaletter [1]
-  {
-    \int_case:nn {#1}
-    {
-      {1}  {А} {2}  {Б} {3}  {В} {4}  {Г} {5}  {Д}
-      {6}  {Е} {7}  {Ж} {8}  {И} {9}  {К} {10} {Л}
-      {11} {М} {12} {Н} {13} {П} {14} {Р} {15} {С}
-      {16} {Т} {17} {У} {18} {Ф} {19} {Х} {20} {Ц}
-      {21} {Ш} {22} {Щ} {23} {Э} {24} {Ю} {25} {Я}
-    }
-  }
+	\renewcommand* \bsuir@alphaletter [1]
+	{
+		\int_case:nn {#1}
+		{
+			{1}  {А} {2}  {Б} {3}  {В} {4}  {Г} {5}  {Д}
+				{6}  {Е} {7}  {Ж} {8}  {И} {9}  {К} {10} {Л}
+				{11} {М} {12} {Н} {13} {П} {14} {Р} {15} {С}
+				{16} {Т} {17} {У} {18} {Ф} {19} {Х} {20} {Ц}
+				{21} {Ш} {22} {Щ} {23} {Э} {24} {Ю} {25} {Я}
+		}
+	}
 }
 \newcommand* \bsuir@alphaenumer [1] { \tl_lower_case:n {
-\bsuir@alphaletter { \value{#1} } } }
+		\bsuir@alphaletter { \value{#1} } } }
 \AddEnumerateCounter
 { \bsuir@alphaenumer }
 { \bsuir@alphaletter }
@@ -30,14 +30,14 @@
 
 \setlist
 {
-  topsep        = 0pt,
-  partopsep     = 0pt,
-  parsep        = 0pt,
-  itemsep       = 0pt,
-  listparindent = \parindent,
-  labelindent   = \parindent,
-  leftmargin    = *,
-  labelsep      = \fontdimen2\font,
+	topsep        = 0pt,
+	partopsep     = 0pt,
+	parsep        = 0pt,
+	itemsep       = 0pt,
+	listparindent = \parindent,
+	labelindent   = \parindent,
+	leftmargin    = *,
+	labelsep      = \fontdimen2\font,
 }
 
 \setlist[itemize]   { label = \textendash }
@@ -46,12 +46,12 @@
 \newlist {enumalpha} {enumerate} {2}
 
 \setlist[enumalpha, 1] {
-label = \bsuir@alphaenumer*),
-ref = \bsuir@alphaenumer*
+	label = \bsuir@alphaenumer*),
+	ref = \bsuir@alphaenumer*
 }
 \setlist[enumalpha, 2] {
-label = \arabic*),
-ref= \arabic*
+	label = \arabic*),
+	ref= \arabic*
 }
 
 \AddToHook {env/description/begin}
